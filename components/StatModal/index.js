@@ -1,11 +1,14 @@
 import React from "react";
 import {
   StyleSheet,
-  TouchableNativeFeedback,
+  TouchableHighlight,
   Text,
   Modal,
   View
 } from "react-native";
+
+// Atoms:
+import Headline from "../../atoms/Headline";
 
 const StatModal = props => {
   let darts = [];
@@ -38,7 +41,7 @@ const StatModal = props => {
     >
       <View>
         <View>
-          <Text style={styles.headline}>Stats</Text>
+          <Headline>Stats</Headline>
           <View style={{ flexDirection: "row" }}>
             <View>
               <Text>Category</Text>
@@ -100,28 +103,17 @@ const StatModal = props => {
           </View>
         </View>
         <View>
-          <TouchableNativeFeedback
-            background={TouchableNativeFeedback.SelectableBackground()}
-            onPress={props.onClose}
-          >
+          <TouchableHighlight onPress={props.onClose}>
             <View style={{ width: 150, height: 100, backgroundColor: "red" }}>
               <Text>Close</Text>
             </View>
-          </TouchableNativeFeedback>
+          </TouchableHighlight>
         </View>
       </View>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignContent: "center"
-  },
-  headline: {
-    fontStyle: "italic",
-    fontSize: 20
-  }
-});
+const styles = StyleSheet.create({});
 
 export default StatModal;

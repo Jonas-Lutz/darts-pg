@@ -1,21 +1,29 @@
 import React from "react";
-import { StyleSheet, Text, TouchableNativeFeedback, View } from "react-native";
-
-// Components:
-import StatModal from "../../components/StatModal";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
 import theme from "../../theme";
 
+// Components:
+import Container from "../../components/Container";
+import GameNav from "../../components/GameNav";
+import Scoreboard from "../../components/Scoreboard";
+
 export default class NineNineX extends React.Component {
-  state = {
-    score: 0,
-    round: 1,
-    goal: 20,
-    gameHistory: [],
-    roundHistory: [],
-    showStats: false
+  static navigationOptions = {
+    header: null
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      goal: this.props.navigation.getParam("goal", 20),
+      round: this.props.navigation.getParam("round", 1),
+      score: this.props.navigation.getParam("score", 0),
+      gameHistory: this.props.navigation.getParam("gameHistory", []),
+      roundHistory: this.props.navigation.getParam("roundHistory", []),
+      fetchedStats: this.props.navigation.getParam("fetchedStats", [])
+    };
+  }
 
   addScore = multiplier => {
     if (this.state.roundHistory.length < 3) {
@@ -28,8 +36,7 @@ export default class NineNineX extends React.Component {
         ...this.state.roundHistory,
         {
           goal: this.state.goal,
-          multiplier: multiplier,
-          score: this.state.goal * multiplier
+          multiplier: multiplier
         }
       ];
 
@@ -55,8 +62,7 @@ export default class NineNineX extends React.Component {
         for (let i = filledUpRoundHistory.length; i < 3; i++) {
           filledUpRoundHistory.push({
             goal: this.state.goal,
-            multiplier: 0,
-            score: 0
+            multiplier: 0
           });
         }
       }
@@ -71,8 +77,10 @@ export default class NineNineX extends React.Component {
   };
 
   removeScore = () => {
+    // At least 1 dart thrown
     if (this.state.gameHistory.length > 0) {
       if (
+        // Dart thrown previous or this round
         this.state.gameHistory[this.state.gameHistory.length - 1].length > 0 ||
         this.state.gameHistory.length > 1
       ) {
@@ -80,23 +88,27 @@ export default class NineNineX extends React.Component {
         let updatedGameHistory = [...this.state.gameHistory];
         let subtractValue = 0;
 
+        // IF: darts thrown this round
         if (this.state.roundHistory.length > 0) {
-          subtractValue = this.state.roundHistory[
-            this.state.roundHistory.length - 1
-          ].score;
-          // Darts thrown this round:
+          subtractValue =
+            this.state.roundHistory[this.state.roundHistory.length - 1]
+              .multiplier * this.state.goal;
           newRoundHistory.pop();
           updatedGameHistory.splice(
             updatedGameHistory.length - 1,
             1,
             newRoundHistory
           );
-        } else {
-          subtractValue = this.state.gameHistory[
-            this.state.gameHistory.length - 2
-          ][2].score;
+        }
+        // ELSE: No darts thrown this round
+        else {
+          subtractValue =
+            this.state.gameHistory[
+              this.state.gameHistory.length - 2 >= 0
+                ? this.state.gameHistory.length - 2
+                : 0
+            ][2].multiplier * this.state.goal;
 
-          // No Darts thrown this round:
           const prevRound =
             this.state.gameHistory.length < 2
               ? 0
@@ -132,108 +144,123 @@ export default class NineNineX extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
+
     return (
-      <View style={styles.container}>
-        <View style={styles.scoreBoard}>
-          <Text>{`${this.state.round} round`}</Text>
-          <Text>{`${this.state.score} points`}</Text>
+      <Container>
+        <Scoreboard flexVal={0.25}>
+          <View style={styles.gamestats}>
+            <Text>{`${this.state.round} round`}</Text>
+            <Text>{`${this.state.score} points`}</Text>
+          </View>
           <View style={styles.thrownDarts}>
-            <Text style={styles.dartScore}>{`I: ${
-              this.state.roundHistory.length > 0
-                ? this.state.roundHistory[0].score
-                : ""
-            }`}</Text>
-            <Text style={styles.dartScore}>{`II: ${
-              this.state.roundHistory.length > 1
-                ? this.state.roundHistory[1].score
-                : ""
-            }`}</Text>
-            <Text style={styles.dartScore}>{`III: ${
-              this.state.roundHistory.length > 2
-                ? this.state.roundHistory[2].score
-                : ""
-            }`}</Text>
+            <View style={styles.dartScore}>
+              <Text style={{ fontSize: 24 }}>{`${
+                this.state.roundHistory.length > 0
+                  ? this.state.roundHistory[0].multiplier * this.state.goal
+                  : "I"
+              }`}</Text>
+            </View>
+            <View style={styles.dartScore}>
+              <Text style={{ fontSize: 24 }}>{`${
+                this.state.roundHistory.length > 1
+                  ? this.state.roundHistory[1].multiplier * this.state.goal
+                  : "II"
+              }`}</Text>
+            </View>
+            <View style={styles.dartScore}>
+              <Text style={{ fontSize: 24 }}>{`${
+                this.state.roundHistory.length > 2
+                  ? this.state.roundHistory[2].multiplier * this.state.goal
+                  : "III"
+              }`}</Text>
+            </View>
+          </View>
+        </Scoreboard>
+        <View style={styles.inputContainer}>
+          {this.state.goal !== 25 && (
+            <View style={{ flex: 0.25 }}>
+              <TouchableHighlight
+                onPress={() => this.addScore(3)}
+                style={styles.scoreButtonTriple}
+                underlayColor={theme.neutrals.eighth}
+              >
+                <Text style={{ fontSize: 24 }}>{`T ${this.state.goal}`}</Text>
+              </TouchableHighlight>
+            </View>
+          )}
+
+          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
+            <TouchableHighlight
+              onPress={() => this.addScore(2)}
+              style={styles.scoreButtonDouble}
+              underlayColor={theme.neutrals.eighth}
+            >
+              <Text style={{ fontSize: 24 }}>{`D ${this.state.goal}`}</Text>
+            </TouchableHighlight>
+          </View>
+          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
+            <TouchableHighlight
+              onPress={() => this.addScore(1)}
+              style={styles.scoreButtonSingle}
+              underlayColor={theme.neutrals.eighth}
+            >
+              <Text style={{ fontSize: 24 }}>{`S ${this.state.goal}`}</Text>
+            </TouchableHighlight>
+          </View>
+          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
+            <TouchableHighlight
+              onPress={() => this.addScore(0)}
+              style={styles.scoreButtonMiss}
+              underlayColor={theme.neutrals.eighth}
+            >
+              <Text style={{ fontSize: 24 }}>{`Miss`}</Text>
+            </TouchableHighlight>
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <TouchableNativeFeedback onPress={() => this.addScore(3)}>
-            <View style={styles.scoreButtonTriple}>
-              <Text>{`T ${this.state.goal}`}</Text>
-            </View>
-          </TouchableNativeFeedback>
-          <TouchableNativeFeedback onPress={() => this.addScore(2)}>
-            <View style={styles.scoreButtonDouble}>
-              <Text>{`D ${this.state.goal}`}</Text>
-            </View>
-          </TouchableNativeFeedback>
-          <TouchableNativeFeedback onPress={() => this.addScore(1)}>
-            <View style={styles.scoreButtonSingle}>
-              <Text>{`S ${this.state.goal}`}</Text>
-            </View>
-          </TouchableNativeFeedback>
-          <TouchableNativeFeedback onPress={() => this.addScore(0)}>
-            <View style={styles.scoreButtonMiss}>
-              <Text>{`Miss`}</Text>
-            </View>
-          </TouchableNativeFeedback>
-        </View>
-        <View style={styles.navContainer}>
-          <TouchableNativeFeedback onPress={() => this.removeScore()}>
-            <View style={styles.backButton}>
-              <Text>Back</Text>
-            </View>
-          </TouchableNativeFeedback>
-          <TouchableNativeFeedback
-            onPress={() => {
-              if (this.state.round < 20) {
-                this.advanceRound();
-              } else {
-                this.setState({
-                  ...this.state,
-                  showStats: true
-                });
-              }
-            }}
-          >
-            <View style={styles.forwardButton}>
-              <Text>{this.state.round < 20 ? "Next" : "Finish"}</Text>
-            </View>
-          </TouchableNativeFeedback>
-        </View>
-        <StatModal
-          visible={this.state.showStats}
-          gameHistory={this.state.gameHistory}
-          score={this.state.score}
-          onClose={() => {
-            this.setState({
-              ...this.state,
-              score: 0,
-              round: 1,
-              goal: 20,
-              gameHistory: [],
-              roundHistory: [],
-              showStats: false
-            });
+
+        <GameNav
+          backDisabled={this.state.gameHistory.length < 1}
+          moveOn={() => {
+            if (this.state.round < 20) {
+              this.advanceRound();
+            } else {
+              navigation.navigate("NineNineXStats", {
+                gameHistory: this.state.gameHistory,
+                goal: this.state.goal,
+                score: this.state.score
+              });
+            }
           }}
+          moveOnText={this.state.round < 20 ? "Next" : "Finish"}
+          removeScore={this.removeScore}
+          underlayBack={
+            this.state.gameHistory.length < 1
+              ? theme.neutrals.eighth
+              : theme.neutrals.seventh
+          }
+          underlayMove={theme.primaries.eighth}
         />
-      </View>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+  gamestats: {
+    flexDirection: "row",
+    justifyContent: "space-around"
   },
   thrownDarts: {
+    backgroundColor: theme.primaries.ninth,
+    flex: 0.9,
     flexDirection: "row",
     width: "100%"
   },
   dartScore: {
     flex: 0.33,
+    alignItems: "center",
+    justifyContent: "center",
     paddingLeft: 10
   },
   inputContainer: {
@@ -242,60 +269,34 @@ const styles = StyleSheet.create({
   },
   scoreButtonTriple: {
     backgroundColor: theme.neutrals.tenth,
-    flex: 0.25,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 1,
     marginTop: 1,
+    height: "100%",
     width: "100%"
   },
   scoreButtonDouble: {
     backgroundColor: theme.neutrals.tenth,
-    flex: 0.25,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 1,
+    height: "100%",
     width: "100%"
   },
   scoreButtonSingle: {
     backgroundColor: theme.neutrals.tenth,
-    flex: 0.25,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 1,
+    height: "100%",
     width: "100%"
   },
   scoreButtonMiss: {
     backgroundColor: theme.neutrals.tenth,
-    flex: 0.25,
     alignItems: "center",
     justifyContent: "center",
+    height: "100%",
     width: "100%"
-  },
-  scoreBoard: {
-    backgroundColor: theme.primaries.tenth,
-    flex: 0.25,
-    alignItems: "center",
-    paddingTop: 20
-  },
-  navContainer: {
-    backgroundColor: theme.neutrals.tenth,
-    justifyContent: "space-evenly",
-    flexDirection: "row",
-    flex: 0.1,
-    margin: 1,
-    width: "100%"
-  },
-  backButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.neutrals.ninth,
-    flex: 0.5
-  },
-  forwardButton: {
-    backgroundColor: theme.primaries.sixth,
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 0.5
   }
 });
