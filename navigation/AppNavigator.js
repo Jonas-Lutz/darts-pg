@@ -11,6 +11,9 @@ import NineNineX from "mydarts/screens/99X";
 import NineNineXSettings from "mydarts/screens/99X/settings";
 import NineNineXStats from "mydarts/screens/99X/stats";
 
+// Bob' 27:
+import Bobs from "mydarts/screens/Bobs";
+
 // CricketCountUp:
 import CricketCountUp from "mydarts/screens/CricketCountUp";
 
@@ -19,13 +22,14 @@ import HomeScreen from "mydarts/screens/Home";
 
 const AppNavigator = createStackNavigator(
   {
-    CricketCountUp: CricketCountUp,
+    Bobs,
+    CricketCountUp,
     Home: HomeScreen,
-    NineNineX: NineNineX,
-    NineNineXSettings: NineNineXSettings,
-    NineNineXStats: NineNineXStats,
-    OneOOne: OneOOne,
-    OneOOneSettings: OneOOneSettings
+    NineNineX,
+    NineNineXSettings,
+    NineNineXStats,
+    OneOOne,
+    OneOOneSettings
   },
   {
     initialRouteName: "Home"

@@ -23,28 +23,31 @@ class Home extends Component {
     const buttons = [
       { destination: "NineNineXSettings", label: "60 on X" },
       { destination: "OneOOneSettings", label: "Checkouts" },
-      { destination: "CricketCountUp", label: "Cricket Count Up" }
+      { destination: "CricketCountUp", label: "Cricket Count Up" },
+      { destination: "Bobs", label: "Bob's 27" }
     ];
 
     return (
       <Container>
-        <Scoreboard>
+        <Scoreboard flexVal={0.25}>
           <Headline>Darts Trainer</Headline>
           <Text>Select your training</Text>
         </Scoreboard>
-        {buttons.map(b => (
-          <View key={b.destination}>
-            <TouchableHighlight
-              onPress={() => {
-                navigation.navigate(b.destination);
-              }}
-            >
-              <View style={styles.gameBtn}>
-                <Text style={styles.gameBtnText}>{b.label}</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-        ))}
+        <View style={{ flex: 0.75 }}>
+          {buttons.map(b => (
+            <View key={b.destination}>
+              <TouchableHighlight
+                onPress={() => {
+                  navigation.navigate(b.destination);
+                }}
+              >
+                <View style={styles.gameBtn}>
+                  <Text style={styles.gameBtnText}>{b.label}</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
+          ))}
+        </View>
       </Container>
     );
   }
@@ -52,7 +55,7 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   gameBtn: {
-    backgroundColor: theme.primaries.lightBlues.third,
+    backgroundColor: theme.primaries.yellows.sixth,
     alignItems: "center",
     justifyContent: "center",
     margin: 5,
