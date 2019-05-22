@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "../../atoms/Headline";
+import Headline from "mydarts/atoms/Headline";
 
 const StatModal = props => {
   let darts = [];

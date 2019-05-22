@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 const GameNav = ({
   backDisabled,
@@ -37,7 +37,13 @@ const GameNav = ({
           style={styles.forwardButton}
           underlayColor={underlayMove}
         >
-          <Text style={{ fontSize: 20 }}>{moveOnText}</Text>
+          <Text
+            fontWeight="bold"
+            textTransform="uppercase"
+            style={{ color: theme.neutrals.tenth, fontSize: 22 }}
+          >
+            {moveOnText}
+          </Text>
         </TouchableHighlight>
       </View>
     </View>
@@ -66,7 +72,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   forwardButton: {
-    backgroundColor: theme.primaries.sixth,
+    backgroundColor: theme.primaries.lightBlues.third,
     alignItems: "center",
     justifyContent: "center",
     flex: 1

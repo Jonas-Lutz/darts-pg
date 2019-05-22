@@ -12,7 +12,31 @@ export default {
     seventh: "#7BC47F",
     eighth: "#A3D9A5",
     ninth: "#C1EAC5",
-    tenth: "#E3F9E5"
+    tenth: "#E3F9E5",
+    yellows: {
+      first: "#8D2B0B",
+      second: "#B44D12",
+      third: "#CB6E17",
+      fourth: "#DE911D",
+      fifth: "#F0B429",
+      sixth: "#F7C948",
+      seventh: "#FADB5F",
+      eighth: "#FCE588",
+      ninth: "#FFF3C4",
+      tenth: "#FFFBEA"
+    },
+    lightBlues: {
+      first: "#035388",
+      second: "#0B69A3",
+      third: "#127FBF",
+      fourth: "#1992D4",
+      fifth: "#2BB0ED",
+      sixth: "#40C3F7",
+      seventh: "#5ED0FA",
+      eighth: "#81DEFD",
+      ninth: "#B3ECFF",
+      tenth: "#E3F8FF"
+    }
   },
   // Neutrals
   // Make up majority of the UI
@@ -46,16 +70,16 @@ export default {
       tenth: "#EAE2F8"
     },
     red: {
-      first: "#610404",
-      second: "#780A0A",
-      third: "#911111",
-      fourth: "#A61B1B",
-      fifth: "#BA2525",
-      sixth: "#D64545",
-      seventh: "#E66A6A",
-      eighth: "#F29B9B",
-      ninth: "#FACDCD",
-      tenth: "#FFEEEE"
+      first: "#610316",
+      second: "#8A041A",
+      third: "#AB091E",
+      fourth: "#CF1124",
+      fifth: "#E12D39",
+      sixth: "#EF4E4E",
+      seventh: "#F86A6A",
+      eighth: "#FF9B9B",
+      ninth: "#FFBDBD",
+      tenth: "#FFE3E3"
     },
     yellow: {
       first: "#513C06",
@@ -68,6 +92,18 @@ export default {
       eighth: "#F8E3A3",
       ninth: "#FCEFC7",
       tenth: "#FFFAEB"
+    },
+    green: {
+      first: "#014D40",
+      second: "#0C6B58",
+      third: "#147D64",
+      fourth: "#199473",
+      fifth: "#27AB83",
+      sixth: "#3EBD93",
+      seventh: "#65D6AD",
+      eighth: "#8EEDC7",
+      ninth: "#C6F7E2",
+      tenth: "#EFFCF6"
     }
   }
 };

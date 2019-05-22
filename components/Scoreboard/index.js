@@ -1,14 +1,23 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
+import { LinearGradient } from "expo";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 const Scoreboard = ({ bust, children, flexVal }) => {
   return (
     <View style={{ flex: flexVal, width: "100%" }}>
       <View style={!bust ? styles.scoreboard : styles.scoreboardBust}>
-        {children}
+        <LinearGradient
+          colors={[
+            theme.primaries.yellows.fifth,
+            theme.primaries.yellows.sixth,
+            theme.primaries.yellows.seventh
+          ]}
+        >
+          {children}
+        </LinearGradient>
       </View>
     </View>
   );
@@ -17,7 +26,6 @@ const Scoreboard = ({ bust, children, flexVal }) => {
 const styles = StyleSheet.create({
   scoreboard: {
     alignItems: "center",
-    backgroundColor: theme.primaries.fourth,
     flex: 1,
     justifyContent: "center",
     marginBottom: 1,

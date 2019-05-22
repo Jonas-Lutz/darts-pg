@@ -3,19 +3,19 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 // Screens:
 
 // 101:
-import OneOOneSettings from "../screens/101/settings";
-import OneOOne from "../screens/101";
+import OneOOneSettings from "mydarts/screens/101/settings";
+import OneOOne from "mydarts/screens/101";
 
 // 99X:
-import NineNineX from "../screens/99X";
-import NineNineXSettings from "../screens/99X/settings";
-import NineNineXStats from "../screens/99X/stats";
+import NineNineX from "mydarts/screens/99X";
+import NineNineXSettings from "mydarts/screens/99X/settings";
+import NineNineXStats from "mydarts/screens/99X/stats";
 
 // CricketCountUp:
-import CricketCountUp from "../screens/CricketCountUp";
+import CricketCountUp from "mydarts/screens/CricketCountUp";
 
 // Home:
-import HomeScreen from "../screens/Home";
+import HomeScreen from "mydarts/screens/Home";
 
 const AppNavigator = createStackNavigator(
   {

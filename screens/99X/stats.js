@@ -9,13 +9,13 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Atoms:
-import Headline from "../../atoms/Headline";
+import Headline from "mydarts/atoms/Headline";
 
 // Components:
-import Container from "../../components/Container";
+import Container from "mydarts/components/Container";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // ================================================================================================
 
@@ -206,7 +206,7 @@ class Settings extends Component {
                   this.props.navigation.dispatch(resetAction);
                 }}
                 style={styles.forwardButton}
-                underlayColor={theme.primaries.eighth}
+                underlayColor={theme.primaries.lightBlues.eighth}
               >
                 <View>
                   <Text style={{ fontSize: 20 }}>Restart</Text>
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: "column"
   },
   statContainer: {
-    backgroundColor: theme.primaries.tenth,
+    backgroundColor: theme.neutrals.tenth,
     alignItems: "center",
     justifyContent: "space-between",
     flex: 0.9,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     width: "90%"
   },
   forwardButton: {
-    backgroundColor: theme.primaries.sixth,
+    backgroundColor: theme.neutrals.sixth,
     alignItems: "center",
     justifyContent: "center",
     flex: 1

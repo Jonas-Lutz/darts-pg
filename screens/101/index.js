@@ -3,19 +3,19 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
-import GameNav from "../../components/GameNav";
-import FinishedModal from "../../components/FinishedModal";
-import Scoreboard from "../../components/Scoreboard";
+import Container from "mydarts/components/Container";
+import GameNav from "mydarts/components/GameNav";
+import FinishedModal from "mydarts/components/FinishedModal";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "../../utils/deviceRatio";
-import { calculateFinish } from "../../utils/calculateFinish";
-import { getLabel } from "../../utils/getLabel";
-import getThrownDarts from "../../utils/getThrownDarts";
+import { smallScreen } from "mydarts/utils/deviceRatio";
+import { calculateFinish } from "mydarts/utils/calculateFinish";
+import { getLabel } from "mydarts/utils/getLabel";
+import getThrownDarts from "mydarts/utils/getThrownDarts";
 
 const isSmall = smallScreen();
 
@@ -392,14 +392,14 @@ class OneOOne extends Component {
         <GameNav
           backDisabled={this.state.gameHistory.length < 1}
           moveOn={this.advanceRound}
-          moveOnText="Next Round"
+          moveOnText="Next"
           removeScore={this.removeScore}
           underlayBack={
             this.state.gameHistory.length < 1
               ? theme.neutrals.seventh
               : theme.neutrals.eighth
           }
-          underlayMove={theme.primaries.eighth}
+          underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
           goHome={() => {
@@ -447,7 +447,6 @@ class OneOOne extends Component {
 const styles = StyleSheet.create({
   headline: {
     flex: 0.2,
-    backgroundColor: theme.primaries.tenth,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
@@ -456,7 +455,6 @@ const styles = StyleSheet.create({
   },
   headlineBust: {
     flex: 0.2,
-    backgroundColor: theme.supporting.red.sixth,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
@@ -511,7 +509,7 @@ const styles = StyleSheet.create({
   },
   triggerButton: {
     alignItems: "center",
-    backgroundColor: theme.primaries.tenth,
+    backgroundColor: theme.neutrals.tenth,
     justifyContent: "center",
     height: isSmall ? 60 : 70,
     margin: 1,
@@ -519,7 +517,7 @@ const styles = StyleSheet.create({
   },
   triggerButtonActive: {
     alignItems: "center",
-    backgroundColor: theme.primaries.seventh,
+    backgroundColor: theme.neutrals.seventh,
     justifyContent: "center",
     height: isSmall ? 60 : 70,
     margin: 1,

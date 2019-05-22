@@ -9,18 +9,18 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
-import GameNav from "../../components/GameNav";
-import FinishedModal from "../../components/FinishedModal";
-import Scoreboard from "../../components/Scoreboard";
+import Container from "mydarts/components/Container";
+import GameNav from "mydarts/components/GameNav";
+import FinishedModal from "mydarts/components/FinishedModal";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "../../utils/deviceRatio";
-import { getLabel } from "../../utils/getLabel";
-import calcMPR from "../../utils/calcMPR";
+import { smallScreen } from "mydarts/utils/deviceRatio";
+import { getLabel } from "mydarts/utils/getLabel";
+import calcMPR from "mydarts/utils/calcMPR";
 
 const isSmall = smallScreen();
 
@@ -247,6 +247,8 @@ class CricketCountUp extends Component {
   };
 
   render() {
+    const { navigation } = this.props;
+
     return (
       <Container>
         <Scoreboard flexVal={0.3}>
@@ -348,7 +350,7 @@ class CricketCountUp extends Component {
               ? theme.neutrals.seventh
               : theme.neutrals.eighth
           }
-          underlayMove={theme.primaries.eighth}
+          underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
           goHome={() => navigation.navigate("Home")}
@@ -368,9 +370,9 @@ class CricketCountUp extends Component {
           finished={this.state.finished}
         >
           <View style={{ flexDirection: "column" }}>
-            <Text>{`You reached a total score of ${
-              this.state.score
-            } (MPR: ${this.state.score / 7}).`}</Text>
+            <Text>{`You reached a total score of ${this.state.score} (MPR: ${(
+              this.state.score / 7
+            ).toFixed(1)}).`}</Text>
 
             {this.state.finished && this.state.highscore < this.state.score ? (
               <Text>{`That's a new Carreer High - Gratz!`}</Text>

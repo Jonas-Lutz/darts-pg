@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Atoms:
-import Headline from "../../atoms/Headline";
+import Headline from "mydarts/atoms/Headline";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
+import Container from "mydarts/components/Container";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 class Home extends Component {
   static navigationOptions = {
@@ -27,8 +28,10 @@ class Home extends Component {
 
     return (
       <Container>
-        <Headline>Darts Trainer</Headline>
-        <Text>Select your training</Text>
+        <Scoreboard>
+          <Headline>Darts Trainer</Headline>
+          <Text>Select your training</Text>
+        </Scoreboard>
         {buttons.map(b => (
           <View key={b.destination}>
             <TouchableHighlight
@@ -49,7 +52,7 @@ class Home extends Component {
 
 const styles = StyleSheet.create({
   gameBtn: {
-    backgroundColor: theme.primaries.sixth,
+    backgroundColor: theme.primaries.lightBlues.third,
     alignItems: "center",
     justifyContent: "center",
     margin: 5,

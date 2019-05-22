@@ -8,16 +8,16 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "../../atoms/Headline";
+import Headline from "mydarts/atoms/Headline";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
+import Container from "mydarts/components/Container";
 
 // Utils:
-import { smallScreen } from "../../utils/deviceRatio";
+import { smallScreen } from "mydarts/utils/deviceRatio";
 
 const isSmall = smallScreen();
 
@@ -138,14 +138,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  toggleButtonActive: {
-    backgroundColor: theme.primaries.sixth
-  },
-  toggleButtonInactive: {
-    backgroundColor: theme.neutrals.ninth
-  },
   quickStart: {
-    backgroundColor: theme.primaries.eighth,
+    backgroundColor: theme.primaries.lightBlues.fifth,
     alignItems: "center",
     justifyContent: "center",
     margin: 5,
@@ -153,7 +147,7 @@ const styles = StyleSheet.create({
     width: 120
   },
   startButton: {
-    backgroundColor: theme.primaries.sixth,
+    backgroundColor: theme.primaries.lightBlues.third,
     alignItems: "center",
     justifyContent: "center",
     margin: 5,

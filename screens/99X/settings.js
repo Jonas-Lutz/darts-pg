@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
+import Container from "mydarts/components/Container";
 
 // Utils:
-import { smallScreen } from "../../utils/deviceRatio";
+import { smallScreen } from "mydarts/utils/deviceRatio";
 
 const isSmall = smallScreen();
 
@@ -32,9 +32,10 @@ class Settings extends Component {
         <View
           style={{
             alignItems: "center",
-            backgroundColor: theme.primaries.ninth,
+            backgroundColor: theme.neutrals.ninth,
             flex: 0.2,
-            justifyContent: "center"
+            justifyContent: "center",
+            width: "100%"
           }}
         >
           <Text style={{ fontSize: 20 }}>Select a field</Text>

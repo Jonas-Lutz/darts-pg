@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 const Container = ({ children }) => (
   <View style={styles.container}>{children}</View>

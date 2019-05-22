@@ -8,10 +8,10 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "../../atoms/Headline";
+import Headline from "mydarts/atoms/Headline";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
   return (
@@ -47,7 +47,7 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
             <TouchableHighlight onPress={restart}>
               <View
                 style={{
-                  backgroundColor: theme.primaries.fifth,
+                  backgroundColor: theme.neutrals.fifth,
                   alignItems: "center",
                   height: 65,
                   justifyContent: "center",
@@ -62,7 +62,7 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
             <TouchableHighlight onPress={goHome}>
               <View
                 style={{
-                  backgroundColor: theme.primaries.seventh,
+                  backgroundColor: theme.neutrals.seventh,
                   alignItems: "center",
                   height: 65,
                   justifyContent: "center",
@@ -82,7 +82,7 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: theme.primaries.eighth,
+    backgroundColor: theme.neutrals.eighth,
     justifyContent: "center",
     flex: 1
   },

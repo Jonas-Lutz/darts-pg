@@ -2,12 +2,12 @@ import React from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
-import theme from "../../theme";
+import theme from "mydarts/theme";
 
 // Components:
-import Container from "../../components/Container";
-import GameNav from "../../components/GameNav";
-import Scoreboard from "../../components/Scoreboard";
+import Container from "mydarts/components/Container";
+import GameNav from "mydarts/components/GameNav";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 export default class NineNineX extends React.Component {
   static navigationOptions = {
@@ -185,7 +185,9 @@ export default class NineNineX extends React.Component {
                 style={styles.scoreButtonTriple}
                 underlayColor={theme.neutrals.eighth}
               >
-                <Text style={{ fontSize: 24 }}>{`T ${this.state.goal}`}</Text>
+                <Text style={styles.scoreButtonText}>{`T ${
+                  this.state.goal
+                }`}</Text>
               </TouchableHighlight>
             </View>
           )}
@@ -196,7 +198,9 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonDouble}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={{ fontSize: 24 }}>{`D ${this.state.goal}`}</Text>
+              <Text style={styles.scoreButtonText}>{`D ${
+                this.state.goal
+              }`}</Text>
             </TouchableHighlight>
           </View>
           <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
@@ -205,7 +209,9 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonSingle}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={{ fontSize: 24 }}>{`S ${this.state.goal}`}</Text>
+              <Text style={styles.scoreButtonText}>{`S ${
+                this.state.goal
+              }`}</Text>
             </TouchableHighlight>
           </View>
           <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
@@ -214,7 +220,7 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonMiss}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={{ fontSize: 24 }}>{`Miss`}</Text>
+              <Text style={styles.scoreButtonText}>{`Miss`}</Text>
             </TouchableHighlight>
           </View>
         </View>
@@ -239,7 +245,7 @@ export default class NineNineX extends React.Component {
               ? theme.neutrals.eighth
               : theme.neutrals.seventh
           }
-          underlayMove={theme.primaries.eighth}
+          underlayMove={theme.primaries.lightBlues.eighth}
         />
       </Container>
     );
@@ -252,7 +258,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around"
   },
   thrownDarts: {
-    backgroundColor: theme.primaries.ninth,
     flex: 0.9,
     flexDirection: "row",
     width: "100%"
@@ -264,7 +269,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   inputContainer: {
-    flex: 0.6,
+    flex: 0.65,
     width: "100%"
   },
   scoreButtonTriple: {
@@ -298,5 +303,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "100%",
     width: "100%"
+  },
+  scoreButtonText: {
+    color: theme.primaries.lightBlues.first,
+    fontSize: 24
   }
 });
