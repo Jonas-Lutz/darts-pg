@@ -27,9 +27,7 @@ export default class NineNineX extends React.Component {
 
   addScore = multiplier => {
     if (this.state.roundHistory.length < 3) {
-      // Removes the current Round from Game-History
       const copyGameHistory = [...this.state.gameHistory];
-      copyGameHistory.pop();
 
       // Update new Round-History with current throw
       const newRoundHistory = [
@@ -40,8 +38,7 @@ export default class NineNineX extends React.Component {
         }
       ];
 
-      // Add Updated Round-History to Game-History
-      copyGameHistory.push(newRoundHistory);
+      copyGameHistory.splice(this.state.round - 1, 1, newRoundHistory);
 
       // Update State
       this.setState({
@@ -55,6 +52,7 @@ export default class NineNineX extends React.Component {
 
   advanceRound = () => {
     if (this.state.round <= 20) {
+      let copyGameHistory = [...this.state.gameHistory];
       let filledUpRoundHistory = [...this.state.roundHistory];
 
       // Add Misses, if less than 3 Darts were entered
@@ -67,11 +65,17 @@ export default class NineNineX extends React.Component {
         }
       }
 
+      copyGameHistory.splice(this.state.round - 1, 1, filledUpRoundHistory);
+
+      console.log("===============================================");
+      console.log("cGH ", copyGameHistory);
+      console.log("===============================================");
+
       this.setState({
         ...this.state,
         round: this.state.round + 1,
         roundHistory: [],
-        gameHistory: [...this.state.gameHistory, filledUpRoundHistory]
+        gameHistory: copyGameHistory
       });
     }
   };
@@ -94,11 +98,15 @@ export default class NineNineX extends React.Component {
             this.state.roundHistory[this.state.roundHistory.length - 1]
               .multiplier * this.state.goal;
           newRoundHistory.pop();
-          updatedGameHistory.splice(
-            updatedGameHistory.length - 1,
-            1,
-            newRoundHistory
-          );
+          if (newRoundHistory.length > 0) {
+            updatedGameHistory.splice(
+              updatedGameHistory.length - 1,
+              1,
+              newRoundHistory
+            );
+          } else {
+            updatedGameHistory.splice(updatedGameHistory.length - 1, 1);
+          }
         }
         // ELSE: No darts thrown this round
         else {
@@ -115,30 +123,53 @@ export default class NineNineX extends React.Component {
               : this.state.gameHistory.length - 2;
           newRoundHistory = [...this.state.gameHistory[prevRound]];
           newRoundHistory.pop();
+
+          console.log("===============================================");
+          console.log(newRoundHistory);
+          console.log("===============================================");
+
           if (newRoundHistory.length > 0) {
+            console.log("Schplize mit");
             updatedGameHistory.splice(
-              updatedGameHistory.length - 2,
-              2,
+              updatedGameHistory.length - 1,
+              1,
               newRoundHistory
             );
           } else {
+            console.log("Schplize ohne ersatz");
             updatedGameHistory.splice(updatedGameHistory.length - 2, 2);
           }
         }
 
+        console.log(
+          "UPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATE"
+        );
+        console.log(updatedGameHistory);
+        console.log(
+          "UPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATE"
+        );
         // Update State
         this.setState({
           ...this.state,
-          round: updatedGameHistory.length,
+          round: updatedGameHistory.length > 0 ? updatedGameHistory.length : 1,
           score: this.state.score - subtractValue,
           roundHistory: newRoundHistory,
           gameHistory: updatedGameHistory
+        });
+      } else {
+        this.setState({
+          ...this.state,
+          round: 1,
+          gameHistory: [],
+          roundHistory: []
         });
       }
     } else {
       this.setState({
         ...this.state,
-        round: 1
+        round: 1,
+        gameHistory: [],
+        roundHistory: []
       });
     }
   };

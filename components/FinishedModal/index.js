@@ -30,45 +30,21 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
           <View style={{ flexDirection: "row" }}>{children}</View>
           <View style={styles.buttonWrapper}>
             <TouchableHighlight onPress={undo}>
-              <View
-                style={{
-                  backgroundColor: theme.neutrals.eighth,
-                  alignItems: "center",
-                  height: 65,
-                  justifyContent: "center",
-                  width: 150
-                }}
-              >
+              <View style={styles.undoBtn}>
                 <Text style={styles.buttonText}>Undo</Text>
               </View>
             </TouchableHighlight>
           </View>
           <View style={styles.buttonWrapper}>
             <TouchableHighlight onPress={restart}>
-              <View
-                style={{
-                  backgroundColor: theme.neutrals.fifth,
-                  alignItems: "center",
-                  height: 65,
-                  justifyContent: "center",
-                  width: 150
-                }}
-              >
+              <View style={styles.newGameBtn}>
                 <Text style={styles.buttonText}>New Game</Text>
               </View>
             </TouchableHighlight>
           </View>
           <View style={styles.buttonWrapper}>
             <TouchableHighlight onPress={goHome}>
-              <View
-                style={{
-                  backgroundColor: theme.neutrals.seventh,
-                  alignItems: "center",
-                  height: 65,
-                  justifyContent: "center",
-                  width: 150
-                }}
-              >
+              <View style={styles.homeBtn}>
                 <Text style={styles.buttonText}>Home</Text>
               </View>
             </TouchableHighlight>
@@ -82,13 +58,13 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.eighth,
+    backgroundColor: theme.neutrals.ninth,
     justifyContent: "center",
     flex: 1
   },
   contentContainer: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.ninth,
+    backgroundColor: theme.neutrals.tenth,
     justifyContent: "center",
     flex: 0.9,
     width: "90%"
@@ -98,6 +74,27 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 20
+  },
+  homeBtn: {
+    backgroundColor: theme.primaries.lightBlues.seventh,
+    alignItems: "center",
+    height: 65,
+    justifyContent: "center",
+    width: 150
+  },
+  newGameBtn: {
+    backgroundColor: theme.primaries.lightBlues.third,
+    alignItems: "center",
+    height: 65,
+    justifyContent: "center",
+    width: 150
+  },
+  undoBtn: {
+    backgroundColor: theme.neutrals.eighth,
+    alignItems: "center",
+    height: 65,
+    justifyContent: "center",
+    width: 150
   }
 });
 

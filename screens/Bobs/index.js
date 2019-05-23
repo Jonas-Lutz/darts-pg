@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  AsyncStorage,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View
+} from "react-native";
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
@@ -50,6 +56,10 @@ export default class NineNineX extends React.Component {
           finished: this.state.goal > 20
         });
       }
+
+      if (this.state.goal > 20) {
+        this.updateStats();
+      }
     } else {
       this.setState({
         finished: true,
@@ -77,6 +87,53 @@ export default class NineNineX extends React.Component {
     }
   };
 
+  // Fetch existing stats from storage
+  fetchStats = async () => {
+    try {
+      const value = await AsyncStorage.getItem("Bobs");
+      if (value) {
+        return JSON.parse(value);
+      } else {
+        return { highscore: 0 };
+      }
+    } catch {
+      return { highscore: 0 };
+    }
+  };
+
+  // Append new stats to old existing
+  mergeStats = oldStats => {
+    const highscore = Math.max(oldStats.highscore, this.state.score);
+    return {
+      highscore: highscore
+    };
+  };
+
+  // Update stats in storage
+  saveStats = async highscore => {
+    try {
+      const res = await AsyncStorage.setItem("Bobs", JSON.stringify(highscore));
+      if (res) console.log("saved: ", res);
+    } catch {
+      console.log("error saving stats");
+    }
+  };
+
+  // Calls the methods
+  updateStats = async () => {
+    try {
+      let currHigh = await this.fetchStats();
+      this.setState({
+        ...this.state,
+        highscore: currHigh.highscore
+      });
+      const mergedStats = this.mergeStats(currHigh);
+      this.saveStats(mergedStats);
+    } catch {
+      console.log("error updating stats");
+    }
+  };
+
   render() {
     const { navigation } = this.props;
     const hits = [0, 1, 2, 3];
@@ -88,9 +145,7 @@ export default class NineNineX extends React.Component {
             <Text>{`D${this.state.goal}`}</Text>
           </View>
           <View style={styles.pointWrapper}>
-            <Text style={styles.pointLabel}>{`${
-              this.state.score
-            } points`}</Text>
+            <Text style={styles.pointLabel}>{`${this.state.score}`}</Text>
           </View>
         </Scoreboard>
         <View style={styles.inputContainer}>
@@ -101,7 +156,9 @@ export default class NineNineX extends React.Component {
                 style={styles.scoreButton}
                 underlayColor={theme.neutrals.eighth}
               >
-                <Text style={styles.scoreButtonText}>{`${h} Hits`}</Text>
+                <Text style={styles.scoreButtonText}>{`${h} Hit${
+                  h !== 1 ? "s" : " "
+                }`}</Text>
               </TouchableHighlight>
             </View>
           ))}
@@ -136,18 +193,27 @@ export default class NineNineX extends React.Component {
                 })
               ]
             });
-
             this.props.navigation.dispatch(resetAction);
           }}
           undo={this.removeScore}
           finished={this.state.finished}
         >
-          <Text>
-            {this.state.score > 0
-              ? `Finished the game with ${this.state.score} points!`
-              : `Game Over! Failed at D${this.state.goal}`}
-            {this.state.score > 1436 && "We both know you cheated"}
-          </Text>
+          <View style={{ flexDirection: "column" }}>
+            <Text>
+              {this.state.score > 0
+                ? `Congratulations! Finished with ${this.state.score} points!`
+                : `Game Over! Failed at D${this.state.goal}`}
+              {this.state.score > 1436 && "We both know you cheated tho"}
+              {this.state.highscore &&
+                this.state.highscore > 0 &&
+                (this.state.finished &&
+                this.state.highscore < this.state.score ? (
+                  <Text>{`That's a new Carreer High - Gratz!`}</Text>
+                ) : (
+                  <Text>{`Carreer High: ${this.state.highscore}`}</Text>
+                ))}
+            </Text>
+          </View>
         </FinishedModal>
       </Container>
     );
@@ -161,7 +227,7 @@ const styles = StyleSheet.create({
   },
   pointWrapper: {},
   pointLabel: {
-    fontSize: 24
+    fontSize: 28
   },
   inputContainer: {
     flex: 0.65,

@@ -29,41 +29,47 @@ class Home extends Component {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.25}>
+        <Scoreboard flexVal={1}>
           <Headline>Darts Trainer</Headline>
           <Text>Select your training</Text>
+          <View style={styles.homeContent}>
+            {buttons.map(b => (
+              <View key={b.destination}>
+                <TouchableHighlight
+                  onPress={() => {
+                    navigation.navigate(b.destination);
+                  }}
+                >
+                  <View style={styles.gameBtn}>
+                    <Text style={styles.gameBtnText}>{b.label}</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+            ))}
+          </View>
         </Scoreboard>
-        <View style={{ flex: 0.75 }}>
-          {buttons.map(b => (
-            <View key={b.destination}>
-              <TouchableHighlight
-                onPress={() => {
-                  navigation.navigate(b.destination);
-                }}
-              >
-                <View style={styles.gameBtn}>
-                  <Text style={styles.gameBtnText}>{b.label}</Text>
-                </View>
-              </TouchableHighlight>
-            </View>
-          ))}
-        </View>
       </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  homeContent: {
+    justifyContent: "center",
+    flex: 1
+  },
   gameBtn: {
-    backgroundColor: theme.primaries.yellows.sixth,
+    backgroundColor: theme.neutrals.third,
     alignItems: "center",
     justifyContent: "center",
-    margin: 5,
+    margin: 10,
     height: 75,
+    padding: 5,
     width: 180
   },
   gameBtnText: {
-    fontSize: 20
+    color: theme.neutrals.tenth,
+    fontSize: 22
   }
 });
 

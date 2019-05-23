@@ -6,6 +6,7 @@ import theme from "mydarts/theme";
 
 // Components:
 import Container from "mydarts/components/Container";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 // Utils:
 import { smallScreen } from "mydarts/utils/deviceRatio";
@@ -29,17 +30,9 @@ class Settings extends Component {
 
     return (
       <Container>
-        <View
-          style={{
-            alignItems: "center",
-            backgroundColor: theme.neutrals.ninth,
-            flex: 0.2,
-            justifyContent: "center",
-            width: "100%"
-          }}
-        >
+        <Scoreboard flexVal={0.2}>
           <Text style={{ fontSize: 20 }}>Select a field</Text>
-        </View>
+        </Scoreboard>
         <View style={styles.buttonsWrapper}>
           {buttonArray.map(b => (
             <TouchableHighlight
@@ -56,7 +49,7 @@ class Settings extends Component {
               }}
             >
               <View style={styles.goalButton}>
-                <Text style={{ fontSize: 18 }}>{b}</Text>
+                <Text style={styles.goalButtonText}>{b}</Text>
               </View>
             </TouchableHighlight>
           ))}
@@ -81,6 +74,10 @@ const styles = StyleSheet.create({
     height: isSmall ? 65 : 80,
     margin: 1,
     width: isSmall ? 65 : 80
+  },
+  goalButtonText: {
+    color: theme.primaries.lightBlues.first,
+    fontSize: 18
   }
 });
 
