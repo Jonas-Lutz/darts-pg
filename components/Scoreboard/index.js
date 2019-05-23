@@ -12,7 +12,8 @@ const Scoreboard = ({ bust, children, flexVal }) => {
         colors={[
           theme.primaries.yellows.fifth,
           theme.primaries.yellows.sixth,
-          theme.primaries.yellows.seventh
+          theme.primaries.yellows.seventh,
+          theme.primaries.yellows.eighth
         ]}
         style={!bust ? styles.scoreboard : styles.scoreboardBust}
       >

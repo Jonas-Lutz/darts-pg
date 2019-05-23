@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   gameBtn: {
-    backgroundColor: theme.neutrals.third,
+    backgroundColor: theme.primaries.lightBlues.first,
     alignItems: "center",
     justifyContent: "center",
     margin: 10,

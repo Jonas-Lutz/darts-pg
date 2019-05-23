@@ -242,9 +242,6 @@ class OneOOne extends Component {
         <Scoreboard flexVal={0.33} bust={this.state.bust}>
           {/* Headline */}
           <View style={this.state.bust ? styles.headlineBust : styles.headline}>
-            <Text>{`101 - ${
-              this.state.doubleIn ? "Double In" : "Single In"
-            }`}</Text>
             <Text>{`Round ${this.state.round}`}</Text>
           </View>
           {/* Score - Label */}

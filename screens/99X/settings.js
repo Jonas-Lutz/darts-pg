@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   goalButton: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.tenth,
+    backgroundColor: theme.neutrals.ninth,
     justifyContent: "center",
     height: isSmall ? 65 : 80,
     margin: 1,

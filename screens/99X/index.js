@@ -9,6 +9,9 @@ import Container from "mydarts/components/Container";
 import GameNav from "mydarts/components/GameNav";
 import Scoreboard from "mydarts/components/Scoreboard";
 
+// Utils
+import { getLabel } from "mydarts/utils/getLabel";
+
 export default class NineNineX extends React.Component {
   static navigationOptions = {
     header: null
@@ -67,10 +70,6 @@ export default class NineNineX extends React.Component {
 
       copyGameHistory.splice(this.state.round - 1, 1, filledUpRoundHistory);
 
-      console.log("===============================================");
-      console.log("cGH ", copyGameHistory);
-      console.log("===============================================");
-
       this.setState({
         ...this.state,
         round: this.state.round + 1,
@@ -124,30 +123,17 @@ export default class NineNineX extends React.Component {
           newRoundHistory = [...this.state.gameHistory[prevRound]];
           newRoundHistory.pop();
 
-          console.log("===============================================");
-          console.log(newRoundHistory);
-          console.log("===============================================");
-
           if (newRoundHistory.length > 0) {
-            console.log("Schplize mit");
             updatedGameHistory.splice(
               updatedGameHistory.length - 1,
               1,
               newRoundHistory
             );
           } else {
-            console.log("Schplize ohne ersatz");
             updatedGameHistory.splice(updatedGameHistory.length - 2, 2);
           }
         }
 
-        console.log(
-          "UPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATE"
-        );
-        console.log(updatedGameHistory);
-        console.log(
-          "UPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATEUPDATE"
-        );
         // Update State
         this.setState({
           ...this.state,
@@ -182,27 +168,41 @@ export default class NineNineX extends React.Component {
         <Scoreboard flexVal={0.25}>
           <View style={styles.gamestats}>
             <Text>{`${this.state.round} round`}</Text>
-            <Text>{`${this.state.score} points`}</Text>
+            <Text style={styles.scoreLabelText}>{`${
+              this.state.score
+            } points`}</Text>
           </View>
           <View style={styles.thrownDarts}>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 24 }}>{`${
+              <Text style={{ fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 0
-                  ? this.state.roundHistory[0].multiplier * this.state.goal
+                  ? this.state.roundHistory[0].multiplier < 1
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[0].multiplier)}${
+                        this.state.goal
+                      }`
                   : "I"
               }`}</Text>
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 24 }}>{`${
+              <Text style={{ fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 1
-                  ? this.state.roundHistory[1].multiplier * this.state.goal
+                  ? this.state.roundHistory[1].multiplier < 1
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[1].multiplier)}${
+                        this.state.goal
+                      }`
                   : "II"
               }`}</Text>
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 24 }}>{`${
+              <Text style={{ fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 2
-                  ? this.state.roundHistory[2].multiplier * this.state.goal
+                  ? this.state.roundHistory[2].multiplier < 1
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[2].multiplier)}${
+                        this.state.goal
+                      }`
                   : "III"
               }`}</Text>
             </View>
@@ -285,11 +285,13 @@ export default class NineNineX extends React.Component {
 
 const styles = StyleSheet.create({
   gamestats: {
-    flexDirection: "row",
+    alignItems: "center",
+    flex: 0.7,
+    flexDirection: "column",
     justifyContent: "space-around"
   },
   thrownDarts: {
-    flex: 0.9,
+    flex: 0.3,
     flexDirection: "row",
     width: "100%"
   },
@@ -337,6 +339,9 @@ const styles = StyleSheet.create({
   },
   scoreButtonText: {
     color: theme.primaries.lightBlues.first,
+    fontSize: 24
+  },
+  scoreLabelText: {
     fontSize: 24
   }
 });

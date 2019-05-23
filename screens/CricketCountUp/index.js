@@ -53,11 +53,6 @@ class CricketCountUp extends Component {
       let filledUpRoundHistory = [...this.state.roundHistory];
       const copyGameHistory = [...this.state.gameHistory];
 
-      // Delete last element, if darts thrown this round
-      if (filledUpRoundHistory.length > 0) {
-        copyGameHistory.pop();
-      }
-
       // Add Misses, if less than 3 Darts were entered
       if (filledUpRoundHistory.length < 3) {
         for (let i = filledUpRoundHistory.length; i < 3; i++) {
@@ -68,8 +63,7 @@ class CricketCountUp extends Component {
         }
       }
 
-      // Push updated round
-      copyGameHistory.push(filledUpRoundHistory);
+      copyGameHistory.splice(this.state.round - 1, 1, filledUpRoundHistory);
 
       this.setState({
         ...this.state,
@@ -94,7 +88,7 @@ class CricketCountUp extends Component {
         ...this.state.roundHistory,
         {
           points: points,
-          multiplier: 1
+          multiplier: points === 0 ? 0 : 1
         }
       ];
 
@@ -143,26 +137,14 @@ class CricketCountUp extends Component {
             );
           } else {
             updatedGameHistory.splice(updatedGameHistory.length - 1, 1);
-            newRound = newRound - 1;
           }
         }
         // ELSE: No darts thrown this round
         else {
-          newRound = newRound - 1;
-          addValue = this.state.gameHistory[
-            this.state.gameHistory.length - 2 >= 0
-              ? this.state.gameHistory.length - 2
-              : 0
-          ][2].points;
+          newRound = newRound - 1 >= 1 ? newRound - 1 : 1;
+          addValue = this.state.gameHistory[newRound - 1][2].points;
+          newRoundHistory = [...this.state.gameHistory[newRound - 1]];
 
-          const prevRound =
-            this.state.gameHistory.length < 2
-              ? 0
-              : this.state.gameHistory === 2
-              ? 1
-              : this.state.gameHistory.length - 2;
-
-          newRoundHistory = [...this.state.gameHistory[prevRound]];
           newRoundHistory.pop();
 
           if (newRoundHistory.length > 0) {
@@ -249,37 +231,63 @@ class CricketCountUp extends Component {
   render() {
     const { navigation } = this.props;
 
+    console.log(
+      "____________________________LEG_____________________________________"
+    );
+    console.log(this.state.gameHistory);
+    console.log(
+      "____________________________FIN_____________________________________"
+    );
+
     return (
       <Container>
         <Scoreboard flexVal={0.3}>
-          <Text>{`MPR: ${calcMPR(
-            this.state.score,
-            this.state.roundHistory.length > 0
-              ? this.state.round
-              : this.state.round - 1
-          )}`}</Text>
-          <Text>{this.state.score}</Text>
-          <Text>
-            {this.state.roundHistory.length > 0
-              ? `${getLabel(this.state.roundHistory[0].points * -1)}${
-                  this.state.goals[this.state.round - 1]
-                }`
-              : ""}
-          </Text>
-          <Text>
-            {this.state.roundHistory.length > 1
-              ? `${getLabel(this.state.roundHistory[1].points * -1)}${
-                  this.state.goals[this.state.round - 1]
-                }`
-              : ""}
-          </Text>
-          <Text>
-            {this.state.roundHistory.length > 2
-              ? `${getLabel(this.state.roundHistory[2].points * -1)}${
-                  this.state.goals[this.state.round - 1]
-                }`
-              : ""}
-          </Text>
+          <View style={styles.mprWrapper}>
+            <Text style={styles.mprText}>{`MPR: ${calcMPR(
+              this.state.score,
+              this.state.roundHistory.length > 0
+                ? this.state.round
+                : this.state.round - 1
+            )}`}</Text>
+          </View>
+          <View style={styles.scoreWrapper}>
+            <Text style={styles.scoreText}>{`${this.state.score}`}</Text>
+          </View>
+          <View style={styles.dartsDisplay}>
+            <View style={styles.dartsDisplayDart}>
+              <Text style={styles.dartText}>
+                {this.state.roundHistory.length > 0
+                  ? this.state.roundHistory[0].points === 0
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[0].points * -1)}${
+                        this.state.goals[this.state.round - 1]
+                      }`
+                  : "I"}
+              </Text>
+            </View>
+            <View style={styles.dartsDisplayDart}>
+              <Text style={styles.dartText}>
+                {this.state.roundHistory.length > 1
+                  ? this.state.roundHistory[1].points === 0
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[1].points * -1)}${
+                        this.state.goals[this.state.round - 1]
+                      }`
+                  : "II"}
+              </Text>
+            </View>
+            <View style={styles.dartsDisplayDart}>
+              <Text style={styles.dartText}>
+                {this.state.roundHistory.length > 2
+                  ? this.state.roundHistory[2].points === 0
+                    ? "Miss"
+                    : `${getLabel(this.state.roundHistory[2].points * -1)}${
+                        this.state.goals[this.state.round - 1]
+                      }`
+                  : "III"}
+              </Text>
+            </View>
+          </View>
         </Scoreboard>
         <View style={styles.buttonsWrapper}>
           {this.state.goals[this.state.round - 1] !== 25 && (
@@ -399,6 +407,34 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     height: "100%",
     width: "100%"
+  },
+  mprText: {
+    fontSize: 14
+  },
+  dartsDisplay: {
+    flex: 0.2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%"
+  },
+  dartsDisplayDart: {
+    alignItems: "center",
+    flex: 0.33
+  },
+  dartText: {
+    fontSize: 16
+  },
+  mprWrapper: {
+    flex: 0.2,
+    justifyContent: "center"
+  },
+  scoreWrapper: {
+    justifyContent: "center",
+    flex: 0.7
+  },
+  scoreText: {
+    fontSize: 24,
+    fontWeight: "bold"
   }
 });
 

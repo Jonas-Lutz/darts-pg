@@ -15,6 +15,7 @@ import theme from "mydarts/theme";
 
 // Components:
 import Container from "mydarts/components/Container";
+import Scoreboard from "mydarts/components/Scoreboard";
 
 // Utils:
 import { smallScreen } from "mydarts/utils/deviceRatio";
@@ -55,15 +56,10 @@ class OneOOneSettings extends Component {
 
     return (
       <Container>
-        <View style={styles.header}>
-          <View>
-            <Headline>Custom checkouts</Headline>
-          </View>
-
-          <View>
-            <Text>Pick or enter the starting score</Text>
-          </View>
-        </View>
+        <Scoreboard flexVal={0.25}>
+          <Headline>Custom checkouts</Headline>
+          <Text>Pick or enter the starting score</Text>
+        </Scoreboard>
 
         <View style={styles.content}>
           <View style={styles.buttonsWrapper}>
