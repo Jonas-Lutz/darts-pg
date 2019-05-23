@@ -231,14 +231,6 @@ class CricketCountUp extends Component {
   render() {
     const { navigation } = this.props;
 
-    console.log(
-      "____________________________LEG_____________________________________"
-    );
-    console.log(this.state.gameHistory);
-    console.log(
-      "____________________________FIN_____________________________________"
-    );
-
     return (
       <Container>
         <Scoreboard flexVal={0.3}>

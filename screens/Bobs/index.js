@@ -71,10 +71,17 @@ export default class NineNineX extends React.Component {
   removeScore = () => {
     if (this.state.gameHistory.length > 0) {
       const newGameHistory = [...this.state.gameHistory];
+      const multiplier =
+        newGameHistory[newGameHistory.length - 1].hits > 0
+          ? newGameHistory[newGameHistory.length - 1].hits
+          : -1;
       const removeVal =
-        newGameHistory[newGameHistory.length - 1].hits *
-        (this.state.round < 21 ? this.state.round : 25);
+        multiplier * (this.state.round < 21 ? this.state.round - 1 : 25) * 2;
       newGameHistory.pop();
+
+      console.log("____");
+      console.log(multiplier);
+      console.log(this.state.round - 1);
 
       this.setState({
         ...this.state,
