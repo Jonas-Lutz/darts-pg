@@ -24,7 +24,7 @@ import calcMPR from "mydarts/utils/calcMPR";
 
 const isSmall = smallScreen();
 
-class CricketCountUp extends Component {
+class Shanghai extends Component {
   static navigationOptions = {
     header: null
   };
@@ -36,14 +36,36 @@ class CricketCountUp extends Component {
       gameHistory: [],
       roundHistory: [],
       round: 1,
-      goals: [20, 19, 18, 17, 16, 15, 25],
+      goals: [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
       finished: false,
-      highscore: 0
+      highscore: 0,
+      shanghai: false
     };
   }
 
   advanceRound = () => {
-    if (this.state.round === 7) {
+    if (this.state.round === 20) {
       this.setState({
         ...this.state,
         finished: true
@@ -70,7 +92,8 @@ class CricketCountUp extends Component {
         round: this.state.round + 1,
         roundHistory: [],
         gameHistory: copyGameHistory,
-        multiplier: 1
+        multiplier: 1,
+        shanghai: false
       });
     }
   };
@@ -95,15 +118,34 @@ class CricketCountUp extends Component {
       // Add Updated Round-History to Game-History
       copyGameHistory.push(newRoundHistory);
 
-      // Update State
-      this.setState({
-        ...this.state,
-        score: this.state.score - points,
-        gameHistory: copyGameHistory,
-        roundHistory: newRoundHistory,
-        multiplier: 1,
-        finished: false
-      });
+      // Shanghai ?
+      const isShanghai = newRoundHistory.map(dart => dart.points);
+      if (
+        isShanghai.includes(-1) &&
+        isShanghai.includes(-2) &&
+        isShanghai.includes(-3)
+      ) {
+        // Update State
+        this.setState({
+          ...this.state,
+          score: this.state.score - points,
+          gameHistory: copyGameHistory,
+          roundHistory: newRoundHistory,
+          multiplier: 1,
+          finished: true,
+          shanghai: true
+        });
+      } else {
+        // Update State
+        this.setState({
+          ...this.state,
+          score: this.state.score - points,
+          gameHistory: copyGameHistory,
+          roundHistory: newRoundHistory,
+          multiplier: 1,
+          finished: false
+        });
+      }
     }
   };
 
@@ -167,7 +209,8 @@ class CricketCountUp extends Component {
           gameHistory: updatedGameHistory,
           multiplier: 1,
           finished: false,
-          bust: false
+          bust: false,
+          shanghai: false
         });
       }
     } else {
@@ -181,7 +224,7 @@ class CricketCountUp extends Component {
   // Fetch existing stats from storage
   fetchStats = async () => {
     try {
-      const value = await AsyncStorage.getItem("cricketCountUp");
+      const value = await AsyncStorage.getItem("shanghai");
       if (value) {
         return JSON.parse(value);
       } else {
@@ -204,7 +247,7 @@ class CricketCountUp extends Component {
   saveStats = async highscore => {
     try {
       const res = await AsyncStorage.setItem(
-        "cricketCountUp",
+        "shanghai",
         JSON.stringify(highscore)
       );
       if (res) console.log("saved: ", res);
@@ -354,12 +397,13 @@ class CricketCountUp extends Component {
         />
         <FinishedModal
           goHome={() => navigation.navigate("Home")}
+          headline={this.state.shanghai ? "Shanghai!" : "Stats"}
           restart={() => {
             const resetAction = StackActions.reset({
               index: 0,
               actions: [
                 NavigationActions.navigate({
-                  routeName: "CricketCountUp"
+                  routeName: "Shanghai"
                 })
               ]
             });
@@ -370,8 +414,9 @@ class CricketCountUp extends Component {
           finished={this.state.finished}
         >
           <View style={{ flexDirection: "column" }}>
+            {this.state.shanghai && <Text>Finished by Shanghai</Text>}
             <Text>{`You reached a total score of ${this.state.score} (MPR: ${(
-              this.state.score / 7
+              this.state.score / this.state.gameHistory.length
             ).toFixed(1)}).`}</Text>
 
             {this.state.finished && this.state.highscore < this.state.score ? (
@@ -434,4 +479,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CricketCountUp;
+export default Shanghai;

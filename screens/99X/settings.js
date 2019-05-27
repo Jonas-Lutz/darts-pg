@@ -31,7 +31,7 @@ class Settings extends Component {
     return (
       <Container>
         <Scoreboard flexVal={0.2}>
-          <Text style={{ fontSize: 20 }}>Select a field</Text>
+          <Text style={{ fontSize: 24 }}>Select a field</Text>
         </Scoreboard>
         <View style={styles.buttonsWrapper}>
           {buttonArray.map(b => (
@@ -47,12 +47,22 @@ class Settings extends Component {
                   fetchedStats: []
                 });
               }}
+              style={styles.goalButton}
             >
-              <View style={styles.goalButton}>
-                <Text style={styles.goalButtonText}>{b}</Text>
-              </View>
+              <Text style={styles.goalButtonText}>{b}</Text>
             </TouchableHighlight>
           ))}
+        </View>
+        <View style={styles.homeWrapper}>
+          <TouchableHighlight
+            key={`key-Home`}
+            onPress={() => {
+              navigation.navigate("Home");
+            }}
+            style={styles.homeButton}
+          >
+            <Text style={styles.goalButtonText}>{"Cancel"}</Text>
+          </TouchableHighlight>
         </View>
       </Container>
     );
@@ -64,20 +74,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     flexWrap: "wrap",
-    flex: 0.8,
+    flex: 0.7,
+    width: "100%",
     justifyContent: "center"
   },
   goalButton: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.ninth,
     justifyContent: "center",
-    height: isSmall ? 65 : 80,
+    height: "20%",
     margin: 1,
-    width: isSmall ? 65 : 80
+    width: "19%"
   },
   goalButtonText: {
     color: theme.primaries.lightBlues.first,
-    fontSize: 18
+    fontSize: 22
+  },
+  homeWrapper: {
+    flex: 0.1,
+    width: "100%"
+  },
+  homeButton: {
+    alignItems: "center",
+    backgroundColor: theme.neutrals.ninth,
+    justifyContent: "center",
+    height: "100%",
+    margin: 1,
+    width: "100%"
   }
 });
 

@@ -17,6 +17,9 @@ import Bobs from "mydarts/screens/Bobs";
 // CricketCountUp:
 import CricketCountUp from "mydarts/screens/CricketCountUp";
 
+// Shanghai:
+import Shanghai from "mydarts/screens/Shanghai";
+
 // Home:
 import HomeScreen from "mydarts/screens/Home";
 
@@ -29,7 +32,8 @@ const AppNavigator = createStackNavigator(
     NineNineXSettings,
     NineNineXStats,
     OneOOne,
-    OneOOneSettings
+    OneOOneSettings,
+    Shanghai
   },
   {
     initialRouteName: "Home"

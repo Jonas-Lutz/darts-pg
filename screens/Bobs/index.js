@@ -35,14 +35,14 @@ export default class NineNineX extends React.Component {
   }
 
   addScore = multiplier => {
-    if (this.state.score > this.state.goal * 2 - 1) {
+    if (this.state.score > this.state.goal * 2 - 1 || multiplier > 0) {
       const newGameHistory = [...this.state.gameHistory, { hits: multiplier }];
       if (multiplier > 0) {
         this.setState({
           ...this.state,
           score: this.state.score + multiplier * this.state.goal * 2,
           goal: this.state.round < 20 ? this.state.round + 1 : 25,
-          round: this.state.round + 1,
+          round: this.state.goal > 20 ? this.state.round : this.state.round + 1,
           finished: this.state.goal > 20,
           gameHistory: newGameHistory
         });
@@ -51,7 +51,7 @@ export default class NineNineX extends React.Component {
           ...this.state,
           score: this.state.score - this.state.goal * 2,
           goal: this.state.round < 20 ? this.state.round + 1 : 25,
-          round: this.state.round + 1,
+          round: this.state.goal > 20 ? this.state.round : this.state.round + 1,
           gameHistory: newGameHistory,
           finished: this.state.goal > 20
         });
@@ -61,34 +61,47 @@ export default class NineNineX extends React.Component {
         this.updateStats();
       }
     } else {
-      this.setState({
-        finished: true,
-        score: -1
-      });
+      if (multiplier < 1) {
+        this.setState({
+          finished: true,
+          score: -1
+        });
+      }
     }
   };
 
-  removeScore = () => {
+  removeScore = ended => {
     if (this.state.gameHistory.length > 0) {
       const newGameHistory = [...this.state.gameHistory];
       const multiplier =
         newGameHistory[newGameHistory.length - 1].hits > 0
           ? newGameHistory[newGameHistory.length - 1].hits
           : -1;
-      const removeVal =
-        multiplier * (this.state.round < 21 ? this.state.round - 1 : 25) * 2;
-      newGameHistory.pop();
 
-      console.log("____");
-      console.log(multiplier);
-      console.log(this.state.round - 1);
+      // multiplier -> wie oft geworfen
+      //
+      const removeVal =
+        multiplier *
+        (ended
+          ? this.state.round > 20
+            ? 25
+            : this.state.round - 1
+          : this.state.round <= 21
+          ? this.state.round - 1
+          : 25) *
+        2;
+      newGameHistory.pop();
 
       this.setState({
         ...this.state,
         gameHistory: newGameHistory,
-        goal: this.state.goal - 1,
+        goal: ended
+          ? this.state.goal
+          : this.state.goal < 21
+          ? this.state.goal - 1
+          : 20,
         score: this.state.score - removeVal,
-        round: this.state.round - 1,
+        round: ended ? this.state.round : this.state.round - 1,
         finished: false
       });
     }
@@ -179,7 +192,7 @@ export default class NineNineX extends React.Component {
             }
           }}
           moveOnText={this.state.round < 20 ? "Next" : "Finish"}
-          removeScore={this.removeScore}
+          removeScore={() => this.removeScore(false)}
           underlayBack={
             this.state.gameHistory.length < 1
               ? theme.neutrals.eighth
@@ -191,6 +204,7 @@ export default class NineNineX extends React.Component {
           goHome={() => {
             navigation.navigate("Home");
           }}
+          headline={"Bob's 27 - Statistics"}
           restart={() => {
             const resetAction = StackActions.reset({
               index: 0,
@@ -202,24 +216,27 @@ export default class NineNineX extends React.Component {
             });
             this.props.navigation.dispatch(resetAction);
           }}
-          undo={this.removeScore}
+          undo={() => this.removeScore(true)}
           finished={this.state.finished}
         >
           <View style={{ flexDirection: "column" }}>
             <Text>
               {this.state.score > 0
-                ? `Congratulations! Finished with ${this.state.score} points!`
-                : `Game Over! Failed at D${this.state.goal}`}
-              {this.state.score > 1436 && "We both know you cheated tho"}
-              {this.state.highscore &&
-                this.state.highscore > 0 &&
-                (this.state.finished &&
-                this.state.highscore < this.state.score ? (
-                  <Text>{`That's a new Carreer High - Gratz!`}</Text>
-                ) : (
-                  <Text>{`Carreer High: ${this.state.highscore}`}</Text>
-                ))}
+                ? `You finished with ${this.state.score} points!`
+                : `Game ended at D${this.state.goal}`}
             </Text>
+
+            {this.state.score > 1436 && (
+              <Text>We both know you cheated tho</Text>
+            )}
+            {this.state.highscore &&
+              this.state.highscore > 0 &&
+              (this.state.finished &&
+              this.state.highscore < this.state.score ? (
+                <Text>{`That's a new Carreer High - Gratz!`}</Text>
+              ) : (
+                <Text>{`Carreer High: ${this.state.highscore}`}</Text>
+              ))}
           </View>
         </FinishedModal>
       </Container>

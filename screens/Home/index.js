@@ -22,53 +22,71 @@ class Home extends Component {
 
     const buttons = [
       { destination: "NineNineXSettings", label: "60 on X" },
+      { destination: "Bobs", label: "Bob's 27" },
       { destination: "OneOOneSettings", label: "Checkouts" },
       { destination: "CricketCountUp", label: "Cricket Count Up" },
-      { destination: "Bobs", label: "Bob's 27" }
+      { destination: "Shanghai", label: "Shanghai" }
     ];
 
     return (
       <Container>
-        <Scoreboard flexVal={1}>
+        <Scoreboard flexVal={0.2}>
           <Headline>Darts Trainer</Headline>
           <Text>Select your training</Text>
-          <View style={styles.homeContent}>
-            {buttons.map(b => (
-              <View key={b.destination}>
-                <TouchableHighlight
-                  onPress={() => {
-                    navigation.navigate(b.destination);
-                  }}
-                >
-                  <View style={styles.gameBtn}>
-                    <Text style={styles.gameBtnText}>{b.label}</Text>
-                  </View>
-                </TouchableHighlight>
-              </View>
-            ))}
-          </View>
         </Scoreboard>
+
+        <View style={styles.homeContent}>
+          {buttons.map((b, index) => (
+            <TouchableHighlight
+              key={b.destination}
+              onPress={() => {
+                navigation.navigate(b.destination);
+              }}
+              style={
+                index === buttons.length - 1
+                  ? styles.gameBtnBottomBorder
+                  : styles.gameBtn
+              }
+            >
+              <Text style={styles.gameBtnText}>{b.label}</Text>
+            </TouchableHighlight>
+          ))}
+        </View>
       </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  headerContent: {
+    justifyContent: "center",
+    flex: 0.2
+  },
   homeContent: {
     justifyContent: "center",
-    flex: 1
+    flex: 0.8,
+    width: "100%"
   },
   gameBtn: {
-    backgroundColor: theme.primaries.lightBlues.first,
+    alignItems: "center",
+    borderColor: theme.neutrals.seventh,
+    borderTopWidth: 1,
+    justifyContent: "center",
+    flex: 0.2,
+    width: "100%"
+  },
+  gameBtnBottomBorder: {
     alignItems: "center",
     justifyContent: "center",
-    margin: 10,
-    height: 75,
-    padding: 5,
-    width: 180
+    borderTopWidth: 1,
+    borderColor: theme.neutrals.seventh,
+
+    borderBottomWidth: 1,
+    flex: 0.2,
+    width: "100%"
   },
   gameBtnText: {
-    color: theme.neutrals.tenth,
+    color: theme.primaries.lightBlues.first,
     fontSize: 22
   }
 });

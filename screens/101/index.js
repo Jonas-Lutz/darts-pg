@@ -230,13 +230,13 @@ class OneOOne extends Component {
     }
 
     const specials = [
-      { value: 25, type: "scoreBtn" },
-      { value: 0, type: "scoreBtn" },
-      { value: "Double", type: "trigger" },
-      { value: "Triple", type: "trigger" }
+      { label: "Bull", value: 25, type: "scoreBtn" },
+      { label: "Miss", value: 0, type: "scoreBtn" },
+      { label: "Double", value: "Double", type: "trigger" },
+      { label: "Triple", value: "Triple", type: "trigger" }
     ];
-    specials.map(s => buttons.push(s));
-
+    /*     specials.map(s => buttons.push(s));
+     */
     return (
       <Container>
         <Scoreboard flexVal={0.33} bust={this.state.bust}>
@@ -327,46 +327,69 @@ class OneOOne extends Component {
         </Scoreboard>
         {/* Buttons */}
         <View style={styles.buttonsWrapper}>
-          {buttons.map(b => {
-            if (b.type === "scoreBtn") {
-              return (
-                <TouchableHighlight
-                  key={`key-${b.value}`}
-                  onPress={() => {
-                    this.countThrow(b.value);
-                  }}
-                >
-                  <View style={styles.goalButton}>
-                    <Text style={{ fontSize: 18 }}>{b.value}</Text>
-                  </View>
-                </TouchableHighlight>
-              );
-            } else {
-              return (
-                <TouchableHighlight
-                  key={`key-${b.value}`}
-                  onPress={() => {
-                    if (this.state.multiplier === 1) {
-                      this.setState({
-                        ...this.state,
-                        multiplier: b.value === "Double" ? 2 : 3
-                      });
-                    } else if (this.state.multiplier === 2) {
-                      this.setState({
-                        ...this.state,
-                        multiplier: b.value === "Double" ? 1 : 3
-                      });
-                    } else if (this.state.multiplier === 3) {
-                      this.setState({
-                        ...this.state,
-                        multiplier: b.value === "Double" ? 2 : 1
-                      });
-                    }
-                  }}
-                >
-                  <View
+          <View style={{ flex: 1, flexDirection: "row", height: "100%" }}>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                flex: 0.75
+              }}
+            >
+              {buttons.map(b => {
+                return (
+                  <TouchableHighlight
+                    key={`key-${b.value}`}
+                    onPress={() => {
+                      this.countThrow(b.value);
+                    }}
+                    style={styles.goalButton}
+                  >
+                    <Text style={styles.goalButtonText}>{b.value}</Text>
+                  </TouchableHighlight>
+                );
+              })}
+            </View>
+            <View
+              style={{
+                flex: "col",
+                flex: 0.25
+              }}
+            >
+              {specials.map(b => {
+                return (
+                  <TouchableHighlight
+                    key={`key-${b.value}`}
+                    onPress={() => {
+                      if (b.value === 25 || b.value === 0) {
+                        if (b.value === 25 && this.state.multiplier === 3) {
+                        } else {
+                          this.countThrow(b.value);
+                        }
+                      } else {
+                        if (this.state.multiplier === 1) {
+                          this.setState({
+                            ...this.state,
+                            multiplier: b.value === "Double" ? 2 : 3
+                          });
+                        } else if (this.state.multiplier === 2) {
+                          this.setState({
+                            ...this.state,
+                            multiplier: b.value === "Double" ? 1 : 3
+                          });
+                        } else if (this.state.multiplier === 3) {
+                          this.setState({
+                            ...this.state,
+                            multiplier: b.value === "Double" ? 2 : 1
+                          });
+                        }
+                      }
+                    }}
                     style={
-                      this.state.bust
+                      b.value === 0 || b.value === 25
+                        ? styles.triggerButtonSmall
+                        : this.state.bust
                         ? styles.triggerButton
                         : this.state.multiplier === 1
                         ? styles.triggerButton
@@ -377,12 +400,12 @@ class OneOOne extends Component {
                         : styles.triggerButton
                     }
                   >
-                    <Text style={{ fontSize: 18 }}>{b.value}</Text>
-                  </View>
-                </TouchableHighlight>
-              );
-            }
-          })}
+                    <Text style={styles.goalButtonText}>{b.label}</Text>
+                  </TouchableHighlight>
+                );
+              })}
+            </View>
+          </View>
         </View>
 
         {/* Navigation */}
@@ -498,27 +521,33 @@ const styles = StyleSheet.create({
   },
   goalButton: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.tenth,
     justifyContent: "center",
-    height: isSmall ? 60 : 70,
-    margin: 1,
-    width: isSmall ? 60 : 70
+    width: "24%",
+    height: "19.5%",
+    margin: 1
+  },
+  goalButtonText: {
+    fontSize: 20,
+    color: theme.primaries.lightBlues.first
+  },
+  triggerButtonSmall: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "19.5%",
+    margin: 1
   },
   triggerButton: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.tenth,
     justifyContent: "center",
-    height: isSmall ? 60 : 70,
-    margin: 1,
-    width: isSmall ? 90 : 105
+    height: "29.5%",
+    margin: 1
   },
   triggerButtonActive: {
     alignItems: "center",
-    backgroundColor: theme.neutrals.seventh,
+    backgroundColor: theme.neutrals.eighth,
     justifyContent: "center",
-    height: isSmall ? 60 : 70,
-    margin: 1,
-    width: isSmall ? 90 : 105
+    height: "29.5%",
+    margin: 1
   }
 });
 

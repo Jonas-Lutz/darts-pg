@@ -29,27 +29,29 @@ export default class NineNineX extends React.Component {
   }
 
   addScore = multiplier => {
-    if (this.state.roundHistory.length < 3) {
-      const copyGameHistory = [...this.state.gameHistory];
+    if (this.state.round <= 20) {
+      if (this.state.roundHistory.length < 3) {
+        const copyGameHistory = [...this.state.gameHistory];
 
-      // Update new Round-History with current throw
-      const newRoundHistory = [
-        ...this.state.roundHistory,
-        {
-          goal: this.state.goal,
-          multiplier: multiplier
-        }
-      ];
+        // Update new Round-History with current throw
+        const newRoundHistory = [
+          ...this.state.roundHistory,
+          {
+            goal: this.state.goal,
+            multiplier: multiplier
+          }
+        ];
 
-      copyGameHistory.splice(this.state.round - 1, 1, newRoundHistory);
+        copyGameHistory.splice(this.state.round - 1, 1, newRoundHistory);
 
-      // Update State
-      this.setState({
-        ...this.state,
-        score: this.state.score + this.state.goal * multiplier,
-        gameHistory: copyGameHistory,
-        roundHistory: newRoundHistory
-      });
+        // Update State
+        this.setState({
+          ...this.state,
+          score: this.state.score + this.state.goal * multiplier,
+          gameHistory: copyGameHistory,
+          roundHistory: newRoundHistory
+        });
+      }
     }
   };
 
@@ -167,10 +169,10 @@ export default class NineNineX extends React.Component {
       <Container>
         <Scoreboard flexVal={0.25}>
           <View style={styles.gamestats}>
-            <Text>{`${this.state.round} round`}</Text>
-            <Text style={styles.scoreLabelText}>{`${
-              this.state.score
-            } points`}</Text>
+            <Text>
+              {this.state.round < 21 ? `Round ${this.state.round}` : "Finished"}
+            </Text>
+            <Text style={styles.scoreLabelText}>{`${this.state.score}`}</Text>
           </View>
           <View style={styles.thrownDarts}>
             <View style={styles.dartScore}>
@@ -216,9 +218,17 @@ export default class NineNineX extends React.Component {
                 style={styles.scoreButtonTriple}
                 underlayColor={theme.neutrals.eighth}
               >
-                <Text style={styles.scoreButtonText}>{`T ${
-                  this.state.goal
-                }`}</Text>
+                <Text
+                  style={
+                    !(
+                      (this.state.round === 20 &&
+                        this.state.roundHistory.length === 3) ||
+                      this.state.round > 20
+                    )
+                      ? styles.scoreButtonText
+                      : styles.scoreButtonDisabledText
+                  }
+                >{`T ${this.state.goal}`}</Text>
               </TouchableHighlight>
             </View>
           )}
@@ -229,9 +239,17 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonDouble}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={styles.scoreButtonText}>{`D ${
-                this.state.goal
-              }`}</Text>
+              <Text
+                style={
+                  !(
+                    (this.state.round === 20 &&
+                      this.state.roundHistory.length === 3) ||
+                    this.state.round > 20
+                  )
+                    ? styles.scoreButtonText
+                    : styles.scoreButtonDisabledText
+                }
+              >{`D ${this.state.goal}`}</Text>
             </TouchableHighlight>
           </View>
           <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
@@ -240,9 +258,17 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonSingle}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={styles.scoreButtonText}>{`S ${
-                this.state.goal
-              }`}</Text>
+              <Text
+                style={
+                  !(
+                    (this.state.round === 20 &&
+                      this.state.roundHistory.length === 3) ||
+                    this.state.round > 20
+                  )
+                    ? styles.scoreButtonText
+                    : styles.scoreButtonDisabledText
+                }
+              >{`S ${this.state.goal}`}</Text>
             </TouchableHighlight>
           </View>
           <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
@@ -251,7 +277,17 @@ export default class NineNineX extends React.Component {
               style={styles.scoreButtonMiss}
               underlayColor={theme.neutrals.eighth}
             >
-              <Text style={styles.scoreButtonText}>{`Miss`}</Text>
+              <Text
+                style={
+                  !(
+                    (this.state.round === 20 &&
+                      this.state.roundHistory.length === 3) ||
+                    this.state.round > 20
+                  )
+                    ? styles.scoreButtonText
+                    : styles.scoreButtonDisabledText
+                }
+              >{`Miss`}</Text>
             </TouchableHighlight>
           </View>
         </View>
@@ -259,17 +295,26 @@ export default class NineNineX extends React.Component {
         <GameNav
           backDisabled={this.state.gameHistory.length < 1}
           moveOn={() => {
-            if (this.state.round < 20) {
-              this.advanceRound();
-            } else {
+            if (
+              (this.state.round === 20 &&
+                this.state.roundHistory.length === 3) ||
+              this.state.round > 20
+            ) {
               navigation.navigate("NineNineXStats", {
                 gameHistory: this.state.gameHistory,
                 goal: this.state.goal,
                 score: this.state.score
               });
+            } else {
+              this.advanceRound();
             }
           }}
-          moveOnText={this.state.round < 20 ? "Next" : "Finish"}
+          moveOnText={
+            (this.state.round === 20 && this.state.roundHistory.length === 3) ||
+            this.state.round > 20
+              ? "Finish"
+              : "Next"
+          }
           removeScore={this.removeScore}
           underlayBack={
             this.state.gameHistory.length < 1
@@ -304,6 +349,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 0.65,
     width: "100%"
+  },
+  scoreButtonDisabledText: {
+    color: theme.neutrals.ninth,
+    fontSize: 24
   },
   scoreButtonTriple: {
     backgroundColor: theme.neutrals.tenth,
@@ -342,6 +391,7 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   scoreLabelText: {
-    fontSize: 24
+    fontSize: 26,
+    fontWeight: "bold"
   }
 });

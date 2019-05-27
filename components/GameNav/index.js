@@ -5,12 +5,12 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import theme from "mydarts/theme";
 
 const GameNav = ({
-  backDisabled,
+  backDisabled = false,
   moveOn,
   moveOnText,
   removeScore,
-  underlayBack,
-  underlayMove
+  underlayBack = theme.neutrals.eighth,
+  underlayMove = theme.primaries.lightBlues.eighth
 }) => {
   return (
     <View style={styles.navContainer}>

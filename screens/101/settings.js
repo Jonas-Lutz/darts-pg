@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
+  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableHighlight,
@@ -61,30 +62,28 @@ class OneOOneSettings extends Component {
           <Text>Pick or enter the starting score</Text>
         </Scoreboard>
 
-        <View style={styles.content}>
+        <KeyboardAvoidingView style={styles.content} behavior="padding">
           <View style={styles.buttonsWrapper}>
             {suggestions.map(s => {
               return (
-                <View key={`default - ${s}`} style={styles.quickStart}>
-                  <TouchableHighlight
-                    onPress={() => {
-                      navigation.navigate("OneOOne", {
-                        doubleIn: this.state.doubleIn,
-                        gameHistory: [],
-                        multiplier: 1,
-                        round: 1,
-                        roundHistory: [],
-                        finished: false,
-                        bust: false,
-                        score: s
-                      });
-                    }}
-                  >
-                    <View>
-                      <Text style={styles.buttonText}>{s}</Text>
-                    </View>
-                  </TouchableHighlight>
-                </View>
+                <TouchableHighlight
+                  key={`default - ${s}`}
+                  style={styles.quickStart}
+                  onPress={() => {
+                    navigation.navigate("OneOOne", {
+                      doubleIn: this.state.doubleIn,
+                      gameHistory: [],
+                      multiplier: 1,
+                      round: 1,
+                      roundHistory: [],
+                      finished: false,
+                      bust: false,
+                      score: s
+                    });
+                  }}
+                >
+                  <Text style={styles.buttonText}>{s}</Text>
+                </TouchableHighlight>
               );
             })}
             <View style={styles.scoreTextfieldWrapper}>
@@ -96,7 +95,7 @@ class OneOOneSettings extends Component {
                 style={styles.scoreTextfield}
               />
             </View>
-            <View>
+            <View style={{ flex: 0.25, width: "100%" }}>
               <TouchableHighlight
                 onPress={() => {
                   navigation.navigate("OneOOne", {
@@ -107,17 +106,16 @@ class OneOOneSettings extends Component {
                     roundHistory: [],
                     finished: false,
                     bust: false,
-                    score: parseInt(this.state.input)
+                    score: this.state.input ? parseInt(this.state.input) : 101
                   });
                 }}
+                style={styles.startButton}
               >
-                <View style={styles.startButton}>
-                  <Text style={styles.buttonText}>Start</Text>
-                </View>
+                <Text style={styles.startButtonText}>Start</Text>
               </TouchableHighlight>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Container>
     );
   }
@@ -128,39 +126,48 @@ const styles = StyleSheet.create({
     flex: 0.33
   },
   content: {
-    flex: 0.67
+    flex: 0.75,
+    width: "100%"
   },
   buttonsWrapper: {
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    width: "100%"
   },
   quickStart: {
-    backgroundColor: theme.primaries.lightBlues.fifth,
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: theme.neutrals.ninth,
     justifyContent: "center",
-    margin: 5,
-    height: 55,
-    width: 120
+    flex: 0.25,
+    width: "100%"
   },
   startButton: {
-    backgroundColor: theme.primaries.lightBlues.third,
+    backgroundColor: theme.primaries.lightBlues.fourth,
     alignItems: "center",
     justifyContent: "center",
-    margin: 5,
-    height: 55,
-    width: 120
+    flex: 1,
+    width: "100%"
   },
   buttonText: {
-    fontSize: 20
+    fontSize: 24,
+    color: theme.primaries.lightBlues.first
+  },
+  startButtonText: {
+    fontSize: 24,
+    color: theme.neutrals.tenth
   },
   scoreTextfield: {
     fontSize: 18,
-    marginLeft: 5
+    marginLeft: 5,
+    flex: 0.25
   },
   scoreTextfieldWrapper: {
+    alignItems: "center",
     justifyContent: "center",
-    height: 55,
-    width: 120,
+    flex: 0.25,
+    width: "100%",
     borderColor: theme.neutrals.tenth,
     borderBottomWidth: 1
   }

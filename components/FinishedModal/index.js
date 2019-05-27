@@ -10,10 +10,22 @@ import {
 // Atoms:
 import Headline from "mydarts/atoms/Headline";
 
+// Components:
+import Container from "mydarts/components/Container";
+import GameNav from "mydarts/components/GameNav";
+import Scoreboard from "mydarts/components/Scoreboard";
+
 // Colors:
 import theme from "mydarts/theme";
 
-const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
+const FinishedModal = ({
+  children,
+  headline = "Finished",
+  goHome,
+  restart,
+  undo,
+  finished
+}) => {
   return (
     <Modal
       visible={finished}
@@ -21,69 +33,51 @@ const FinishedModal = ({ children, goHome, restart, undo, finished }) => {
         alert("closed");
       }}
     >
-      <View style={styles.container}>
-        <View style={styles.contentContainer}>
+      <Container>
+        <Scoreboard flexVal={0.2}>
           <View>
-            <Headline>Finished</Headline>
+            <Headline>{headline}</Headline>
           </View>
-
-          <View style={{ flexDirection: "row" }}>{children}</View>
-          <View style={styles.buttonWrapper}>
-            <TouchableHighlight onPress={undo}>
-              <View style={styles.undoBtn}>
-                <Text style={styles.buttonText}>Undo</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-          <View style={styles.buttonWrapper}>
-            <TouchableHighlight onPress={restart}>
-              <View style={styles.newGameBtn}>
-                <Text style={styles.buttonText}>New Game</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-          <View style={styles.buttonWrapper}>
-            <TouchableHighlight onPress={goHome}>
-              <View style={styles.homeBtn}>
-                <Text style={styles.buttonText}>Home</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
+        </Scoreboard>
+        <View
+          style={{ alignItems: "center", justifyContent: "center", flex: 0.5 }}
+        >
+          {children}
         </View>
-      </View>
+        <View style={styles.buttonWrapper}>
+          <TouchableHighlight onPress={restart}>
+            <View style={styles.newGameBtn}>
+              <Text style={styles.buttonText}>New Game</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <GameNav moveOn={goHome} moveOnText="Home" removeScore={undo} />
+      </Container>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    backgroundColor: theme.neutrals.ninth,
-    justifyContent: "center",
-    flex: 1
-  },
-  contentContainer: {
-    alignItems: "center",
-    backgroundColor: theme.neutrals.tenth,
-    justifyContent: "center",
-    flex: 0.9,
-    width: "90%"
-  },
   buttonWrapper: {
+    flex: 0.2,
     margin: 20
   },
   buttonText: {
     fontSize: 20
   },
+  homeButtonText: {
+    color: theme.primaries.tenth,
+    fontSize: 20
+  },
   homeBtn: {
-    backgroundColor: theme.primaries.lightBlues.seventh,
+    backgroundColor: theme.primaries.lightBlues.third,
     alignItems: "center",
     height: 65,
     justifyContent: "center",
     width: 150
   },
   newGameBtn: {
-    backgroundColor: theme.primaries.lightBlues.third,
+    backgroundColor: theme.primaries.lightBlues.seventh,
     alignItems: "center",
     height: 65,
     justifyContent: "center",
