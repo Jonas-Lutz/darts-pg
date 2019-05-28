@@ -81,6 +81,7 @@ class OneOOneSettings extends Component {
                       score: s
                     });
                   }}
+                  underlayColor={theme.primaries.lightBlues.tenth}
                 >
                   <Text style={styles.buttonText}>{s}</Text>
                 </TouchableHighlight>
@@ -110,6 +111,7 @@ class OneOOneSettings extends Component {
                   });
                 }}
                 style={styles.startButton}
+                underlayColor={theme.primaries.lightBlues.tenth}
               >
                 <Text style={styles.startButtonText}>Start</Text>
               </TouchableHighlight>

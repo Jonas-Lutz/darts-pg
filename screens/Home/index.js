@@ -47,6 +47,7 @@ class Home extends Component {
                   ? styles.gameBtnBottomBorder
                   : styles.gameBtn
               }
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text style={styles.gameBtnText}>{b.label}</Text>
             </TouchableHighlight>

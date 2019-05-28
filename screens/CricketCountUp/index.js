@@ -287,7 +287,7 @@ class CricketCountUp extends Component {
               <TouchableHighlight
                 onPress={() => this.countThrow(-3)}
                 style={styles.scoreButton}
-                underlayColor={theme.neutrals.eighth}
+                underlayColor={theme.primaries.lightBlues.tenth}
               >
                 <Text style={styles.buttonText}>{`T ${
                   this.state.goals[this.state.round - 1]
@@ -304,7 +304,7 @@ class CricketCountUp extends Component {
             <TouchableHighlight
               onPress={() => this.countThrow(-2)}
               style={styles.scoreButton}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text style={styles.buttonText}>{`D ${
                 this.state.goals[this.state.round - 1]
@@ -319,7 +319,7 @@ class CricketCountUp extends Component {
             <TouchableHighlight
               onPress={() => this.countThrow(-1)}
               style={styles.scoreButton}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text style={styles.buttonText}>{`S ${
                 this.state.goals[this.state.round - 1]
@@ -334,7 +334,7 @@ class CricketCountUp extends Component {
             <TouchableHighlight
               onPress={() => this.countThrow(0)}
               style={styles.scoreButton}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text style={styles.buttonText}>{`Miss`}</Text>
             </TouchableHighlight>

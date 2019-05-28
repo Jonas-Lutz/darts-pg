@@ -216,7 +216,7 @@ export default class NineNineX extends React.Component {
               <TouchableHighlight
                 onPress={() => this.addScore(3)}
                 style={styles.scoreButtonTriple}
-                underlayColor={theme.neutrals.eighth}
+                underlayColor={theme.primaries.lightBlues.eighth}
               >
                 <Text
                   style={
@@ -237,7 +237,7 @@ export default class NineNineX extends React.Component {
             <TouchableHighlight
               onPress={() => this.addScore(2)}
               style={styles.scoreButtonDouble}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.eighth}
             >
               <Text
                 style={
@@ -256,7 +256,7 @@ export default class NineNineX extends React.Component {
             <TouchableHighlight
               onPress={() => this.addScore(1)}
               style={styles.scoreButtonSingle}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.eighth}
             >
               <Text
                 style={
@@ -275,7 +275,7 @@ export default class NineNineX extends React.Component {
             <TouchableHighlight
               onPress={() => this.addScore(0)}
               style={styles.scoreButtonMiss}
-              underlayColor={theme.neutrals.eighth}
+              underlayColor={theme.primaries.lightBlues.eighth}
             >
               <Text
                 style={

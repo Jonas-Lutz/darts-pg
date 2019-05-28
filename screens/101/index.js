@@ -345,6 +345,7 @@ class OneOOne extends Component {
                       this.countThrow(b.value);
                     }}
                     style={styles.goalButton}
+                    underlayColor={theme.primaries.lightBlues.tenth}
                   >
                     <Text style={styles.goalButtonText}>{b.value}</Text>
                   </TouchableHighlight>

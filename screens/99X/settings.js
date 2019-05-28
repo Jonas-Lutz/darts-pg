@@ -48,6 +48,7 @@ class Settings extends Component {
                 });
               }}
               style={styles.goalButton}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text style={styles.goalButtonText}>{b}</Text>
             </TouchableHighlight>
@@ -60,6 +61,7 @@ class Settings extends Component {
               navigation.navigate("Home");
             }}
             style={styles.homeButton}
+            underlayColor={theme.primaries.lightBlues.tenth}
           >
             <Text style={styles.goalButtonText}>{"Cancel"}</Text>
           </TouchableHighlight>
