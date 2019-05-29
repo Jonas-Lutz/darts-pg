@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  StatusBar,
+  View
+} from "react-native";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -48,9 +54,12 @@ class Home extends Component<Props, State> {
 
     return (
       <Container>
+        <StatusBar hidden />
         <Scoreboard flexVal={0.2}>
           <Headline>Darts Trainer</Headline>
-          <Text>Select your training</Text>
+          <Text style={{ color: theme.neutrals.text }}>
+            Select your training
+          </Text>
         </Scoreboard>
 
         <View style={styles.homeContent}>
@@ -61,8 +70,8 @@ class Home extends Component<Props, State> {
                 navigation.navigate(b.destination);
               }}
               style={
-                index === buttons.length - 1
-                  ? styles.gameBtnBottomBorder
+                !(index === buttons.length - 1)
+                  ? styles.gameBtnBorder
                   : styles.gameBtn
               }
               underlayColor={theme.primaries.lightBlues.tenth}
@@ -88,18 +97,14 @@ const styles = StyleSheet.create({
   },
   gameBtn: {
     alignItems: "center",
-    borderColor: theme.neutrals.seventh,
-    borderTopWidth: 1,
     justifyContent: "center",
     flex: 0.2,
     width: "100%"
   },
-  gameBtnBottomBorder: {
+  gameBtnBorder: {
     alignItems: "center",
     justifyContent: "center",
-    borderTopWidth: 1,
     borderColor: theme.neutrals.seventh,
-
     borderBottomWidth: 1,
     flex: 0.2,
     width: "100%"

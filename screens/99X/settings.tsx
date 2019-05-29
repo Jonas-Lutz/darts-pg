@@ -50,7 +50,9 @@ class Settings extends Component<Props, State> {
     return (
       <Container>
         <Scoreboard flexVal={0.2}>
-          <Text style={{ fontSize: 24 }}>Select a field</Text>
+          <Text style={{ color: theme.neutrals.text, fontSize: 24 }}>
+            Select a field
+          </Text>
         </Scoreboard>
         <View style={styles.buttonsWrapper}>
           {buttonArray.map(b => (

@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.neutrals.tenth,
     flex: 1,
-    justifyContent: "center",
-    paddingTop: 20
+    justifyContent: "center"
   }
 });
 

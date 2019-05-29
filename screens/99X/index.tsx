@@ -188,14 +188,14 @@ export default class NineNineX extends Component<Props, State> {
       <Container>
         <Scoreboard flexVal={0.25}>
           <View style={styles.gamestats}>
-            <Text>
+            <Text style={{ color: theme.neutrals.text }}>
               {this.state.round < 21 ? `Round ${this.state.round}` : "Finished"}
             </Text>
             <Text style={styles.scoreLabelText}>{`${this.state.score}`}</Text>
           </View>
           <View style={styles.thrownDarts}>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 20 }}>{`${
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 0
                   ? this.state.roundHistory[0].multiplier < 1
                     ? "Miss"
@@ -206,7 +206,7 @@ export default class NineNineX extends Component<Props, State> {
               }`}</Text>
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 20 }}>{`${
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 1
                   ? this.state.roundHistory[1].multiplier < 1
                     ? "Miss"
@@ -217,7 +217,7 @@ export default class NineNineX extends Component<Props, State> {
               }`}</Text>
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ fontSize: 20 }}>{`${
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
                 this.state.roundHistory.length > 2
                   ? this.state.roundHistory[2].multiplier < 1
                     ? "Miss"
@@ -235,7 +235,7 @@ export default class NineNineX extends Component<Props, State> {
               <TouchableHighlight
                 onPress={() => this.addScore(3)}
                 style={styles.scoreButtonTriple}
-                underlayColor={theme.primaries.lightBlues.eighth}
+                underlayColor={theme.primaries.lightBlues.tenth}
               >
                 <Text
                   style={
@@ -256,7 +256,7 @@ export default class NineNineX extends Component<Props, State> {
             <TouchableHighlight
               onPress={() => this.addScore(2)}
               style={styles.scoreButtonDouble}
-              underlayColor={theme.primaries.lightBlues.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text
                 style={
@@ -275,7 +275,7 @@ export default class NineNineX extends Component<Props, State> {
             <TouchableHighlight
               onPress={() => this.addScore(1)}
               style={styles.scoreButtonSingle}
-              underlayColor={theme.primaries.lightBlues.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text
                 style={
@@ -294,7 +294,7 @@ export default class NineNineX extends Component<Props, State> {
             <TouchableHighlight
               onPress={() => this.addScore(0)}
               style={styles.scoreButtonMiss}
-              underlayColor={theme.primaries.lightBlues.eighth}
+              underlayColor={theme.primaries.lightBlues.tenth}
             >
               <Text
                 style={
@@ -340,7 +340,7 @@ export default class NineNineX extends Component<Props, State> {
               ? theme.neutrals.eighth
               : theme.neutrals.seventh
           }
-          underlayMove={theme.primaries.lightBlues.eighth}
+          underlayMove={theme.primaries.lightBlues.tenth}
         />
       </Container>
     );
@@ -410,6 +410,7 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   scoreLabelText: {
+    color: theme.neutrals.text,
     fontSize: 26,
     fontWeight: "bold"
   }

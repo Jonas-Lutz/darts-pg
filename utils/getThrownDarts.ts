@@ -1,8 +1,7 @@
-export default darts => {
+export default (darts: any[]) => {
   let throwndarts = 0;
-  let rounds = darts && darts.length > 0 ? darts.length : 0;
   darts.map(round => {
-    round.map(dart => {
+    round.map((dart: any) => {
       throwndarts = throwndarts + 1;
     });
   });

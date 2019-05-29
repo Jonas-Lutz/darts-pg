@@ -1,4 +1,4 @@
-export const calculateFinish = score => {
+export const calculateFinish = (score: number) => {
   const finishes = [
     { score: 170, finish: ["T20", "T20", "D25"] },
     { score: 167, finish: ["T20", "T19", "D25"] },

@@ -51,7 +51,8 @@ export default {
     seventh: "#B1B1B1",
     eighth: "#CFCFCF",
     ninth: "#E1E1E1",
-    tenth: "#F7F7F7"
+    tenth: "#F7F7F7",
+    text: "#022E4B"
   },
   // Supporting - use with caution!
   // Used for stand out elements

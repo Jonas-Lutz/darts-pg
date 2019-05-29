@@ -1,4 +1,4 @@
-export const getLabel = multiplier => {
+export const getLabel = (multiplier: number) => {
   let label = "";
   switch (multiplier) {
     case 3:

@@ -197,7 +197,7 @@ export default class NineNineX extends Component<Props, State> {
               <TouchableHighlight
                 onPress={() => this.addScore(h)}
                 style={styles.scoreButton}
-                underlayColor={theme.primaries.lightBlues.eighth}
+                underlayColor={theme.primaries.lightBlues.tenth}
               >
                 <Text style={styles.scoreButtonText}>{`${h} Hit${
                   h !== 1 ? "s" : " "
