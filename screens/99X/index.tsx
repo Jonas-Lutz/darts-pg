@@ -1,22 +1,41 @@
-import React from "react";
+import React, { Component } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import Scoreboard from "components/Scoreboard";
 
 // Utils
-import { getLabel } from "mydarts/utils/getLabel";
+import { getLabel } from "utils/getLabel";
 
-export default class NineNineX extends React.Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  goal: number;
+  round: number;
+  score: number;
+  gameHistory: any[];
+  roundHistory: any[];
+  fetchedStats: any[];
+};
+
+// ================================================================================================
+
+export default class NineNineX extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       goal: this.props.navigation.getParam("goal", 20),
@@ -28,7 +47,7 @@ export default class NineNineX extends React.Component {
     };
   }
 
-  addScore = multiplier => {
+  addScore = (multiplier: number) => {
     if (this.state.round <= 20) {
       if (this.state.roundHistory.length < 3) {
         const copyGameHistory = [...this.state.gameHistory];

@@ -2,20 +2,38 @@ import React, { Component } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Atoms:
-import Headline from "mydarts/atoms/Headline";
+import Headline from "atoms/Headline";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import Scoreboard from "components/Scoreboard";
 
-class Home extends Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  goal: number;
+  round: number;
+  score: number;
+  gameHistory: any[];
+  roundHistory: any[];
+  fetchedStats: any[];
+};
+
+// ================================================================================================
+
+class Home extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
-  state = {};
 
   render() {
     const { navigation } = this.props;

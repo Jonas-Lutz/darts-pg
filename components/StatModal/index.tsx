@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import {
   StyleSheet,
   TouchableHighlight,
@@ -8,14 +8,30 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "mydarts/atoms/Headline";
+import Headline from "atoms/Headline";
 
-const StatModal = props => {
-  let darts = [];
+// ==================================================================================================
 
-  if (props.gameHistory.length > 0) {
-    props.gameHistory.map(round => {
-      round.map(dart => {
+type Props = {
+  gameHistory: any[];
+  onClose: () => {};
+  score: number;
+  visible: boolean;
+};
+
+// ==================================================================================================
+
+const StatModal: FunctionComponent<Props> = ({
+  gameHistory,
+  onClose,
+  score,
+  visible
+}) => {
+  let darts: any[] = [];
+
+  if (gameHistory.length > 0) {
+    gameHistory.map((round: any) => {
+      round.map((dart: any) => {
         darts.push(dart);
       });
     });
@@ -34,9 +50,9 @@ const StatModal = props => {
 
   return (
     <Modal
-      visible={props.visible}
+      visible={visible}
       onRequestClose={() => {
-        alert("closed");
+        console.log("closed");
       }}
     >
       <View>
@@ -55,7 +71,7 @@ const StatModal = props => {
               <Text>Score:</Text>
             </View>
             <View>
-              <Text>{props.score} </Text>
+              <Text>{score} </Text>
             </View>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -103,7 +119,7 @@ const StatModal = props => {
           </View>
         </View>
         <View>
-          <TouchableHighlight onPress={props.onClose}>
+          <TouchableHighlight onPress={onClose}>
             <View style={{ width: 150, height: 100, backgroundColor: "red" }}>
               <Text>Close</Text>
             </View>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import {
   StyleSheet,
   TouchableHighlight,
@@ -8,17 +8,29 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "mydarts/atoms/Headline";
+import Headline from "atoms/Headline";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import Scoreboard from "components/Scoreboard";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
-const FinishedModal = ({
+// ==================================================================================================
+
+type Props = {
+  headline?: string;
+  goHome: () => void;
+  restart: () => void;
+  undo: () => void;
+  finished: boolean;
+};
+
+// ==================================================================================================
+
+const FinishedModal: FunctionComponent<Props> = ({
   children,
   headline = "Finished",
   goHome,
@@ -30,7 +42,7 @@ const FinishedModal = ({
     <Modal
       visible={finished}
       onRequestClose={() => {
-        alert("closed");
+        console.log("closed");
       }}
     >
       <Container>

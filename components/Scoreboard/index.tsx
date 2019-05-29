@@ -1,11 +1,24 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
-const Scoreboard = ({ bust, children, flexVal }) => {
+// ==================================================================================================
+
+type Props = {
+  bust?: boolean;
+  flexVal: number;
+};
+
+// ==================================================================================================
+
+const Scoreboard: FunctionComponent<Props> = ({
+  bust = false,
+  children,
+  flexVal
+}) => {
   return (
     <View style={{ flex: flexVal, width: "100%" }}>
       <LinearGradient

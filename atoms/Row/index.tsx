@@ -1,7 +1,7 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, View, ViewProps } from "react-native";
 
-const Row = props => (
+const Row: FunctionComponent<ViewProps> = props => (
   <View style={styles.row} {...props}>
     {props.children}
   </View>

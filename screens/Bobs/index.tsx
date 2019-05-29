@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   AsyncStorage,
   StyleSheet,
@@ -9,19 +9,40 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import FinishedModal from "mydarts/components/FinishedModal";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import FinishedModal from "components/FinishedModal";
+import Scoreboard from "components/Scoreboard";
 
-export default class NineNineX extends React.Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  goal: number;
+  round: number;
+  score: number;
+  gameHistory: any[];
+  roundHistory: any[];
+  fetchedStats: any[];
+  finished: boolean;
+  highscore: number;
+};
+
+// ================================================================================================
+
+export default class NineNineX extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       goal: this.props.navigation.getParam("goal", 1),
@@ -30,11 +51,12 @@ export default class NineNineX extends React.Component {
       gameHistory: this.props.navigation.getParam("gameHistory", []),
       roundHistory: this.props.navigation.getParam("roundHistory", []),
       fetchedStats: this.props.navigation.getParam("fetchedStats", []),
-      finished: false
+      finished: false,
+      highscore: 0
     };
   }
 
-  addScore = multiplier => {
+  addScore = (multiplier: number) => {
     if (this.state.score > this.state.goal * 2 - 1 || multiplier > 0) {
       const newGameHistory = [...this.state.gameHistory, { hits: multiplier }];
       if (multiplier > 0) {
@@ -70,7 +92,7 @@ export default class NineNineX extends React.Component {
     }
   };
 
-  removeScore = ended => {
+  removeScore = (ended: boolean) => {
     if (this.state.gameHistory.length > 0) {
       const newGameHistory = [...this.state.gameHistory];
       const multiplier =
@@ -122,7 +144,7 @@ export default class NineNineX extends React.Component {
   };
 
   // Append new stats to old existing
-  mergeStats = oldStats => {
+  mergeStats = (oldStats: any) => {
     const highscore = Math.max(oldStats.highscore, this.state.score);
     return {
       highscore: highscore
@@ -130,9 +152,10 @@ export default class NineNineX extends React.Component {
   };
 
   // Update stats in storage
-  saveStats = async highscore => {
+  saveStats = async (highscore: any) => {
     try {
       const res = await AsyncStorage.setItem("Bobs", JSON.stringify(highscore));
+      // @ts-ignore
       if (res) console.log("saved: ", res);
     } catch {
       console.log("error saving stats");

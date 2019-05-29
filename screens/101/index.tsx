@@ -3,28 +3,51 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import FinishedModal from "mydarts/components/FinishedModal";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import FinishedModal from "components/FinishedModal";
+import Scoreboard from "components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "mydarts/utils/deviceRatio";
-import { calculateFinish } from "mydarts/utils/calculateFinish";
-import { getLabel } from "mydarts/utils/getLabel";
-import getThrownDarts from "mydarts/utils/getThrownDarts";
+import { smallScreen } from "utils/deviceRatio";
+import { calculateFinish } from "utils/calculateFinish";
+import { getLabel } from "utils/getLabel";
+import getThrownDarts from "utils/getThrownDarts";
 
 const isSmall = smallScreen();
 
-class OneOOne extends Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  doubleIn?: boolean;
+  gameHistory: any[];
+  input?: string;
+  multiplier: number;
+  round: number;
+  roundHistory: any[];
+  finished: boolean;
+  bust: boolean;
+  score: number;
+  initialScore: number;
+};
+
+// ================================================================================================
+
+class OneOOne extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       doubleIn: this.props.navigation.getParam("doubleIn", true),
@@ -72,8 +95,8 @@ class OneOOne extends Component {
     } else {
       const newGameHistory = [...this.state.gameHistory];
       const addedScore = newGameHistory[newGameHistory.length - 1]
-        .map(el => el.points * el.multiplier)
-        .reduce((total, curr) => {
+        .map((el: any) => el.points * el.multiplier)
+        .reduce((total: number, curr: number) => {
           return total + curr;
         });
 
@@ -90,7 +113,7 @@ class OneOOne extends Component {
     }
   };
 
-  countThrow = points => {
+  countThrow = (points: number) => {
     if (this.state.roundHistory.length < 3 && !this.state.bust) {
       // Removes the current Round from Game-History
       const copyGameHistory = [...this.state.gameHistory];
@@ -182,7 +205,7 @@ class OneOOne extends Component {
           const prevRound =
             this.state.gameHistory.length < 2
               ? 0
-              : this.state.gameHistory === 2
+              : this.state.gameHistory.length === 2
               ? 1
               : this.state.gameHistory.length - 2;
 
@@ -354,7 +377,7 @@ class OneOOne extends Component {
             </View>
             <View
               style={{
-                flex: "col",
+                flexDirection: "column",
                 flex: 0.25
               }}
             >

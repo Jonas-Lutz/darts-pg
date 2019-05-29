@@ -3,25 +3,25 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 // Screens:
 
 // 101:
-import OneOOneSettings from "mydarts/screens/101/settings";
-import OneOOne from "mydarts/screens/101";
+import OneOOneSettings from "screens/101/settings";
+import OneOOne from "screens/101";
 
 // 99X:
-import NineNineX from "mydarts/screens/99X";
-import NineNineXSettings from "mydarts/screens/99X/settings";
-import NineNineXStats from "mydarts/screens/99X/stats";
+import NineNineX from "screens/99X";
+import NineNineXSettings from "screens/99X/settings";
+import NineNineXStats from "screens/99X/stats";
 
 // Bob' 27:
-import Bobs from "mydarts/screens/Bobs";
+import Bobs from "screens/Bobs";
 
 // CricketCountUp:
-import CricketCountUp from "mydarts/screens/CricketCountUp";
+import CricketCountUp from "screens/CricketCountUp";
 
 // Shanghai:
-import Shanghai from "mydarts/screens/Shanghai";
+import Shanghai from "screens/Shanghai";
 
 // Home:
-import HomeScreen from "mydarts/screens/Home";
+import HomeScreen from "screens/Home";
 
 const AppNavigator = createStackNavigator(
   {

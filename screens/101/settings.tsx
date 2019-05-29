@@ -9,26 +9,41 @@ import {
 } from "react-native";
 
 // Atoms:
-import Headline from "mydarts/atoms/Headline";
+import Headline from "atoms/Headline";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import Scoreboard from "components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "mydarts/utils/deviceRatio";
+import { smallScreen } from "utils/deviceRatio";
 
 const isSmall = smallScreen();
 
-class OneOOneSettings extends Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  doubleIn?: boolean;
+  input?: string;
+};
+
+// ================================================================================================
+
+class OneOOneSettings extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       doubleIn: true,
@@ -43,7 +58,7 @@ class OneOOneSettings extends Component {
     });
   };
 
-  handleInputChange = input => {
+  handleInputChange = (input: string) => {
     this.setState({
       ...this.state,
       input: input

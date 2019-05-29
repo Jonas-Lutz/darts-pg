@@ -1,7 +1,7 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { StyleSheet, Text } from "react-native";
 
-const Headline = ({ children }) => (
+const Headline: FunctionComponent = ({ children }) => (
   <Text style={styles.headline}>{children}</Text>
 );
 

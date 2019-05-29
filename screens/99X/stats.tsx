@@ -9,22 +9,36 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Atoms:
-import Headline from "mydarts/atoms/Headline";
+import Headline from "atoms/Headline";
 
 // Components:
-import Container from "mydarts/components/Container";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import Scoreboard from "components/Scoreboard";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // ================================================================================================
 
-class Settings extends Component {
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  gameHistory: any[];
+  goal: number;
+  score: number;
+};
+
+// ================================================================================================
+
+class Settings extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       gameHistory: this.props.navigation.getParam("gameHistory"),
@@ -52,7 +66,7 @@ class Settings extends Component {
   };
 
   // Append new stats to old existing
-  mergeStats = oldStats => {
+  mergeStats = (oldStats: any) => {
     const highscore = Math.max(oldStats.highscore, this.state.score);
     return {
       darts: [...oldStats.darts, ...this.state.gameHistory],
@@ -61,12 +75,13 @@ class Settings extends Component {
   };
 
   // Update stats in storage
-  saveStats = async (goal, stats) => {
+  saveStats = async (goal: number, stats: any) => {
     try {
       const res = await AsyncStorage.setItem(
         `99-${goal}`,
         JSON.stringify(stats)
       );
+      // @ts-ignore
       if (res) console.log(res);
     } catch {
       console.log("error saving stats");
@@ -87,9 +102,9 @@ class Settings extends Component {
   render() {
     const { navigation } = this.props;
 
-    let darts = [];
+    let darts: any[] = [];
     this.state.gameHistory.map(round => {
-      round.map(dart => {
+      round.map((dart: any) => {
         darts.push(dart);
       });
     });

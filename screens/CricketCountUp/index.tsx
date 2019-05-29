@@ -9,27 +9,49 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import FinishedModal from "mydarts/components/FinishedModal";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import FinishedModal from "components/FinishedModal";
+import Scoreboard from "components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "mydarts/utils/deviceRatio";
-import { getLabel } from "mydarts/utils/getLabel";
-import calcMPR from "mydarts/utils/calcMPR";
+import { smallScreen } from "utils/deviceRatio";
+import { getLabel } from "utils/getLabel";
+import calcMPR from "utils/calcMPR";
 
 const isSmall = smallScreen();
 
-class CricketCountUp extends Component {
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  score: number;
+  gameHistory: any[];
+  roundHistory: any[];
+  round: number;
+  goals: number[];
+  finished: boolean;
+  highscore: number;
+  multiplier: number;
+  bust: boolean;
+};
+
+// ================================================================================================
+
+class CricketCountUp extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       score: 0,
@@ -38,7 +60,9 @@ class CricketCountUp extends Component {
       round: 1,
       goals: [20, 19, 18, 17, 16, 15, 25],
       finished: false,
-      highscore: 0
+      highscore: 0,
+      multiplier: 1,
+      bust: false
     };
   }
 
@@ -75,7 +99,7 @@ class CricketCountUp extends Component {
     }
   };
 
-  countThrow = points => {
+  countThrow = (points: number) => {
     if (this.state.roundHistory.length < 3 && !this.state.bust) {
       // Removes the current Round from Game-History
       const copyGameHistory = [...this.state.gameHistory];
@@ -193,7 +217,7 @@ class CricketCountUp extends Component {
   };
 
   // Append new stats to old existing
-  mergeStats = oldStats => {
+  mergeStats = (oldStats: any) => {
     const highscore = Math.max(oldStats.highscore, this.state.score);
     return {
       highscore: highscore
@@ -201,12 +225,13 @@ class CricketCountUp extends Component {
   };
 
   // Update stats in storage
-  saveStats = async highscore => {
+  saveStats = async (highscore: any) => {
     try {
       const res = await AsyncStorage.setItem(
         "cricketCountUp",
         JSON.stringify(highscore)
       );
+      //@ts-ignore
       if (res) console.log("saved: ", res);
     } catch {
       console.log("error saving stats");

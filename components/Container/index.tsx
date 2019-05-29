@@ -1,10 +1,10 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { StyleSheet, View } from "react-native";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
-const Container = ({ children }) => (
+const Container: FunctionComponent = ({ children }) => (
   <View style={styles.container}>{children}</View>
 );
 

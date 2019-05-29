@@ -1,10 +1,24 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
-const GameNav = ({
+// ==================================================================================================
+
+type Props = {
+  backDisabled: boolean;
+  headline?: string;
+  moveOn: () => void;
+  moveOnText: string;
+  removeScore: () => void;
+  underlayBack: string;
+  underlayMove: string;
+};
+
+// ==================================================================================================
+
+const GameNav: FunctionComponent<Props> = ({
   backDisabled = false,
   moveOn,
   moveOnText,
@@ -38,9 +52,10 @@ const GameNav = ({
           underlayColor={underlayMove}
         >
           <Text
-            fontWeight="bold"
-            textTransform="uppercase"
-            style={{ color: theme.neutrals.tenth, fontSize: 22 }}
+            style={{
+              color: theme.neutrals.tenth,
+              fontSize: 22
+            }}
           >
             {moveOnText}
           </Text>

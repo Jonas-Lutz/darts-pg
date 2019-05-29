@@ -9,27 +9,49 @@ import {
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
-import theme from "mydarts/theme";
+import theme from "theme";
 
 // Components:
-import Container from "mydarts/components/Container";
-import GameNav from "mydarts/components/GameNav";
-import FinishedModal from "mydarts/components/FinishedModal";
-import Scoreboard from "mydarts/components/Scoreboard";
+import Container from "components/Container";
+import GameNav from "components/GameNav";
+import FinishedModal from "components/FinishedModal";
+import Scoreboard from "components/Scoreboard";
 
 // Utils:
-import { smallScreen } from "mydarts/utils/deviceRatio";
-import { getLabel } from "mydarts/utils/getLabel";
-import calcMPR from "mydarts/utils/calcMPR";
+import { smallScreen } from "utils/deviceRatio";
+import { getLabel } from "utils/getLabel";
+import calcMPR from "utils/calcMPR";
+
+// ================================================================================================
+
+// Props:
+export interface Props {
+  navigation: any;
+}
+
+// State:
+type State = {
+  round: number;
+  score: number;
+  gameHistory: any[];
+  goals: number[];
+  roundHistory: any[];
+  finished: boolean;
+  highscore: number;
+  shanghai: boolean;
+  multiplier: number;
+};
+
+// ================================================================================================
 
 const isSmall = smallScreen();
 
-class Shanghai extends Component {
+class Shanghai extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       score: 0,
@@ -60,7 +82,8 @@ class Shanghai extends Component {
       ],
       finished: false,
       highscore: 0,
-      shanghai: false
+      shanghai: false,
+      multiplier: 1
     };
   }
 
@@ -98,8 +121,8 @@ class Shanghai extends Component {
     }
   };
 
-  countThrow = points => {
-    if (this.state.roundHistory.length < 3 && !this.state.bust) {
+  countThrow = (points: number) => {
+    if (this.state.roundHistory.length < 3) {
       // Removes the current Round from Game-History
       const copyGameHistory = [...this.state.gameHistory];
       if (this.state.roundHistory.length > 0) {
@@ -209,7 +232,6 @@ class Shanghai extends Component {
           gameHistory: updatedGameHistory,
           multiplier: 1,
           finished: false,
-          bust: false,
           shanghai: false
         });
       }
@@ -236,7 +258,7 @@ class Shanghai extends Component {
   };
 
   // Append new stats to old existing
-  mergeStats = oldStats => {
+  mergeStats = (oldStats: any) => {
     const highscore = Math.max(oldStats.highscore, this.state.score);
     return {
       highscore: highscore
@@ -244,12 +266,13 @@ class Shanghai extends Component {
   };
 
   // Update stats in storage
-  saveStats = async highscore => {
+  saveStats = async (highscore: any) => {
     try {
       const res = await AsyncStorage.setItem(
         "shanghai",
         JSON.stringify(highscore)
       );
+      //@ts-ignore
       if (res) console.log("saved: ", res);
     } catch {
       console.log("error saving stats");
