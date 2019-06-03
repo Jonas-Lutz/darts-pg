@@ -258,7 +258,12 @@ class CricketCountUp extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.3}>
+        <Scoreboard
+          flexVal={0.3}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           <View style={styles.mprWrapper}>
             <Text style={styles.mprText}>{`MPR: ${calcMPR(
               this.state.score,

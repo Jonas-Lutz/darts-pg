@@ -262,7 +262,13 @@ class OneOOne extends Component<Props, State> {
      */
     return (
       <Container>
-        <Scoreboard flexVal={0.33} bust={this.state.bust}>
+        <Scoreboard
+          flexVal={0.33}
+          bust={this.state.bust}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           {/* Headline */}
           <View style={this.state.bust ? styles.headlineBust : styles.headline}>
             <Text>{`Round ${this.state.round}`}</Text>

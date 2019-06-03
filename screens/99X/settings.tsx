@@ -49,7 +49,12 @@ class Settings extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.2}>
+        <Scoreboard
+          flexVal={0.2}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           <Text style={{ color: theme.neutrals.text, fontSize: 24 }}>
             Select a field
           </Text>

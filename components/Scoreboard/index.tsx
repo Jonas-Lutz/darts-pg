@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Image, TouchableHighlight } from "react-native";
 import { LinearGradient } from "expo";
 
 // Colors:
@@ -10,6 +10,7 @@ import theme from "theme";
 type Props = {
   bust?: boolean;
   flexVal: number;
+  goHome?: () => void;
 };
 
 // ==================================================================================================
@@ -17,7 +18,8 @@ type Props = {
 const Scoreboard: FunctionComponent<Props> = ({
   bust = false,
   children,
-  flexVal
+  flexVal,
+  goHome
 }) => {
   return (
     <View style={{ flex: flexVal, width: "100%" }}>
@@ -30,6 +32,14 @@ const Scoreboard: FunctionComponent<Props> = ({
         ]}
         style={!bust ? styles.scoreboard : styles.scoreboardBust}
       >
+        {goHome && (
+          <TouchableHighlight onPress={goHome} style={styles.closeButton}>
+            <Image
+              style={styles.closeButtonImage}
+              source={require("../../assets/close.png")}
+            />
+          </TouchableHighlight>
+        )}
         {children}
       </LinearGradient>
     </View>
@@ -45,6 +55,18 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     width: "100%"
   },
+  closeButton: {
+    position: "absolute",
+    padding: 5,
+    top: 5,
+    right: 5,
+    zIndex: 20
+  },
+  closeButtonImage: {
+    width: 15,
+    height: 15
+  },
+
   scoreboardBust: {
     alignItems: "center",
     backgroundColor: theme.supporting.red.fifth,

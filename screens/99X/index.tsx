@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  Text,
+  TouchableHighlight,
+  View
+} from "react-native";
 
 // Colors:
 import theme from "theme";
@@ -186,46 +192,87 @@ export default class NineNineX extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.25}>
+        <Scoreboard
+          flexVal={0.25}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           <View style={styles.gamestats}>
-            <Text style={{ color: theme.neutrals.text }}>
-              {this.state.round < 21 ? `Round ${this.state.round}` : "Finished"}
-            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                width: "100%"
+              }}
+            >
+              <Text style={{ color: theme.neutrals.text }}>
+                {this.state.round < 21
+                  ? `Round ${this.state.round}`
+                  : "Finished"}
+              </Text>
+              <Text style={{ color: theme.neutrals.text }}>
+                {`PPR: ${(this.state.score / this.state.round).toFixed(2)}`}
+              </Text>
+              <Text style={{ color: theme.neutrals.text }}>
+                {`MPR: ${(
+                  this.state.score /
+                  this.state.goal /
+                  this.state.round
+                ).toFixed(2)}`}
+              </Text>
+            </View>
+
             <Text style={styles.scoreLabelText}>{`${this.state.score}`}</Text>
           </View>
           <View style={styles.thrownDarts}>
             <View style={styles.dartScore}>
-              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                this.state.roundHistory.length > 0
-                  ? this.state.roundHistory[0].multiplier < 1
+              {this.state.roundHistory.length > 0 ? (
+                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                  this.state.roundHistory[0].multiplier < 1
                     ? "Miss"
                     : `${getLabel(this.state.roundHistory[0].multiplier)}${
                         this.state.goal
                       }`
-                  : "I"
-              }`}</Text>
+                }`}</Text>
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                this.state.roundHistory.length > 1
-                  ? this.state.roundHistory[1].multiplier < 1
+              {this.state.roundHistory.length > 1 ? (
+                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                  this.state.roundHistory[1].multiplier < 1
                     ? "Miss"
                     : `${getLabel(this.state.roundHistory[1].multiplier)}${
                         this.state.goal
                       }`
-                  : "II"
-              }`}</Text>
+                }`}</Text>
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
             </View>
             <View style={styles.dartScore}>
-              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                this.state.roundHistory.length > 2
-                  ? this.state.roundHistory[2].multiplier < 1
+              {this.state.roundHistory.length > 2 ? (
+                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                  this.state.roundHistory[2].multiplier < 1
                     ? "Miss"
                     : `${getLabel(this.state.roundHistory[2].multiplier)}${
                         this.state.goal
                       }`
-                  : "III"
-              }`}</Text>
+                }`}</Text>
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
             </View>
           </View>
         </Scoreboard>
@@ -352,7 +399,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 0.7,
     flexDirection: "column",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    width: "100%"
   },
   thrownDarts: {
     flex: 0.3,

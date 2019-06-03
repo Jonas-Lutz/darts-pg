@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  Image,
   StatusBar,
   View
 } from "react-native";
@@ -56,10 +57,20 @@ class Home extends Component<Props, State> {
       <Container>
         <StatusBar hidden />
         <Scoreboard flexVal={0.2}>
-          <Headline>Darts Trainer</Headline>
-          <Text style={{ color: theme.neutrals.text }}>
-            Select your training
-          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={require("../../assets/arrow.png")}
+              style={{ width: 50, height: 50, marginRight: 25 }}
+            />
+            <View style={{ alignItems: "center" }}>
+              <Headline>Darts Trainer</Headline>
+
+              <Text style={{ color: theme.neutrals.text }}>
+                Select your training
+              </Text>
+            </View>
+            <View style={{ width: 75 }} />
+          </View>
         </Scoreboard>
 
         <View style={styles.homeContent}>

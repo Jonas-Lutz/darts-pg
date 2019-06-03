@@ -183,7 +183,12 @@ export default class NineNineX extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.25}>
+        <Scoreboard
+          flexVal={0.25}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           <View style={styles.gamestats}>
             <Text>{`D${this.state.goal}`}</Text>
           </View>

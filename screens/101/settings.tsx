@@ -72,7 +72,12 @@ class OneOOneSettings extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard flexVal={0.25}>
+        <Scoreboard
+          flexVal={0.25}
+          goHome={() => {
+            navigation.navigate("Home");
+          }}
+        >
           <Headline>Custom checkouts</Headline>
           <Text>Pick or enter the starting score</Text>
         </Scoreboard>
