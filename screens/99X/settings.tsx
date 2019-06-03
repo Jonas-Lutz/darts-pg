@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
 import theme from "theme";
@@ -52,7 +53,16 @@ class Settings extends Component<Props, State> {
         <Scoreboard
           flexVal={0.2}
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
         >
           <Text style={{ color: theme.neutrals.text, fontSize: 24 }}>

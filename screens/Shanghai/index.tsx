@@ -306,7 +306,16 @@ class Shanghai extends Component<Props, State> {
         <Scoreboard
           flexVal={0.3}
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
         >
           <View style={styles.mprWrapper}>
@@ -450,7 +459,18 @@ class Shanghai extends Component<Props, State> {
           underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
-          goHome={() => navigation.navigate("Home")}
+          goHome={() => {
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
+          }}
           headline={this.state.shanghai ? "Shanghai!" : "Stats"}
           restart={() => {
             const resetAction = StackActions.reset({

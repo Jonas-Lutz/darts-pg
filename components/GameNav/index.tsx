@@ -7,13 +7,13 @@ import theme from "theme";
 // ==================================================================================================
 
 type Props = {
-  backDisabled: boolean;
+  backDisabled?: boolean;
   headline?: string;
   moveOn: () => void;
   moveOnText: string;
   removeScore: () => void;
-  underlayBack: string;
-  underlayMove: string;
+  underlayBack?: string;
+  underlayMove?: string;
 };
 
 // ==================================================================================================

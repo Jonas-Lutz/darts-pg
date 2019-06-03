@@ -273,7 +273,16 @@ class OneOOne extends Component<Props, State> {
           flexVal={0.33}
           bust={this.state.bust}
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
         >
           {/* Headline */}
@@ -462,7 +471,16 @@ class OneOOne extends Component<Props, State> {
         />
         <FinishedModal
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
           restart={() => {
             const resetAction = StackActions.reset({

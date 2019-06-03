@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
+import { StackActions, NavigationActions } from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -75,7 +76,16 @@ class OneOOneSettings extends Component<Props, State> {
         <Scoreboard
           flexVal={0.25}
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
         >
           <Headline>Custom checkouts</Headline>

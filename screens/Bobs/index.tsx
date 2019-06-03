@@ -192,7 +192,9 @@ export default class NineNineX extends Component<Props, State> {
           }}
         >
           <View style={styles.gamestats}>
-            <Text>{`D${this.state.goal}`}</Text>
+            <Text style={{ color: theme.neutrals.text }}>{`D${
+              this.state.goal
+            }`}</Text>
           </View>
           <View style={styles.pointWrapper}>
             <Text style={styles.pointLabel}>{`${this.state.score}`}</Text>
@@ -217,11 +219,9 @@ export default class NineNineX extends Component<Props, State> {
         <GameNav
           backDisabled={this.state.gameHistory.length < 1}
           moveOn={() => {
-            if (this.state.round < 20) {
-              this.addScore(0);
-            }
+            this.addScore(0);
           }}
-          moveOnText={this.state.round < 20 ? "Next" : "Finish"}
+          moveOnText={this.state.round < 21 ? "Next" : "Finish"}
           removeScore={() => this.removeScore(false)}
           underlayBack={
             this.state.gameHistory.length < 1
@@ -232,7 +232,16 @@ export default class NineNineX extends Component<Props, State> {
         />
         <FinishedModal
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
           headline={"Bob's 27 - Statistics"}
           restart={() => {
@@ -260,13 +269,13 @@ export default class NineNineX extends Component<Props, State> {
               <Text>We both know you cheated tho</Text>
             )}
             {this.state.highscore &&
-              this.state.highscore > 0 &&
-              (this.state.finished &&
-              this.state.highscore < this.state.score ? (
-                <Text>{`That's a new Carreer High - Gratz!`}</Text>
-              ) : (
-                <Text>{`Carreer High: ${this.state.highscore}`}</Text>
-              ))}
+            this.state.highscore > 0 &&
+            this.state.finished &&
+            this.state.highscore < this.state.score ? (
+              <Text>{`That's a new Carreer High - Gratz!`}</Text>
+            ) : (
+              <Text>{`Carreer High: ${this.state.highscore}`}</Text>
+            )}
           </View>
         </FinishedModal>
       </Container>
@@ -281,6 +290,7 @@ const styles = StyleSheet.create({
   },
   pointWrapper: {},
   pointLabel: {
+    color: theme.neutrals.text,
     fontSize: 28
   },
   inputContainer: {

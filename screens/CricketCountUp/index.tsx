@@ -264,7 +264,16 @@ class CricketCountUp extends Component<Props, State> {
         <Scoreboard
           flexVal={0.3}
           goHome={() => {
-            navigation.navigate("Home");
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({
+                  routeName: "Home"
+                })
+              ]
+            });
+
+            navigation.dispatch(resetAction);
           }}
         >
           <View style={styles.mprWrapper}>
