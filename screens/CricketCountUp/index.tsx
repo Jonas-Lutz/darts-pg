@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import {
   AsyncStorage,
   StyleSheet,
+  StatusBar,
   Text,
   TouchableHighlight,
+  Image,
   View
 } from "react-native";
 import { StackActions, NavigationActions } from "react-navigation";
@@ -258,6 +260,7 @@ class CricketCountUp extends Component<Props, State> {
 
     return (
       <Container>
+        <StatusBar hidden />
         <Scoreboard
           flexVal={0.3}
           goHome={() => {
@@ -267,9 +270,10 @@ class CricketCountUp extends Component<Props, State> {
           <View style={styles.mprWrapper}>
             <Text style={styles.mprText}>{`MPR: ${calcMPR(
               this.state.score,
-              this.state.roundHistory.length > 0
-                ? this.state.round
-                : this.state.round - 1
+              Math.max(
+                1,
+                this.state.round - 1 + this.state.roundHistory.length / 3
+              )
             )}`}</Text>
           </View>
           <View style={styles.scoreWrapper}>
@@ -278,35 +282,56 @@ class CricketCountUp extends Component<Props, State> {
           <View style={styles.dartsDisplay}>
             <View style={styles.dartsDisplayDart}>
               <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 0
-                  ? this.state.roundHistory[0].points === 0
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[0].points * -1)}${
-                        this.state.goals[this.state.round - 1]
-                      }`
-                  : "I"}
+                {this.state.roundHistory.length > 0 ? (
+                  this.state.roundHistory[0].points === 0 ? (
+                    "Miss"
+                  ) : (
+                    `${getLabel(this.state.roundHistory[0].points * -1)}${
+                      this.state.goals[this.state.round - 1]
+                    }`
+                  )
+                ) : (
+                  <Image
+                    source={require("../../assets/arrow.png")}
+                    style={{ width: 20, height: 20 }}
+                  />
+                )}
               </Text>
             </View>
             <View style={styles.dartsDisplayDart}>
               <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 1
-                  ? this.state.roundHistory[1].points === 0
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[1].points * -1)}${
-                        this.state.goals[this.state.round - 1]
-                      }`
-                  : "II"}
+                {this.state.roundHistory.length > 1 ? (
+                  this.state.roundHistory[1].points === 0 ? (
+                    "Miss"
+                  ) : (
+                    `${getLabel(this.state.roundHistory[1].points * -1)}${
+                      this.state.goals[this.state.round - 1]
+                    }`
+                  )
+                ) : (
+                  <Image
+                    source={require("../../assets/arrow.png")}
+                    style={{ width: 20, height: 20 }}
+                  />
+                )}
               </Text>
             </View>
             <View style={styles.dartsDisplayDart}>
               <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 2
-                  ? this.state.roundHistory[2].points === 0
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[2].points * -1)}${
-                        this.state.goals[this.state.round - 1]
-                      }`
-                  : "III"}
+                {this.state.roundHistory.length > 2 ? (
+                  this.state.roundHistory[2].points === 0 ? (
+                    "Miss"
+                  ) : (
+                    `${getLabel(this.state.roundHistory[2].points * -1)}${
+                      this.state.goals[this.state.round - 1]
+                    }`
+                  )
+                ) : (
+                  <Image
+                    source={require("../../assets/arrow.png")}
+                    style={{ width: 20, height: 20 }}
+                  />
+                )}
               </Text>
             </View>
           </View>
@@ -431,9 +456,11 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   mprText: {
+    color: theme.neutrals.text,
     fontSize: 14
   },
   dartsDisplay: {
+    alignItems: "center",
     flex: 0.2,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -441,10 +468,13 @@ const styles = StyleSheet.create({
   },
   dartsDisplayDart: {
     alignItems: "center",
+    justifyContent: "center",
+    color: theme.neutrals.text,
     flex: 0.33
   },
   dartText: {
-    fontSize: 16
+    color: theme.neutrals.text,
+    fontSize: 20
   },
   mprWrapper: {
     flex: 0.2,
@@ -455,7 +485,8 @@ const styles = StyleSheet.create({
     flex: 0.7
   },
   scoreText: {
-    fontSize: 24,
+    color: theme.neutrals.text,
+    fontSize: 28,
     fontWeight: "bold"
   },
   buttonText: {

@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  StyleSheet,
+  StatusBar,
+  Text,
+  TouchableHighlight,
+  View
+} from "react-native";
 import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
@@ -262,6 +268,7 @@ class OneOOne extends Component<Props, State> {
      */
     return (
       <Container>
+        <StatusBar hidden />
         <Scoreboard
           flexVal={0.33}
           bust={this.state.bust}
@@ -271,7 +278,9 @@ class OneOOne extends Component<Props, State> {
         >
           {/* Headline */}
           <View style={this.state.bust ? styles.headlineBust : styles.headline}>
-            <Text>{`Round ${this.state.round}`}</Text>
+            <Text style={{ color: theme.neutrals.text }}>{`Round ${
+              this.state.round
+            }`}</Text>
           </View>
           {/* Score - Label */}
           <View style={styles.scoreWrapper}>
@@ -517,6 +526,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   scoreLabel: {
+    color: theme.neutrals.text,
     fontSize: 28,
     fontWeight: "bold"
   },
@@ -524,7 +534,7 @@ const styles = StyleSheet.create({
   wayOutItem: {
     fontStyle: "italic",
     fontSize: 18,
-    color: theme.neutrals.second
+    color: theme.primaries.lightBlues.fourth
   },
   // Thrown Darts
   roundHistoryRow: {
@@ -537,6 +547,7 @@ const styles = StyleSheet.create({
     width: "33.3%"
   },
   roundHistoryItemText: {
+    color: theme.neutrals.text,
     fontSize: 18
   },
   // Buttons

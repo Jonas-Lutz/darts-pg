@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 
 // Colors:
 import theme from "theme";
 
-const Container: FunctionComponent = ({ children }) => (
+const Container: React.FC = ({ children }) => (
   <View style={styles.container}>{children}</View>
 );
 

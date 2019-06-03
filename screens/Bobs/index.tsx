@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   AsyncStorage,
   StyleSheet,
+  StatusBar,
   Text,
   TouchableHighlight,
   View
@@ -183,6 +184,7 @@ export default class NineNineX extends Component<Props, State> {
 
     return (
       <Container>
+        <StatusBar hidden />
         <Scoreboard
           flexVal={0.25}
           goHome={() => {

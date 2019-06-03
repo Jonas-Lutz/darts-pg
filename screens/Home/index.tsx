@@ -59,12 +59,11 @@ class Home extends Component<Props, State> {
         <Scoreboard flexVal={0.2}>
           <View style={{ flexDirection: "row" }}>
             <Image
-              source={require("../../assets/arrow.png")}
+              source={require("../../assets/drticn-no-edges.png")}
               style={{ width: 50, height: 50, marginRight: 25 }}
             />
             <View style={{ alignItems: "center" }}>
               <Headline>Darts Trainer</Headline>
-
               <Text style={{ color: theme.neutrals.text }}>
                 Select your training
               </Text>

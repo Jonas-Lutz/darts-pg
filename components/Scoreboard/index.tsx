@@ -57,14 +57,14 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    padding: 5,
-    top: 5,
-    right: 5,
+    padding: 10,
+    top: 1,
+    right: 1,
     zIndex: 20
   },
   closeButtonImage: {
-    width: 15,
-    height: 15
+    width: 12,
+    height: 12
   },
 
   scoreboardBust: {

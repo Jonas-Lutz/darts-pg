@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
+  StatusBar,
   Image,
   Text,
   TouchableHighlight,
@@ -192,8 +193,9 @@ export default class NineNineX extends Component<Props, State> {
 
     return (
       <Container>
+        <StatusBar hidden />
         <Scoreboard
-          flexVal={0.25}
+          flexVal={0.3}
           goHome={() => {
             navigation.navigate("Home");
           }}
@@ -212,13 +214,22 @@ export default class NineNineX extends Component<Props, State> {
                   : "Finished"}
               </Text>
               <Text style={{ color: theme.neutrals.text }}>
-                {`PPR: ${(this.state.score / this.state.round).toFixed(2)}`}
+                {`PPR: ${(
+                  this.state.score /
+                  Math.max(
+                    1,
+                    this.state.round - 1 + this.state.roundHistory.length / 3
+                  )
+                ).toFixed(2)}`}
               </Text>
               <Text style={{ color: theme.neutrals.text }}>
                 {`MPR: ${(
                   this.state.score /
                   this.state.goal /
-                  this.state.round
+                  Math.max(
+                    1,
+                    this.state.round - 1 + this.state.roundHistory.length / 3
+                  )
                 ).toFixed(2)}`}
               </Text>
             </View>
@@ -414,7 +425,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   inputContainer: {
-    flex: 0.65,
+    flex: 0.6,
     width: "100%"
   },
   scoreButtonDisabledText: {

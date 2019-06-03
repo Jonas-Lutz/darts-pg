@@ -116,7 +116,7 @@ class OneOOneSettings extends Component<Props, State> {
                 style={styles.scoreTextfield}
               />
             </View>
-            <View style={{ flex: 0.25, width: "100%" }}>
+            <View style={{ flex: 0.175, width: "100%" }}>
               <TouchableHighlight
                 onPress={() => {
                   navigation.navigate("OneOOne", {
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: theme.neutrals.ninth,
     justifyContent: "center",
-    flex: 0.25,
+    flex: 0.275,
     width: "100%"
   },
   startButton: {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   buttonText: {
-    fontSize: 24,
+    fontSize: 22,
     color: theme.primaries.lightBlues.first
   },
   startButtonText: {
@@ -181,14 +181,16 @@ const styles = StyleSheet.create({
     color: theme.neutrals.tenth
   },
   scoreTextfield: {
-    fontSize: 18,
-    marginLeft: 5,
-    flex: 0.25
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 22,
+    flex: 0.25,
+    color: theme.primaries.lightBlues.first
   },
   scoreTextfieldWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 0.25,
+    flex: 0.275,
     width: "100%",
     borderColor: theme.neutrals.tenth,
     borderBottomWidth: 1
