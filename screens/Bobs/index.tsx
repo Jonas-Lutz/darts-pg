@@ -18,6 +18,9 @@ import GameNav from "components/GameNav";
 import FinishedModal from "components/FinishedModal";
 import Scoreboard from "components/Scoreboard";
 
+// Utils:
+import goHome from "utils/goHome";
+
 // ================================================================================================
 
 // Props:
@@ -185,12 +188,7 @@ export default class NineNineX extends Component<Props, State> {
     return (
       <Container>
         <StatusBar hidden />
-        <Scoreboard
-          flexVal={0.25}
-          goHome={() => {
-            navigation.navigate("Home");
-          }}
-        >
+        <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
           <View style={styles.gamestats}>
             <Text style={{ color: theme.neutrals.text }}>{`D${
               this.state.goal
@@ -231,18 +229,7 @@ export default class NineNineX extends Component<Props, State> {
           underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
+          goHome={() => goHome(navigation)}
           headline={"Bob's 27 - Statistics"}
           restart={() => {
             const resetAction = StackActions.reset({

@@ -11,6 +11,7 @@ import Scoreboard from "components/Scoreboard";
 
 // Utils:
 import { smallScreen } from "utils/deviceRatio";
+import goHome from "utils/goHome";
 
 // ================================================================================================
 
@@ -50,21 +51,7 @@ class Settings extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard
-          flexVal={0.2}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
-        >
+        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
           <Text style={{ color: theme.neutrals.text, fontSize: 24 }}>
             Select a field
           </Text>

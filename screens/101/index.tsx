@@ -22,6 +22,7 @@ import { smallScreen } from "utils/deviceRatio";
 import { calculateFinish } from "utils/calculateFinish";
 import { getLabel } from "utils/getLabel";
 import getThrownDarts from "utils/getThrownDarts";
+import goHome from "utils/goHome";
 
 const isSmall = smallScreen();
 
@@ -272,18 +273,7 @@ class OneOOne extends Component<Props, State> {
         <Scoreboard
           flexVal={0.33}
           bust={this.state.bust}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
+          goHome={() => goHome(navigation)}
         >
           {/* Headline */}
           <View style={this.state.bust ? styles.headlineBust : styles.headline}>
@@ -470,18 +460,7 @@ class OneOOne extends Component<Props, State> {
           underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
+          goHome={() => goHome(navigation)}
           restart={() => {
             const resetAction = StackActions.reset({
               index: 0,

@@ -23,6 +23,7 @@ import Scoreboard from "components/Scoreboard";
 import { smallScreen } from "utils/deviceRatio";
 import { getLabel } from "utils/getLabel";
 import calcMPR from "utils/calcMPR";
+import goHome from "utils/goHome";
 
 const isSmall = smallScreen();
 
@@ -261,21 +262,7 @@ class CricketCountUp extends Component<Props, State> {
     return (
       <Container>
         <StatusBar hidden />
-        <Scoreboard
-          flexVal={0.3}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
-        >
+        <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
           <View style={styles.mprWrapper}>
             <Text style={styles.mprText}>{`MPR: ${calcMPR(
               this.state.score,
@@ -417,7 +404,7 @@ class CricketCountUp extends Component<Props, State> {
           underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
-          goHome={() => navigation.navigate("Home")}
+          goHome={() => goHome(navigation)}
           restart={() => {
             const resetAction = StackActions.reset({
               index: 0,

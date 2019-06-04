@@ -21,6 +21,7 @@ import Scoreboard from "components/Scoreboard";
 
 // Utils:
 import { smallScreen } from "utils/deviceRatio";
+import goHome from "utils/goHome";
 
 const isSmall = smallScreen();
 
@@ -73,21 +74,7 @@ class OneOOneSettings extends Component<Props, State> {
 
     return (
       <Container>
-        <Scoreboard
-          flexVal={0.25}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
-        >
+        <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
           <Headline>Custom checkouts</Headline>
           <Text>Pick or enter the starting score</Text>
         </Scoreboard>

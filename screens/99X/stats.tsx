@@ -18,6 +18,9 @@ import Scoreboard from "components/Scoreboard";
 // Colors:
 import theme from "theme";
 
+// Utils
+import goHome from "utils/goHome";
+
 // ================================================================================================
 
 // Props:
@@ -188,9 +191,7 @@ class Settings extends Component<Props, State> {
         <View style={{ flex: 0.1, flexDirection: "row" }}>
           <View style={{ flex: 0.5 }}>
             <TouchableHighlight
-              onPress={() => {
-                navigation.navigate("Home");
-              }}
+              onPress={() => goHome(navigation)}
               style={styles.backButton}
               underlayColor={theme.neutrals.seventh}
             >

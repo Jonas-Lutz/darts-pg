@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
-  Image,
   StatusBar,
   View
 } from "react-native";
@@ -17,6 +16,9 @@ import theme from "theme";
 // Components:
 import Container from "components/Container";
 import Scoreboard from "components/Scoreboard";
+
+// Utils:
+import goHome from "utils/goHome";
 
 // ================================================================================================
 
@@ -37,7 +39,7 @@ type State = {
 
 // ================================================================================================
 
-class Home extends Component<Props, State> {
+class Singleplayer extends Component<Props, State> {
   static navigationOptions = {
     header: null
   };
@@ -46,28 +48,24 @@ class Home extends Component<Props, State> {
     const { navigation } = this.props;
 
     const buttons = [
-      { destination: "Singleplayer", label: "Singleplayer" },
-      { destination: "Multiplayer", label: "Multiplayer" },
-      { destination: "Stats", label: "Stats" },
-      { destination: "Settings", label: "Settings" }
+      { destination: "NineNineXSettings", label: "60 on X" },
+      { destination: "Bobs", label: "Bob's 27" },
+      { destination: "OneOOneSettings", label: "Checkouts" },
+      { destination: "CricketCountUp", label: "Cricket Count Up" },
+      { destination: "Shanghai", label: "Shanghai" }
     ];
 
     return (
       <Container>
         <StatusBar hidden />
-        <Scoreboard flexVal={0.2}>
+        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
           <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/drticn-no-edges.png")}
-              style={{ width: 50, height: 50, marginRight: 25 }}
-            />
             <View style={{ alignItems: "center" }}>
-              <Headline>Darts Trainer</Headline>
+              <Headline>Singleplayer Games</Headline>
               <Text style={{ color: theme.neutrals.text }}>
-                Select your training
+                Select a game mode
               </Text>
             </View>
-            <View style={{ width: 75 }} />
           </View>
         </Scoreboard>
 
@@ -107,7 +105,7 @@ const styles = StyleSheet.create({
   gameBtn: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 0.25,
+    flex: 0.2,
     width: "100%"
   },
   gameBtnBorder: {
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderColor: theme.neutrals.seventh,
     borderBottomWidth: 1,
-    flex: 0.25,
+    flex: 0.2,
     width: "100%"
   },
   gameBtnText: {
@@ -124,4 +122,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home;
+export default Singleplayer;

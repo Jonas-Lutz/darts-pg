@@ -23,7 +23,7 @@ import Scoreboard from "components/Scoreboard";
 import { smallScreen } from "utils/deviceRatio";
 import { getLabel } from "utils/getLabel";
 import calcMPR from "utils/calcMPR";
-import { throwStatement } from "@babel/types";
+import goHome from "utils/goHome";
 
 // ================================================================================================
 
@@ -308,21 +308,7 @@ class Shanghai extends Component<Props, State> {
     return (
       <Container>
         <StatusBar hidden />
-        <Scoreboard
-          flexVal={0.3}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
-        >
+        <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
           <View style={styles.mprWrapper}>
             <Text style={styles.mprText}>{`MPR: ${calcMPR(
               this.state.score,
@@ -464,18 +450,7 @@ class Shanghai extends Component<Props, State> {
           underlayMove={theme.primaries.lightBlues.eighth}
         />
         <FinishedModal
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
+          goHome={() => goHome(navigation)}
           headline={this.state.shanghai ? "Shanghai!" : "Stats"}
           restart={() => {
             const resetAction = StackActions.reset({

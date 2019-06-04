@@ -7,7 +7,6 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import { StackActions, NavigationActions } from "react-navigation";
 
 // Colors:
 import theme from "theme";
@@ -19,6 +18,7 @@ import Scoreboard from "components/Scoreboard";
 
 // Utils
 import { getLabel } from "utils/getLabel";
+import goHome from "utils/goHome";
 
 // ================================================================================================
 
@@ -195,21 +195,7 @@ export default class NineNineX extends Component<Props, State> {
     return (
       <Container>
         <StatusBar hidden />
-        <Scoreboard
-          flexVal={0.3}
-          goHome={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Home"
-                })
-              ]
-            });
-
-            navigation.dispatch(resetAction);
-          }}
-        >
+        <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
           <View style={styles.gamestats}>
             <View
               style={{
