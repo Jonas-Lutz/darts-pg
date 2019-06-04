@@ -190,6 +190,7 @@ export default class NineNineX extends Component<Props, State> {
         <StatusBar hidden />
         <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
           <View style={styles.gamestats}>
+            <Text>Bob's 27</Text>
             <Text style={{ color: theme.neutrals.text }}>{`D${
               this.state.goal
             }`}</Text>
@@ -273,7 +274,8 @@ export default class NineNineX extends Component<Props, State> {
 const styles = StyleSheet.create({
   gamestats: {
     flexDirection: "row",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    width: "100%"
   },
   pointWrapper: {},
   pointLabel: {

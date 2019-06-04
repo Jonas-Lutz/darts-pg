@@ -61,9 +61,14 @@ class Multiplayer extends Component<Props, State> {
         <StatusBar hidden />
         <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
           <View style={{ flexDirection: "row" }}>
-            <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("../../assets/multiplayer.png")}
+              style={{ width: 40, height: 40, marginRight: 25 }}
+            />
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <Headline>Multiplayer Games</Headline>
-              <Text style={{ color: theme.neutrals.text }}>Select a game</Text>
+              {/*               <Text style={{ color: theme.neutrals.text }}>Select a game</Text>
+               */}
             </View>
           </View>
         </Scoreboard>

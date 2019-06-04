@@ -62,7 +62,7 @@ class Stats extends Component<Props, State> {
         <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
           <View style={{ flexDirection: "row" }}>
             <Image
-              source={require("../../assets/drticn-no-edges.png")}
+              source={require("../../assets/stats.png")}
               style={{ width: 50, height: 50, marginRight: 25 }}
             />
             <View style={{ alignItems: "center" }}>

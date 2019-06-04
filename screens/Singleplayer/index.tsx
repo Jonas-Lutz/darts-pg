@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
+  Image,
   TouchableHighlight,
   StatusBar,
   View
@@ -60,11 +61,15 @@ class Singleplayer extends Component<Props, State> {
         <StatusBar hidden />
         <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
           <View style={{ flexDirection: "row" }}>
-            <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("../../assets/singleplayer.png")}
+              style={{ width: 40, height: 40, marginRight: 25 }}
+            />
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <Headline>Singleplayer Games</Headline>
-              <Text style={{ color: theme.neutrals.text }}>
+              {/* <Text style={{ color: theme.neutrals.text }}>
                 Select a game mode
-              </Text>
+              </Text> */}
             </View>
           </View>
         </Scoreboard>

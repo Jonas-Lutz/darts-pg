@@ -48,8 +48,8 @@ class Home extends Component<Props, State> {
     const buttons = [
       { destination: "Singleplayer", label: "Singleplayer" },
       { destination: "Multiplayer", label: "Multiplayer" },
-      { destination: "Stats", label: "Stats" },
-      { destination: "Settings", label: "Settings" }
+      { destination: "Settings", label: "Settings" },
+      { destination: "Stats", label: "Stats" }
     ];
 
     return (
@@ -85,7 +85,49 @@ class Home extends Component<Props, State> {
               }
               underlayColor={theme.primaries.lightBlues.tenth}
             >
-              <Text style={styles.gameBtnText}>{b.label}</Text>
+              <View
+                style={{
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  paddingLeft: 25,
+                  width: "100%"
+                }}
+              >
+                {index === 0 && (
+                  <Image
+                    source={require(`../../assets/singleplayer.png`)}
+                    style={{ width: 35, height: 35 }}
+                  />
+                )}
+                {index === 1 && (
+                  <Image
+                    source={require(`../../assets/multiplayer.png`)}
+                    style={{ width: 35, height: 35 }}
+                  />
+                )}
+                {index === 2 && (
+                  <Image
+                    source={require(`../../assets/settings.png`)}
+                    style={{ width: 35, height: 30 }}
+                  />
+                )}
+                {index === 3 && (
+                  <Image
+                    source={require(`../../assets/stats.png`)}
+                    style={{ width: 35, height: 35 }}
+                  />
+                )}
+                <View
+                  style={{
+                    /*                     backgroundColor: theme.primaries.yellows.third,
+                     */ flex: 0.67
+                  }}
+                >
+                  <Text style={styles.gameBtnText}>{b.label}</Text>
+                </View>
+                <View style={{ width: 40, height: 40 }} />
+              </View>
             </TouchableHighlight>
           ))}
         </View>
@@ -105,7 +147,6 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   gameBtn: {
-    alignItems: "center",
     justifyContent: "center",
     flex: 0.25,
     width: "100%"
