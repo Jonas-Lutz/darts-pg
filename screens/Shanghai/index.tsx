@@ -154,7 +154,8 @@ class Shanghai extends Component<Props, State> {
         // Update State
         this.setState({
           ...this.state,
-          score: this.state.score - points,
+          score:
+            this.state.score - points * this.state.goals[this.state.round - 1],
           gameHistory: copyGameHistory,
           roundHistory: newRoundHistory,
           multiplier: 1,
@@ -165,7 +166,8 @@ class Shanghai extends Component<Props, State> {
         // Update State
         this.setState({
           ...this.state,
-          score: this.state.score - points,
+          score:
+            this.state.score - points * this.state.goals[this.state.round - 1],
           gameHistory: copyGameHistory,
           roundHistory: newRoundHistory,
           multiplier: 1,
@@ -192,8 +194,9 @@ class Shanghai extends Component<Props, State> {
         // IF: darts thrown this round
         if (this.state.roundHistory.length > 0) {
           // Value to add to game score
-          addValue = this.state.roundHistory[this.state.roundHistory.length - 1]
-            .points;
+          addValue =
+            this.state.roundHistory[this.state.roundHistory.length - 1].points *
+            this.state.goals[this.state.round - 1];
 
           newRoundHistory.pop();
 
@@ -210,7 +213,9 @@ class Shanghai extends Component<Props, State> {
         // ELSE: No darts thrown this round
         else {
           newRound = newRound - 1 >= 1 ? newRound - 1 : 1;
-          addValue = this.state.gameHistory[newRound - 1][2].points;
+          addValue =
+            this.state.gameHistory[newRound - 1][2].points *
+            this.state.goals[newRound - 1];
           newRoundHistory = [...this.state.gameHistory[newRound - 1]];
 
           newRoundHistory.pop();
