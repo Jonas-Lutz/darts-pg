@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,10 @@ import {
   StatusBar,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -21,120 +25,103 @@ import Scoreboard from "components/Scoreboard";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  goal: number;
-  round: number;
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
-
+export interface Props extends NavigationScreenProps {}
 // ================================================================================================
 
-class Home extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
+const Home: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const buttons = [
+    { destination: "Singleplayer", label: "Singleplayer" },
+    { destination: "Multiplayer", label: "Multiplayer" },
+    { destination: "Settings", label: "Settings" },
+    { destination: "Stats", label: "Stats" }
+  ];
 
-  render() {
-    const { navigation } = this.props;
-
-    const buttons = [
-      { destination: "Singleplayer", label: "Singleplayer" },
-      { destination: "Multiplayer", label: "Multiplayer" },
-      { destination: "Settings", label: "Settings" },
-      { destination: "Stats", label: "Stats" }
-    ];
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/drticn-no-edges.png")}
-              style={{ width: 50, height: 50, marginRight: 25 }}
-            />
-            <View style={{ alignItems: "center" }}>
-              <Headline>Darts Trainer</Headline>
-              <Text style={{ color: theme.neutrals.text }}>
-                Select your training
-              </Text>
-            </View>
-            <View style={{ width: 75 }} />
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/drticn-no-edges.png")}
+            style={{ width: 50, height: 50, marginRight: 25 }}
+          />
+          <View style={{ alignItems: "center" }}>
+            <Headline>Darts Trainer</Headline>
+            <Text style={{ color: theme.neutrals.text }}>
+              Select your training
+            </Text>
           </View>
-        </Scoreboard>
+          <View style={{ width: 75 }} />
+        </View>
+      </Scoreboard>
 
-        <View style={styles.homeContent}>
-          {buttons.map((b, index) => (
-            <TouchableHighlight
-              key={b.destination}
-              onPress={() => {
-                navigation.navigate(b.destination);
+      <View style={styles.homeContent}>
+        {buttons.map((b, index) => (
+          <TouchableHighlight
+            key={b.destination}
+            onPress={() => {
+              navigation.navigate(b.destination);
+            }}
+            style={
+              !(index === buttons.length - 1)
+                ? styles.gameBtnBorder
+                : styles.gameBtn
+            }
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-around",
+                paddingLeft: 25,
+                width: "100%"
               }}
-              style={
-                !(index === buttons.length - 1)
-                  ? styles.gameBtnBorder
-                  : styles.gameBtn
-              }
-              underlayColor={theme.primaries.lightBlues.tenth}
             >
+              {index === 0 && (
+                <Image
+                  source={require(`../../assets/singleplayer.png`)}
+                  style={{ width: 35, height: 35 }}
+                />
+              )}
+              {index === 1 && (
+                <Image
+                  source={require(`../../assets/multiplayer.png`)}
+                  style={{ width: 35, height: 35 }}
+                />
+              )}
+              {index === 2 && (
+                <Image
+                  source={require(`../../assets/settings.png`)}
+                  style={{ width: 35, height: 30 }}
+                />
+              )}
+              {index === 3 && (
+                <Image
+                  source={require(`../../assets/stats.png`)}
+                  style={{ width: 35, height: 35 }}
+                />
+              )}
               <View
                 style={{
                   alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  paddingLeft: 25,
-                  width: "100%"
+                  flex: 0.67
                 }}
               >
-                {index === 0 && (
-                  <Image
-                    source={require(`../../assets/singleplayer.png`)}
-                    style={{ width: 35, height: 35 }}
-                  />
-                )}
-                {index === 1 && (
-                  <Image
-                    source={require(`../../assets/multiplayer.png`)}
-                    style={{ width: 35, height: 35 }}
-                  />
-                )}
-                {index === 2 && (
-                  <Image
-                    source={require(`../../assets/settings.png`)}
-                    style={{ width: 35, height: 30 }}
-                  />
-                )}
-                {index === 3 && (
-                  <Image
-                    source={require(`../../assets/stats.png`)}
-                    style={{ width: 35, height: 35 }}
-                  />
-                )}
-                <View
-                  style={{
-                    /*                     backgroundColor: theme.primaries.yellows.third,
-                     */ flex: 0.67
-                  }}
-                >
-                  <Text style={styles.gameBtnText}>{b.label}</Text>
-                </View>
-                <View style={{ width: 40, height: 40 }} />
+                <Text style={styles.gameBtnText}>{b.label}</Text>
               </View>
-            </TouchableHighlight>
-          ))}
-        </View>
-      </Container>
-    );
-  }
-}
+              <View style={{ width: 40, height: 40 }} />
+            </View>
+          </TouchableHighlight>
+        ))}
+      </View>
+    </Container>
+  );
+};
+
+Home.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {

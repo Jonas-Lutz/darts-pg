@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,10 @@ import {
   StatusBar,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -24,50 +28,34 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  goal: number;
-  round: number;
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class Multiplayer extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
-
-  render() {
-    const { navigation } = this.props;
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/drticn-no-edges.png")}
-              style={{ width: 50, height: 50, marginRight: 25 }}
-            />
-            <View style={{ alignItems: "center" }}>
-              <Headline>Cricket</Headline>
-              <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
-            </View>
-            <View style={{ width: 75 }} />
+const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/drticn-no-edges.png")}
+            style={{ width: 50, height: 50, marginRight: 25 }}
+          />
+          <View style={{ alignItems: "center" }}>
+            <Headline>Cricket</Headline>
+            <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
           </View>
-        </Scoreboard>
-      </Container>
-    );
-  }
-}
+          <View style={{ width: 75 }} />
+        </View>
+      </Scoreboard>
+    </Container>
+  );
+};
+
+Cricket.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {
@@ -99,4 +87,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Multiplayer;
+export default Cricket;

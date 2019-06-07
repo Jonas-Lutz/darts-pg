@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,10 @@ import {
   StatusBar,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -24,58 +28,42 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  goal: number;
-  round: number;
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class Stats extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
+const Stats: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const buttons = [
+    { destination: "NineNineXSettings", label: "60 on X" },
+    { destination: "Bobs", label: "Bob's 27" },
+    { destination: "OneOOneSettings", label: "Checkouts" },
+    { destination: "CricketCountUp", label: "Cricket Count Up" },
+    { destination: "Shanghai", label: "Shanghai" }
+  ];
 
-  render() {
-    const { navigation } = this.props;
-
-    const buttons = [
-      { destination: "NineNineXSettings", label: "60 on X" },
-      { destination: "Bobs", label: "Bob's 27" },
-      { destination: "OneOOneSettings", label: "Checkouts" },
-      { destination: "CricketCountUp", label: "Cricket Count Up" },
-      { destination: "Shanghai", label: "Shanghai" }
-    ];
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/stats.png")}
-              style={{ width: 50, height: 50, marginRight: 25 }}
-            />
-            <View style={{ alignItems: "center" }}>
-              <Headline>Stats</Headline>
-              <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
-            </View>
-            <View style={{ width: 75 }} />
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/stats.png")}
+            style={{ width: 50, height: 50, marginRight: 25 }}
+          />
+          <View style={{ alignItems: "center" }}>
+            <Headline>Stats</Headline>
+            <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
           </View>
-        </Scoreboard>
-      </Container>
-    );
-  }
-}
+          <View style={{ width: 75 }} />
+        </View>
+      </Scoreboard>
+    </Container>
+  );
+};
+
+Stats.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {

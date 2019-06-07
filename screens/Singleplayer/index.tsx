@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,10 @@ import {
   StatusBar,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -24,78 +28,66 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  goal: number;
-  round: number;
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class Singleplayer extends Component<Props, State> {
-  static navigationOptions = {
+const Singleplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
+  /* static navigationOptions = {
     header: null
-  };
+  }; */
 
-  render() {
-    const { navigation } = this.props;
+  const buttons = [
+    { destination: "NineNineXSettings", label: "60 on X" },
+    { destination: "Bobs", label: "Bob's 27" },
+    { destination: "OneOOneSettings", label: "Checkouts" },
+    { destination: "CricketCountUp", label: "Cricket Count Up" },
+    { destination: "Shanghai", label: "Shanghai" }
+  ];
 
-    const buttons = [
-      { destination: "NineNineXSettings", label: "60 on X" },
-      { destination: "Bobs", label: "Bob's 27" },
-      { destination: "OneOOneSettings", label: "Checkouts" },
-      { destination: "CricketCountUp", label: "Cricket Count Up" },
-      { destination: "Shanghai", label: "Shanghai" }
-    ];
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/singleplayer.png")}
-              style={{ width: 40, height: 40, marginRight: 25 }}
-            />
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Headline>Singleplayer Games</Headline>
-              {/* <Text style={{ color: theme.neutrals.text }}>
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/singleplayer.png")}
+            style={{ width: 40, height: 40, marginRight: 25 }}
+          />
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <Headline>Singleplayer Games</Headline>
+            {/* <Text style={{ color: theme.neutrals.text }}>
                 Select a game mode
               </Text> */}
-            </View>
           </View>
-        </Scoreboard>
-
-        <View style={styles.homeContent}>
-          {buttons.map((b, index) => (
-            <TouchableHighlight
-              key={b.destination}
-              onPress={() => {
-                navigation.navigate(b.destination);
-              }}
-              style={
-                !(index === buttons.length - 1)
-                  ? styles.gameBtnBorder
-                  : styles.gameBtn
-              }
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text style={styles.gameBtnText}>{b.label}</Text>
-            </TouchableHighlight>
-          ))}
         </View>
-      </Container>
-    );
-  }
-}
+      </Scoreboard>
+
+      <View style={styles.homeContent}>
+        {buttons.map((b, index) => (
+          <TouchableHighlight
+            key={b.destination}
+            onPress={() => {
+              navigation.navigate(b.destination);
+            }}
+            style={
+              !(index === buttons.length - 1)
+                ? styles.gameBtnBorder
+                : styles.gameBtn
+            }
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text style={styles.gameBtnText}>{b.label}</Text>
+          </TouchableHighlight>
+        ))}
+      </View>
+    </Container>
+  );
+};
+
+Singleplayer.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {

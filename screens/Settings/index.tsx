@@ -1,4 +1,4 @@
-import React, { Component, createRef } from "react";
+import React, { FC, useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,10 @@ import {
   ScrollView,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -26,163 +30,130 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
+export interface Props extends NavigationScreenProps {}
 
-// State:
-type State = {
-  input: string;
-  editInput: string;
-  // TODO: Player Interface
-  players: any[];
-  editPosition: number;
-};
+export interface Player {
+  name: string;
+}
 
 // ================================================================================================
 
-class Settings extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
+const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const [editInput, setEditInput] = useState("");
+  const [input, setInput] = useState("");
+  const [players, setPlayers] = useState<Array<Player>>([]);
+  const [editPosition, setEditPosition] = useState(-1);
+
+  const editFieldRef = useRef<TextInput>(null);
+
+  const handleAddPlayer = () => {
+    setInput("");
+    setPlayers([...players, { name: input }]);
   };
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      editInput: "",
-      input: "",
-      players: [],
-      editPosition: -1
-    };
-  }
-  editFieldRef = createRef<TextInput>();
-
-  handleAddPlayer = () => {
-    this.setState({
-      ...this.state,
-      input: "",
-      players: [...this.state.players, { name: this.state.input }]
-    });
-  };
-
-  handleDeletePlayer = (index: number) => {
-    const newPlayers = [...this.state.players];
+  const handleDeletePlayer = (index: number) => {
+    const newPlayers = [...players];
     newPlayers.splice(index, 1);
-    this.setState({
-      ...this.state,
-      players: newPlayers
-    });
+    setPlayers(newPlayers);
   };
 
-  handleRenamePlayer = () => {
-    const newPlayers = [...this.state.players];
-    newPlayers.splice(this.state.editPosition, 1, {
-      name: this.state.editInput
+  const handleRenamePlayer = () => {
+    const newPlayers = [...players];
+    newPlayers.splice(editPosition, 1, {
+      name: editInput
     });
-    this.setState({
-      ...this.state,
-      players: newPlayers
-    });
+    setPlayers(newPlayers);
   };
 
-  handleToggleEditPlayer = (index: number) => {
-    if (this.editFieldRef.current) this.editFieldRef.current.focus();
-    this.setState({
-      ...this.state,
-      editInput: this.state.players[index].name,
-      editPosition: index
-    });
+  const handleToggleEditPlayer = (index: number) => {
+    if (editFieldRef.current) editFieldRef.current.focus();
+    setEditInput(players[index].name);
+    setEditPosition(index);
   };
 
-  handleInputChange = (input: string) => {
-    this.setState({
-      ...this.state,
-      input: input
-    });
+  const handleInputChange = (input: string) => {
+    setInput(input);
   };
 
-  handleEditInputChange = (input: string) => {
-    this.setState({
-      ...this.state,
-      editInput: input
-    });
+  const handleEditInputChange = (input: string) => {
+    setEditInput(input);
   };
 
-  render() {
-    const { navigation } = this.props;
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/settings.png")}
-              style={{ width: 35, height: 35, marginRight: 45 }}
-            />
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Headline>Settings</Headline>
-              {/*               <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
-               */}
-            </View>
-            <View style={{ width: 75 }} />
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/settings.png")}
+            style={{ width: 35, height: 35, marginRight: 45 }}
+          />
+          <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <Headline>Settings</Headline>
+            {/*               <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
+             */}
           </View>
-        </Scoreboard>
-        <View style={styles.statContent}>
-          <Text style={styles.contentHeadline}>Players</Text>
-          <View style={styles.addPlayer}>
-            <TextInput
-              onChangeText={this.handleInputChange}
-              onSubmitEditing={this.handleAddPlayer}
-              placeholder="Add player"
-              style={styles.addPlayerTextfield}
-              value={this.state.input}
-            />
-            <TouchableHighlight onPress={this.handleAddPlayer}>
-              <Text>Add</Text>
-            </TouchableHighlight>
-          </View>
-          <View style={styles.playerListWrapper}>
-            <ScrollView style={styles.playerList}>
-              {this.state.players && this.state.players.length ? (
-                this.state.players.map((p: any, index: number) => (
-                  <View key={`${index}-${p.name}`} style={styles.player}>
-                    {this.state.editPosition === index ? (
-                      <TextInput
-                        ref={this.editFieldRef}
-                        onChangeText={this.handleEditInputChange}
-                        onSubmitEditing={this.handleRenamePlayer}
-                        placeholder={this.state.players[index].name}
-                        style={styles.addPlayerTextfield}
-                        value={this.state.editInput}
-                      />
-                    ) : (
-                      <Text style={styles.playerText}>{p.name}</Text>
-                    )}
-                    <View style={{ flexDirection: "row" }}>
-                      <TouchableHighlight
-                        onPress={() => this.handleToggleEditPlayer(index)}
-                      >
-                        <Text>Edt</Text>
-                      </TouchableHighlight>
-                      <TouchableHighlight
-                        onPress={() => this.handleDeletePlayer(index)}
-                      >
-                        <Text>Del</Text>
-                      </TouchableHighlight>
-                    </View>
-                  </View>
-                ))
-              ) : (
-                <Text style={{ fontSize: 20 }}>Please create a Player</Text>
-              )}
-            </ScrollView>
-          </View>
+          <View style={{ width: 75 }} />
         </View>
-      </Container>
-    );
-  }
-}
+      </Scoreboard>
+      <View style={styles.statContent}>
+        <Text style={styles.contentHeadline}>Players</Text>
+        <View style={styles.addPlayer}>
+          <TextInput
+            onChangeText={handleInputChange}
+            onSubmitEditing={handleAddPlayer}
+            placeholder="Add player"
+            style={styles.addPlayerTextfield}
+            value={input}
+          />
+          <TouchableHighlight onPress={handleAddPlayer}>
+            <Text>Add</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.playerListWrapper}>
+          <ScrollView style={styles.playerList}>
+            {players && players.length ? (
+              players.map((p: Player, index: number) => (
+                <View key={`${index}-${p.name}`} style={styles.player}>
+                  {editPosition === index ? (
+                    <TextInput
+                      ref={editFieldRef}
+                      onChangeText={handleEditInputChange}
+                      onSubmitEditing={handleRenamePlayer}
+                      placeholder={players[index].name}
+                      style={styles.addPlayerTextfield}
+                      value={editInput}
+                    />
+                  ) : (
+                    <Text style={styles.playerText}>{p.name}</Text>
+                  )}
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableHighlight
+                      onPress={() => handleToggleEditPlayer(index)}
+                    >
+                      <Text>Edt</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                      onPress={() => handleDeletePlayer(index)}
+                    >
+                      <Text>Del</Text>
+                    </TouchableHighlight>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text style={{ fontSize: 20 }}>Please create a Player</Text>
+            )}
+          </ScrollView>
+        </View>
+      </View>
+    </Container>
+  );
+};
+
+Settings.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {

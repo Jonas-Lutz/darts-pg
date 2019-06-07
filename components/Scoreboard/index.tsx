@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { StyleSheet, View, Image, TouchableHighlight } from "react-native";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 
 // Colors:
 import theme from "theme";
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     padding: 10,
     top: 1,
     right: 1,
-    zIndex: 20
+    zIndex: 25
   },
   closeButtonImage: {
     width: 12,

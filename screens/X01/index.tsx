@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,10 @@ import {
   StatusBar,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -24,58 +28,38 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  goal: number;
-  round: number;
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class Multiplayer extends Component<Props, State> {
-  static navigationOptions = {
+const X01: NavigationScreenComponent<Props> = ({ navigation }) => {
+  /* static navigationOptions = {
     header: null
-  };
+  }; */
 
-  render() {
-    const { navigation } = this.props;
-
-    const buttons = [
-      { destination: "NineNineXSettings", label: "60 on X" },
-      { destination: "Bobs", label: "Bob's 27" },
-      { destination: "OneOOneSettings", label: "Checkouts" },
-      { destination: "CricketCountUp", label: "Cricket Count Up" },
-      { destination: "Shanghai", label: "Shanghai" }
-    ];
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
-          <View style={{ flexDirection: "row" }}>
-            <Image
-              source={require("../../assets/drticn-no-edges.png")}
-              style={{ width: 50, height: 50, marginRight: 25 }}
-            />
-            <View style={{ alignItems: "center" }}>
-              <Headline>X01</Headline>
-              <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
-            </View>
-            <View style={{ width: 75 }} />
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            source={require("../../assets/drticn-no-edges.png")}
+            style={{ width: 50, height: 50, marginRight: 25 }}
+          />
+          <View style={{ alignItems: "center" }}>
+            <Headline>X01</Headline>
+            <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
           </View>
-        </Scoreboard>
-      </Container>
-    );
-  }
-}
+          <View style={{ width: 75 }} />
+        </View>
+      </Scoreboard>
+    </Container>
+  );
+};
+
+X01.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   headerContent: {
@@ -107,4 +91,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Multiplayer;
+export default X01;

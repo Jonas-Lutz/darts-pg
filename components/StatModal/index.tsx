@@ -12,8 +12,13 @@ import Headline from "atoms/Headline";
 
 // ==================================================================================================
 
+type Dart = {
+  score: number;
+  multiplier: number;
+};
+
 type Props = {
-  gameHistory: any[];
+  gameHistory: [Dart[]];
   onClose: () => {};
   score: number;
   visible: boolean;
@@ -27,11 +32,11 @@ const StatModal: FunctionComponent<Props> = ({
   score,
   visible
 }) => {
-  let darts: any[] = [];
+  let darts: Dart[] = [];
 
   if (gameHistory.length > 0) {
-    gameHistory.map((round: any) => {
-      round.map((dart: any) => {
+    gameHistory.map((round: Dart[]) => {
+      round.map((dart: Dart) => {
         darts.push(dart);
       });
     });

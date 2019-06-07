@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC, useState } from "react";
 import {
   AsyncStorage,
   StyleSheet,
@@ -7,7 +7,12 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import { StackActions, NavigationActions } from "react-navigation";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps,
+  StackActions,
+  NavigationActions
+} from "react-navigation";
 
 // Colors:
 import theme from "theme";
@@ -23,118 +28,85 @@ import goHome from "utils/goHome";
 
 // ================================================================================================
 
-// Props:
-export interface Props {
-  navigation: any;
+// Types:
+export interface Round {
+  hits: number;
 }
 
-// State:
-type State = {
+export interface BobsStats {
+  highscore: number;
+}
+
+// Props:
+export interface Props extends NavigationScreenProps {
   goal: number;
   round: number;
   score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-  finished: boolean;
-  highscore: number;
-};
+  gameHistory: Round[];
+}
 
 // ================================================================================================
 
-export default class NineNineX extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      goal: this.props.navigation.getParam("goal", 1),
-      round: this.props.navigation.getParam("round", 1),
-      score: this.props.navigation.getParam("score", 27),
-      gameHistory: this.props.navigation.getParam("gameHistory", []),
-      roundHistory: this.props.navigation.getParam("roundHistory", []),
-      fetchedStats: this.props.navigation.getParam("fetchedStats", []),
-      finished: false,
-      highscore: 0
-    };
-  }
+const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const [goal, setGoal] = useState(navigation.getParam("goal", 1));
+  const [round, setRound] = useState(navigation.getParam("round", 1));
+  const [score, setScore] = useState(navigation.getParam("score", 27));
+  const [gameHistory, setGameHistory] = useState(
+    navigation.getParam("gameHistory", [])
+  );
+  const [finished, setFinished] = useState(false);
+  const [highscore, setHighscore] = useState(0);
 
-  addScore = (multiplier: number) => {
-    if (this.state.score > this.state.goal * 2 - 1 || multiplier > 0) {
-      const newGameHistory = [...this.state.gameHistory, { hits: multiplier }];
+  const addScore = (multiplier: number) => {
+    if (score > goal * 2 - 1 || multiplier > 0) {
+      const newGameHistory: Round[] = [...gameHistory, { hits: multiplier }];
+
+      // Update State
       if (multiplier > 0) {
-        this.setState({
-          ...this.state,
-          score: this.state.score + multiplier * this.state.goal * 2,
-          goal: this.state.round < 20 ? this.state.round + 1 : 25,
-          round: this.state.goal > 20 ? this.state.round : this.state.round + 1,
-          finished: this.state.goal > 20,
-          gameHistory: newGameHistory
-        });
+        setScore(score + multiplier * goal * 2);
       } else {
-        this.setState({
-          ...this.state,
-          score: this.state.score - this.state.goal * 2,
-          goal: this.state.round < 20 ? this.state.round + 1 : 25,
-          round: this.state.goal > 20 ? this.state.round : this.state.round + 1,
-          gameHistory: newGameHistory,
-          finished: this.state.goal > 20
-        });
+        setScore(score - goal * 2);
       }
-
-      if (this.state.goal > 20) {
-        this.updateStats();
+      setGoal(round < 20 ? round + 1 : 25);
+      setRound(goal > 20 ? round : round + 1);
+      setGameHistory(newGameHistory);
+      setFinished(goal > 20);
+      if (goal > 20) {
+        updateStats();
       }
     } else {
       if (multiplier < 1) {
-        this.setState({
-          finished: true,
-          score: -1
-        });
+        setFinished(true);
+        setScore(-1);
       }
     }
   };
 
-  removeScore = (ended: boolean) => {
-    if (this.state.gameHistory.length > 0) {
-      const newGameHistory = [...this.state.gameHistory];
+  const removeScore = (ended: boolean) => {
+    if (gameHistory.length > 0) {
+      const newGameHistory = [...gameHistory];
       const multiplier =
         newGameHistory[newGameHistory.length - 1].hits > 0
           ? newGameHistory[newGameHistory.length - 1].hits
           : -1;
 
-      // multiplier -> wie oft geworfen
-      //
       const removeVal =
         multiplier *
-        (ended
-          ? this.state.round > 20
-            ? 25
-            : this.state.round - 1
-          : this.state.round <= 21
-          ? this.state.round - 1
-          : 25) *
+        (ended ? (round > 20 ? 25 : round - 1) : round <= 21 ? round - 1 : 25) *
         2;
       newGameHistory.pop();
 
-      this.setState({
-        ...this.state,
-        gameHistory: newGameHistory,
-        goal: ended
-          ? this.state.goal
-          : this.state.goal < 21
-          ? this.state.goal - 1
-          : 20,
-        score: this.state.score - removeVal,
-        round: ended ? this.state.round : this.state.round - 1,
-        finished: false
-      });
+      // Update State
+      setGameHistory(newGameHistory);
+      setGoal(ended ? goal : goal < 21 ? goal - 1 : 20);
+      setScore(score - removeVal);
+      setRound(ended ? round : round - 1);
+      setFinished(false);
     }
   };
 
   // Fetch existing stats from storage
-  fetchStats = async () => {
+  const fetchStats = async () => {
     try {
       const value = await AsyncStorage.getItem("Bobs");
       if (value) {
@@ -148,15 +120,15 @@ export default class NineNineX extends Component<Props, State> {
   };
 
   // Append new stats to old existing
-  mergeStats = (oldStats: any) => {
-    const highscore = Math.max(oldStats.highscore, this.state.score);
+  const mergeStats = (oldStats: BobsStats) => {
+    const highscore = Math.max(oldStats.highscore, score);
     return {
       highscore: highscore
     };
   };
 
   // Update stats in storage
-  saveStats = async (highscore: any) => {
+  const saveStats = async (highscore: BobsStats) => {
     try {
       const res = await AsyncStorage.setItem("Bobs", JSON.stringify(highscore));
       // @ts-ignore
@@ -167,109 +139,100 @@ export default class NineNineX extends Component<Props, State> {
   };
 
   // Calls the methods
-  updateStats = async () => {
+  const updateStats = async () => {
     try {
-      let currHigh = await this.fetchStats();
-      this.setState({
-        ...this.state,
-        highscore: currHigh.highscore
-      });
-      const mergedStats = this.mergeStats(currHigh);
-      this.saveStats(mergedStats);
+      let currHigh = await fetchStats();
+      setHighscore(currHigh.highscore);
+      const mergedStats = mergeStats(currHigh);
+      saveStats(mergedStats);
     } catch {
       console.log("error updating stats");
     }
   };
 
-  render() {
-    const { navigation } = this.props;
-    const hits = [0, 1, 2, 3];
+  const hits = [0, 1, 2, 3];
 
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
-          <View style={styles.gamestats}>
-            <Text>Bob's 27</Text>
-            <Text style={{ color: theme.neutrals.text }}>{`D${
-              this.state.goal
-            }`}</Text>
-          </View>
-          <View style={styles.pointWrapper}>
-            <Text style={styles.pointLabel}>{`${this.state.score}`}</Text>
-          </View>
-        </Scoreboard>
-        <View style={styles.inputContainer}>
-          {hits.map(h => (
-            <View key={`${h}-hitsButton`} style={{ flex: 0.25 }}>
-              <TouchableHighlight
-                onPress={() => this.addScore(h)}
-                style={styles.scoreButton}
-                underlayColor={theme.primaries.lightBlues.tenth}
-              >
-                <Text style={styles.scoreButtonText}>{`${h} Hit${
-                  h !== 1 ? "s" : " "
-                }`}</Text>
-              </TouchableHighlight>
-            </View>
-          ))}
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
+        <View style={styles.gamestats}>
+          <Text>Bob's 27</Text>
+          <Text style={{ color: theme.neutrals.text }}>{`D${goal}`}</Text>
         </View>
-
-        <GameNav
-          backDisabled={this.state.gameHistory.length < 1}
-          moveOn={() => {
-            this.addScore(0);
-          }}
-          moveOnText={this.state.round < 21 ? "Next" : "Finish"}
-          removeScore={() => this.removeScore(false)}
-          underlayBack={
-            this.state.gameHistory.length < 1
-              ? theme.neutrals.eighth
-              : theme.neutrals.seventh
-          }
-          underlayMove={theme.primaries.lightBlues.eighth}
-        />
-        <FinishedModal
-          goHome={() => goHome(navigation)}
-          headline={"Bob's 27 - Statistics"}
-          restart={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "Bobs"
-                })
-              ]
-            });
-            this.props.navigation.dispatch(resetAction);
-          }}
-          undo={() => this.removeScore(true)}
-          finished={this.state.finished}
-        >
-          <View style={{ flexDirection: "column" }}>
-            <Text>
-              {this.state.score > 0
-                ? `You finished with ${this.state.score} points!`
-                : `Game ended at D${this.state.goal}`}
-            </Text>
-
-            {this.state.score > 1436 && (
-              <Text>We both know you cheated tho</Text>
-            )}
-            {this.state.highscore &&
-            this.state.highscore > 0 &&
-            this.state.finished &&
-            this.state.highscore < this.state.score ? (
-              <Text>{`That's a new Carreer High - Gratz!`}</Text>
-            ) : (
-              <Text>{`Carreer High: ${this.state.highscore}`}</Text>
-            )}
+        <View style={styles.pointWrapper}>
+          <Text style={styles.pointLabel}>{`${score}`}</Text>
+        </View>
+      </Scoreboard>
+      <View style={styles.inputContainer}>
+        {hits.map(h => (
+          <View key={`${h}-hitsButton`} style={{ flex: 0.25 }}>
+            <TouchableHighlight
+              onPress={() => addScore(h)}
+              style={styles.scoreButton}
+              underlayColor={theme.primaries.lightBlues.tenth}
+            >
+              <Text style={styles.scoreButtonText}>{`${h} Hit${
+                h !== 1 ? "s" : " "
+              }`}</Text>
+            </TouchableHighlight>
           </View>
-        </FinishedModal>
-      </Container>
-    );
-  }
-}
+        ))}
+      </View>
+
+      <GameNav
+        backDisabled={gameHistory.length < 1}
+        moveOn={() => {
+          addScore(0);
+        }}
+        moveOnText={round < 21 ? "Next" : "Finish"}
+        removeScore={() => removeScore(false)}
+        underlayBack={
+          gameHistory.length < 1
+            ? theme.neutrals.eighth
+            : theme.neutrals.seventh
+        }
+        underlayMove={theme.primaries.lightBlues.eighth}
+      />
+      <FinishedModal
+        goHome={() => goHome(navigation)}
+        headline={"Bob's 27 - Statistics"}
+        restart={() => {
+          const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({
+                routeName: "Bobs"
+              })
+            ]
+          });
+          navigation.dispatch(resetAction);
+        }}
+        undo={() => removeScore(true)}
+        finished={finished}
+      >
+        <View style={{ flexDirection: "column" }}>
+          <Text>
+            {score > 0
+              ? `You finished with ${score} points!`
+              : `Game ended at D${goal}`}
+          </Text>
+
+          {score > 1436 && <Text>We both know you cheated tho</Text>}
+          {highscore && highscore > 0 && finished && highscore < score ? (
+            <Text>{`That's a new Carreer High - Gratz!`}</Text>
+          ) : (
+            <Text>{`Carreer High: ${highscore}`}</Text>
+          )}
+        </View>
+      </FinishedModal>
+    </Container>
+  );
+};
+
+Bobs27.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   gamestats: {
@@ -300,3 +263,5 @@ const styles = StyleSheet.create({
     fontSize: 24
   }
 });
+
+export default Bobs27;

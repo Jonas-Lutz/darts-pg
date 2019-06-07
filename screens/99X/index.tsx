@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   StatusBar,
@@ -7,6 +7,10 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Colors:
 import theme from "theme";
@@ -23,108 +27,93 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
+export interface Props extends NavigationScreenProps {
   goal: number;
   round: number;
   score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  fetchedStats: any[];
-};
+}
+
+export interface ThrownDart {
+  goal: number;
+  multiplier: number;
+}
 
 // ================================================================================================
 
-export default class NineNineX extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      goal: this.props.navigation.getParam("goal", 20),
-      round: this.props.navigation.getParam("round", 1),
-      score: this.props.navigation.getParam("score", 0),
-      gameHistory: this.props.navigation.getParam("gameHistory", []),
-      roundHistory: this.props.navigation.getParam("roundHistory", []),
-      fetchedStats: this.props.navigation.getParam("fetchedStats", [])
-    };
-  }
+const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
+  // State
+  const [round, setRound] = useState(navigation.getParam("round", 1));
+  const [score, setScore] = useState(navigation.getParam("score", 0));
+  const [gameHistory, setGameHistory] = useState<Array<Array<ThrownDart>>>([]);
+  const [roundHistory, setRoundHistory] = useState<Array<ThrownDart>>([]);
 
-  addScore = (multiplier: number) => {
-    if (this.state.round <= 20) {
-      if (this.state.roundHistory.length < 3) {
-        const copyGameHistory = [...this.state.gameHistory];
+  const goal = navigation.getParam("goal", 20);
+
+  // ==============================================================================================
+
+  const addScore = (multiplier: number) => {
+    if (round <= 20) {
+      if (roundHistory.length < 3) {
+        const copyGameHistory = [...gameHistory];
 
         // Update new Round-History with current throw
         const newRoundHistory = [
-          ...this.state.roundHistory,
+          ...roundHistory,
           {
-            goal: this.state.goal,
+            goal: goal,
             multiplier: multiplier
           }
         ];
 
-        copyGameHistory.splice(this.state.round - 1, 1, newRoundHistory);
+        copyGameHistory.splice(round - 1, 1, newRoundHistory);
 
         // Update State
-        this.setState({
-          ...this.state,
-          score: this.state.score + this.state.goal * multiplier,
-          gameHistory: copyGameHistory,
-          roundHistory: newRoundHistory
-        });
+        setScore(score + goal * multiplier);
+        setGameHistory(copyGameHistory);
+        setRoundHistory(newRoundHistory);
       }
     }
   };
 
-  advanceRound = () => {
-    if (this.state.round <= 20) {
-      let copyGameHistory = [...this.state.gameHistory];
-      let filledUpRoundHistory = [...this.state.roundHistory];
+  const advanceRound = () => {
+    if (round <= 20) {
+      let copyGameHistory = [...gameHistory];
+      let filledUpRoundHistory = [...roundHistory];
 
       // Add Misses, if less than 3 Darts were entered
       if (filledUpRoundHistory.length < 3) {
         for (let i = filledUpRoundHistory.length; i < 3; i++) {
           filledUpRoundHistory.push({
-            goal: this.state.goal,
+            goal: goal,
             multiplier: 0
           });
         }
       }
 
-      copyGameHistory.splice(this.state.round - 1, 1, filledUpRoundHistory);
+      copyGameHistory.splice(round - 1, 1, filledUpRoundHistory);
 
-      this.setState({
-        ...this.state,
-        round: this.state.round + 1,
-        roundHistory: [],
-        gameHistory: copyGameHistory
-      });
+      setRound(round + 1);
+      setRoundHistory([]);
+      setGameHistory(copyGameHistory);
     }
   };
 
-  removeScore = () => {
+  const removeScore = () => {
     // At least 1 dart thrown
-    if (this.state.gameHistory.length > 0) {
+    if (gameHistory.length > 0) {
       if (
         // Dart thrown previous or this round
-        this.state.gameHistory[this.state.gameHistory.length - 1].length > 0 ||
-        this.state.gameHistory.length > 1
+        gameHistory[gameHistory.length - 1].length > 0 ||
+        gameHistory.length > 1
       ) {
-        let newRoundHistory = [...this.state.roundHistory];
-        let updatedGameHistory = [...this.state.gameHistory];
+        let newRoundHistory = [...roundHistory];
+        let updatedGameHistory = [...gameHistory];
         let subtractValue = 0;
 
-        // IF: darts thrown this round
-        if (this.state.roundHistory.length > 0) {
+        // IF: darts thrown this round -> rh: [{}]
+        if (roundHistory.length > 0) {
           subtractValue =
-            this.state.roundHistory[this.state.roundHistory.length - 1]
-              .multiplier * this.state.goal;
+            roundHistory[roundHistory.length - 1].multiplier * goal;
           newRoundHistory.pop();
           if (newRoundHistory.length > 0) {
             updatedGameHistory.splice(
@@ -134,22 +123,25 @@ export default class NineNineX extends Component<Props, State> {
             );
           } else {
             updatedGameHistory.splice(updatedGameHistory.length - 1, 1);
+
+            if (updatedGameHistory.length > 1) {
+              updatedGameHistory[updatedGameHistory.length - 2].splice(2, 1);
+            }
+            if (updatedGameHistory.length > 0) {
+              newRoundHistory =
+                updatedGameHistory[updatedGameHistory.length - 1];
+            }
           }
         }
         // ELSE: No darts thrown this round
         else {
           subtractValue =
-            this.state.gameHistory[
-              this.state.gameHistory.length - 2 >= 0
-                ? this.state.gameHistory.length - 2
-                : 0
-            ][2].multiplier * this.state.goal;
+            gameHistory[
+              gameHistory.length - 2 >= 0 ? gameHistory.length - 2 : 0
+            ][2].multiplier * goal;
 
-          const prevRound =
-            this.state.gameHistory.length < 2
-              ? 0
-              : this.state.gameHistory.length - 2;
-          newRoundHistory = [...this.state.gameHistory[prevRound]];
+          const prevRound = gameHistory.length < 2 ? 0 : gameHistory.length - 2;
+          newRoundHistory = [...gameHistory[prevRound]];
           newRoundHistory.pop();
 
           if (newRoundHistory.length > 0) {
@@ -164,242 +156,203 @@ export default class NineNineX extends Component<Props, State> {
         }
 
         // Update State
-        this.setState({
-          ...this.state,
-          round: updatedGameHistory.length > 0 ? updatedGameHistory.length : 1,
-          score: this.state.score - subtractValue,
-          roundHistory: newRoundHistory,
-          gameHistory: updatedGameHistory
-        });
+        setRound(updatedGameHistory.length > 0 ? updatedGameHistory.length : 1);
+        setScore(score - subtractValue);
+        setRoundHistory(newRoundHistory);
+        setGameHistory(updatedGameHistory);
       } else {
-        this.setState({
-          ...this.state,
-          round: 1,
-          gameHistory: [],
-          roundHistory: []
-        });
+        setRound(1);
+        setGameHistory([]);
+        setRoundHistory([]);
       }
     } else {
-      this.setState({
-        ...this.state,
-        round: 1,
-        gameHistory: [],
-        roundHistory: []
-      });
+      setRound(1);
+      setGameHistory([]);
+      setRoundHistory([]);
     }
   };
 
-  render() {
-    const { navigation } = this.props;
+  // ==============================================================================================
 
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
-          <View style={styles.gamestats}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                width: "100%"
-              }}
-            >
-              <Text style={{ color: theme.neutrals.text }}>
-                {this.state.round < 21
-                  ? `Round ${this.state.round}`
-                  : "Finished"}
-              </Text>
-              <Text style={{ color: theme.neutrals.text }}>
-                {`PPR: ${(
-                  this.state.score /
-                  Math.max(
-                    1,
-                    this.state.round - 1 + this.state.roundHistory.length / 3
-                  )
-                ).toFixed(2)}`}
-              </Text>
-              <Text style={{ color: theme.neutrals.text }}>
-                {`MPR: ${(
-                  this.state.score /
-                  this.state.goal /
-                  Math.max(
-                    1,
-                    this.state.round - 1 + this.state.roundHistory.length / 3
-                  )
-                ).toFixed(2)}`}
-              </Text>
-            </View>
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
+        <View style={styles.gamestats}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              width: "100%"
+            }}
+          >
+            <Text style={{ color: theme.neutrals.text }}>
+              {round < 21 ? `Round ${round}` : "Finished"}
+            </Text>
+            <Text style={{ color: theme.neutrals.text }}>
+              {`PPR: ${(
+                score / Math.max(1, round - 1 + roundHistory.length / 3)
+              ).toFixed(2)}`}
+            </Text>
+            <Text style={{ color: theme.neutrals.text }}>
+              {`MPR: ${(
+                score /
+                goal /
+                Math.max(1, round - 1 + roundHistory.length / 3)
+              ).toFixed(2)}`}
+            </Text>
+          </View>
 
-            <Text style={styles.scoreLabelText}>{`${this.state.score}`}</Text>
+          <Text style={styles.scoreLabelText}>{`${score}`}</Text>
+        </View>
+        <View style={styles.thrownDarts}>
+          <View style={styles.dartScore}>
+            {roundHistory.length > 0 ? (
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                roundHistory[0].multiplier < 1
+                  ? "Miss"
+                  : `${getLabel(roundHistory[0].multiplier)}${goal}`
+              }`}</Text>
+            ) : (
+              <Image
+                source={require("../../assets/arrow.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            )}
           </View>
-          <View style={styles.thrownDarts}>
-            <View style={styles.dartScore}>
-              {this.state.roundHistory.length > 0 ? (
-                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                  this.state.roundHistory[0].multiplier < 1
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[0].multiplier)}${
-                        this.state.goal
-                      }`
-                }`}</Text>
-              ) : (
-                <Image
-                  source={require("../../assets/arrow.png")}
-                  style={{ width: 20, height: 20 }}
-                />
-              )}
-            </View>
-            <View style={styles.dartScore}>
-              {this.state.roundHistory.length > 1 ? (
-                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                  this.state.roundHistory[1].multiplier < 1
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[1].multiplier)}${
-                        this.state.goal
-                      }`
-                }`}</Text>
-              ) : (
-                <Image
-                  source={require("../../assets/arrow.png")}
-                  style={{ width: 20, height: 20 }}
-                />
-              )}
-            </View>
-            <View style={styles.dartScore}>
-              {this.state.roundHistory.length > 2 ? (
-                <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
-                  this.state.roundHistory[2].multiplier < 1
-                    ? "Miss"
-                    : `${getLabel(this.state.roundHistory[2].multiplier)}${
-                        this.state.goal
-                      }`
-                }`}</Text>
-              ) : (
-                <Image
-                  source={require("../../assets/arrow.png")}
-                  style={{ width: 20, height: 20 }}
-                />
-              )}
-            </View>
+          <View style={styles.dartScore}>
+            {roundHistory.length > 1 ? (
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                roundHistory[1].multiplier < 1
+                  ? "Miss"
+                  : `${getLabel(roundHistory[1].multiplier)}${goal}`
+              }`}</Text>
+            ) : (
+              <Image
+                source={require("../../assets/arrow.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            )}
           </View>
-        </Scoreboard>
-        <View style={styles.inputContainer}>
-          {this.state.goal !== 25 && (
-            <View style={{ flex: 0.25 }}>
-              <TouchableHighlight
-                onPress={() => this.addScore(3)}
-                style={styles.scoreButtonTriple}
-                underlayColor={theme.primaries.lightBlues.tenth}
-              >
-                <Text
-                  style={
-                    !(
-                      (this.state.round === 20 &&
-                        this.state.roundHistory.length === 3) ||
-                      this.state.round > 20
-                    )
-                      ? styles.scoreButtonText
-                      : styles.scoreButtonDisabledText
-                  }
-                >{`T ${this.state.goal}`}</Text>
-              </TouchableHighlight>
-            </View>
-          )}
-
-          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
-            <TouchableHighlight
-              onPress={() => this.addScore(2)}
-              style={styles.scoreButtonDouble}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text
-                style={
-                  !(
-                    (this.state.round === 20 &&
-                      this.state.roundHistory.length === 3) ||
-                    this.state.round > 20
-                  )
-                    ? styles.scoreButtonText
-                    : styles.scoreButtonDisabledText
-                }
-              >{`D ${this.state.goal}`}</Text>
-            </TouchableHighlight>
-          </View>
-          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
-            <TouchableHighlight
-              onPress={() => this.addScore(1)}
-              style={styles.scoreButtonSingle}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text
-                style={
-                  !(
-                    (this.state.round === 20 &&
-                      this.state.roundHistory.length === 3) ||
-                    this.state.round > 20
-                  )
-                    ? styles.scoreButtonText
-                    : styles.scoreButtonDisabledText
-                }
-              >{`S ${this.state.goal}`}</Text>
-            </TouchableHighlight>
-          </View>
-          <View style={{ flex: this.state.goal === 25 ? 0.33 : 0.25 }}>
-            <TouchableHighlight
-              onPress={() => this.addScore(0)}
-              style={styles.scoreButtonMiss}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text
-                style={
-                  !(
-                    (this.state.round === 20 &&
-                      this.state.roundHistory.length === 3) ||
-                    this.state.round > 20
-                  )
-                    ? styles.scoreButtonText
-                    : styles.scoreButtonDisabledText
-                }
-              >{`Miss`}</Text>
-            </TouchableHighlight>
+          <View style={styles.dartScore}>
+            {roundHistory.length > 2 ? (
+              <Text style={{ color: theme.neutrals.text, fontSize: 20 }}>{`${
+                roundHistory[2].multiplier < 1
+                  ? "Miss"
+                  : `${getLabel(roundHistory[2].multiplier)}${goal}`
+              }`}</Text>
+            ) : (
+              <Image
+                source={require("../../assets/arrow.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            )}
           </View>
         </View>
+      </Scoreboard>
+      <View style={styles.inputContainer}>
+        {goal !== 25 && (
+          <View style={{ flex: 0.25 }}>
+            <TouchableHighlight
+              onPress={() => addScore(3)}
+              style={styles.scoreButtonTriple}
+              underlayColor={theme.primaries.lightBlues.tenth}
+            >
+              <Text
+                style={
+                  !((round === 20 && roundHistory.length === 3) || round > 20)
+                    ? styles.scoreButtonText
+                    : styles.scoreButtonDisabledText
+                }
+              >{`T ${goal}`}</Text>
+            </TouchableHighlight>
+          </View>
+        )}
 
-        <GameNav
-          backDisabled={this.state.gameHistory.length < 1}
-          moveOn={() => {
-            if (
-              (this.state.round === 20 &&
-                this.state.roundHistory.length === 3) ||
-              this.state.round > 20
-            ) {
-              navigation.navigate("NineNineXStats", {
-                gameHistory: this.state.gameHistory,
-                goal: this.state.goal,
-                score: this.state.score
-              });
-            } else {
-              this.advanceRound();
-            }
-          }}
-          moveOnText={
-            (this.state.round === 20 && this.state.roundHistory.length === 3) ||
-            this.state.round > 20
-              ? "Finish"
-              : "Next"
+        <View style={{ flex: goal === 25 ? 0.33 : 0.25 }}>
+          <TouchableHighlight
+            onPress={() => addScore(2)}
+            style={styles.scoreButtonDouble}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text
+              style={
+                !((round === 20 && roundHistory.length === 3) || round > 20)
+                  ? styles.scoreButtonText
+                  : styles.scoreButtonDisabledText
+              }
+            >{`D ${goal}`}</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{ flex: goal === 25 ? 0.33 : 0.25 }}>
+          <TouchableHighlight
+            onPress={() => addScore(1)}
+            style={styles.scoreButtonSingle}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text
+              style={
+                !((round === 20 && roundHistory.length === 3) || round > 20)
+                  ? styles.scoreButtonText
+                  : styles.scoreButtonDisabledText
+              }
+            >{`S ${goal}`}</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{ flex: goal === 25 ? 0.33 : 0.25 }}>
+          <TouchableHighlight
+            onPress={() => addScore(0)}
+            style={styles.scoreButtonMiss}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text
+              style={
+                !((round === 20 && roundHistory.length === 3) || round > 20)
+                  ? styles.scoreButtonText
+                  : styles.scoreButtonDisabledText
+              }
+            >{`Miss`}</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+
+      <GameNav
+        backDisabled={gameHistory.length < 1}
+        moveOn={() => {
+          if ((round === 20 && roundHistory.length === 3) || round > 20) {
+            navigation.navigate("NineNineXStats", {
+              gameHistory: gameHistory,
+              goal: goal,
+              score: score
+            });
+          } else {
+            advanceRound();
           }
-          removeScore={this.removeScore}
-          underlayBack={
-            this.state.gameHistory.length < 1
-              ? theme.neutrals.eighth
-              : theme.neutrals.seventh
-          }
-          underlayMove={theme.primaries.lightBlues.tenth}
-        />
-      </Container>
-    );
-  }
-}
+        }}
+        moveOnText={
+          (round === 20 && roundHistory.length === 3) || round > 20
+            ? "Finish"
+            : "Next"
+        }
+        removeScore={removeScore}
+        underlayBack={
+          gameHistory.length < 1
+            ? theme.neutrals.eighth
+            : theme.neutrals.seventh
+        }
+        underlayMove={theme.primaries.lightBlues.tenth}
+      />
+    </Container>
+  );
+};
+
+// ==============================================================================================
+
+NineNineX.navigationOptions = {
+  header: null
+};
+
+// ==============================================================================================
 
 const styles = StyleSheet.create({
   gamestats: {
@@ -470,3 +423,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   }
 });
+
+export default NineNineX;

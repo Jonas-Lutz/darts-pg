@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC, useState } from "react";
 import {
   AsyncStorage,
   StyleSheet,
@@ -8,7 +8,12 @@ import {
   Image,
   View
 } from "react-native";
-import { StackActions, NavigationActions } from "react-navigation";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps,
+  StackActions,
+  NavigationActions
+} from "react-navigation";
 
 // Colors:
 import theme from "theme";
@@ -28,57 +33,42 @@ import goHome from "utils/goHome";
 const isSmall = smallScreen();
 
 // ================================================================================================
-
-// Props:
-export interface Props {
-  navigation: any;
+// Types:
+export interface ThrowObject {
+  points: number;
+  multiplier: number;
 }
 
-// State:
-type State = {
-  score: number;
-  gameHistory: any[];
-  roundHistory: any[];
-  round: number;
-  goals: number[];
-  finished: boolean;
+export interface CricketCountUpStats {
   highscore: number;
-  multiplier: number;
-  bust: boolean;
-};
+}
+
+// Props:
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class CricketCountUp extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
+const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const [score, setScore] = useState(0);
+  const [gameHistory, setGameHistory] = useState<
+    Array<Array<ThrowObject>> | []
+  >([]);
+  const [roundHistory, setRoundHistory] = useState<Array<ThrowObject> | []>([]);
+  const [round, setRound] = useState(1);
+  const [finished, setFinished] = useState(false);
+  const [highscore, setHighscore] = useState(0);
+  const [multiplier, setMultiplier] = useState(1);
+  const [bust, setBust] = useState(false);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      score: 0,
-      gameHistory: [],
-      roundHistory: [],
-      round: 1,
-      goals: [20, 19, 18, 17, 16, 15, 25],
-      finished: false,
-      highscore: 0,
-      multiplier: 1,
-      bust: false
-    };
-  }
+  const goals = [20, 19, 18, 17, 16, 15, 25];
 
-  advanceRound = () => {
-    if (this.state.round === 7) {
-      this.setState({
-        ...this.state,
-        finished: true
-      });
-      this.updateStats();
+  const advanceRound = () => {
+    if (round === 7) {
+      setFinished(true);
+      updateStats();
     } else {
-      let filledUpRoundHistory = [...this.state.roundHistory];
-      const copyGameHistory = [...this.state.gameHistory];
+      let filledUpRoundHistory: ThrowObject[] = [...roundHistory];
+      const copyGameHistory: ThrowObject[][] = [...gameHistory];
 
       // Add Misses, if less than 3 Darts were entered
       if (filledUpRoundHistory.length < 3) {
@@ -90,29 +80,27 @@ class CricketCountUp extends Component<Props, State> {
         }
       }
 
-      copyGameHistory.splice(this.state.round - 1, 1, filledUpRoundHistory);
+      copyGameHistory.splice(round - 1, 1, filledUpRoundHistory);
 
-      this.setState({
-        ...this.state,
-        round: this.state.round + 1,
-        roundHistory: [],
-        gameHistory: copyGameHistory,
-        multiplier: 1
-      });
+      // Update State
+      setRound(round + 1);
+      setRoundHistory([]);
+      setGameHistory(copyGameHistory);
+      setMultiplier(1);
     }
   };
 
-  countThrow = (points: number) => {
-    if (this.state.roundHistory.length < 3 && !this.state.bust) {
+  const countThrow = (points: number) => {
+    if (roundHistory.length < 3 && !bust) {
       // Removes the current Round from Game-History
-      const copyGameHistory = [...this.state.gameHistory];
-      if (this.state.roundHistory.length > 0) {
+      const copyGameHistory: Array<Array<ThrowObject>> = [...gameHistory];
+      if (roundHistory.length > 0) {
         copyGameHistory.pop();
       }
 
       // Update new Round-History with current throw
-      const newRoundHistory = [
-        ...this.state.roundHistory,
+      const newRoundHistory: Array<ThrowObject> = [
+        ...roundHistory,
         {
           points: points,
           multiplier: points === 0 ? 0 : 1
@@ -123,36 +111,32 @@ class CricketCountUp extends Component<Props, State> {
       copyGameHistory.push(newRoundHistory);
 
       // Update State
-      this.setState({
-        ...this.state,
-        score: this.state.score - points,
-        gameHistory: copyGameHistory,
-        roundHistory: newRoundHistory,
-        multiplier: 1,
-        finished: false
-      });
+      setScore(score - points);
+      setGameHistory(copyGameHistory);
+      setRoundHistory(newRoundHistory);
+      setMultiplier(1);
+      setFinished(false);
     }
   };
 
-  removeScore = () => {
+  const removeScore = () => {
     // At least 1 dart thrown
-    if (this.state.gameHistory.length > 0) {
+    if (gameHistory.length > 0) {
       if (
         // Dart thrown previous round
-        this.state.gameHistory[this.state.gameHistory.length - 1].length > 0 ||
+        gameHistory[gameHistory.length - 1].length > 0 ||
         // or this round
-        this.state.gameHistory.length > 1
+        gameHistory.length > 1
       ) {
-        let newRound = this.state.round;
-        let newRoundHistory = [...this.state.roundHistory];
-        let updatedGameHistory = [...this.state.gameHistory];
+        let newRound = round;
+        let newRoundHistory = [...roundHistory];
+        let updatedGameHistory = [...gameHistory];
         let addValue = 0;
 
         // IF: darts thrown this round
-        if (this.state.roundHistory.length > 0) {
+        if (roundHistory.length > 0) {
           // Value to add to game score
-          addValue = this.state.roundHistory[this.state.roundHistory.length - 1]
-            .points;
+          addValue = roundHistory[roundHistory.length - 1].points;
 
           newRoundHistory.pop();
 
@@ -169,8 +153,8 @@ class CricketCountUp extends Component<Props, State> {
         // ELSE: No darts thrown this round
         else {
           newRound = newRound - 1 >= 1 ? newRound - 1 : 1;
-          addValue = this.state.gameHistory[newRound - 1][2].points;
-          newRoundHistory = [...this.state.gameHistory[newRound - 1]];
+          addValue = gameHistory[newRound - 1][2].points;
+          newRoundHistory = [...gameHistory[newRound - 1]];
 
           newRoundHistory.pop();
 
@@ -186,27 +170,21 @@ class CricketCountUp extends Component<Props, State> {
         }
 
         // Update State
-        this.setState({
-          ...this.state,
-          round: newRound <= 1 ? 1 : newRound,
-          score: this.state.score + addValue,
-          roundHistory: newRoundHistory,
-          gameHistory: updatedGameHistory,
-          multiplier: 1,
-          finished: false,
-          bust: false
-        });
+        setRound(newRound <= 1 ? 1 : newRound);
+        setScore(score + addValue);
+        setRoundHistory(newRoundHistory);
+        setGameHistory(updatedGameHistory);
+        setMultiplier(1);
+        setFinished(false);
+        setBust(false);
       }
     } else {
-      this.setState({
-        ...this.state,
-        round: 1
-      });
+      setRound(1);
     }
   };
 
   // Fetch existing stats from storage
-  fetchStats = async () => {
+  const fetchStats = async () => {
     try {
       const value = await AsyncStorage.getItem("cricketCountUp");
       if (value) {
@@ -220,15 +198,15 @@ class CricketCountUp extends Component<Props, State> {
   };
 
   // Append new stats to old existing
-  mergeStats = (oldStats: any) => {
-    const highscore = Math.max(oldStats.highscore, this.state.score);
+  const mergeStats = (oldStats: CricketCountUpStats) => {
+    const highscore = Math.max(oldStats.highscore, score);
     return {
       highscore: highscore
     };
   };
 
   // Update stats in storage
-  saveStats = async (highscore: any) => {
+  const saveStats = async (highscore: CricketCountUpStats) => {
     try {
       const res = await AsyncStorage.setItem(
         "cricketCountUp",
@@ -242,200 +220,182 @@ class CricketCountUp extends Component<Props, State> {
   };
 
   // Calls the methods
-  updateStats = async () => {
+  const updateStats = async () => {
     try {
-      let currHigh = await this.fetchStats();
-      this.setState({
-        ...this.state,
-        highscore: currHigh.highscore
-      });
-      const mergedStats = this.mergeStats(currHigh);
-      this.saveStats(mergedStats);
+      let currHigh = await fetchStats();
+      setHighscore(currHigh.highscore);
+      const mergedStats = mergeStats(currHigh);
+      saveStats(mergedStats);
     } catch {
       console.log("error updating stats");
     }
   };
 
-  render() {
-    const { navigation } = this.props;
-
-    return (
-      <Container>
-        <StatusBar hidden />
-        <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
-          <View style={styles.mprWrapper}>
-            <Text style={styles.mprText}>{`MPR: ${calcMPR(
-              this.state.score,
-              Math.max(
-                1,
-                this.state.round - 1 + this.state.roundHistory.length / 3
-              )
-            )}`}</Text>
-          </View>
-          <View style={styles.scoreWrapper}>
-            <Text style={styles.scoreText}>{`${this.state.score}`}</Text>
-          </View>
-          <View style={styles.dartsDisplay}>
-            <View style={styles.dartsDisplayDart}>
-              <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 0 ? (
-                  this.state.roundHistory[0].points === 0 ? (
-                    "Miss"
-                  ) : (
-                    `${getLabel(this.state.roundHistory[0].points * -1)}${
-                      this.state.goals[this.state.round - 1]
-                    }`
-                  )
+  return (
+    <Container>
+      <StatusBar hidden />
+      <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
+        <View style={styles.mprWrapper}>
+          <Text style={styles.mprText}>{`MPR: ${calcMPR(
+            score,
+            Math.max(1, round - 1 + roundHistory.length / 3)
+          )}`}</Text>
+        </View>
+        <View style={styles.scoreWrapper}>
+          <Text style={styles.scoreText}>{`${score}`}</Text>
+        </View>
+        <View style={styles.dartsDisplay}>
+          <View style={styles.dartsDisplayDart}>
+            <Text style={styles.dartText}>
+              {roundHistory.length > 0 ? (
+                roundHistory[0].points === 0 ? (
+                  "Miss"
                 ) : (
-                  <Image
-                    source={require("../../assets/arrow.png")}
-                    style={{ width: 20, height: 20 }}
-                  />
-                )}
-              </Text>
-            </View>
-            <View style={styles.dartsDisplayDart}>
-              <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 1 ? (
-                  this.state.roundHistory[1].points === 0 ? (
-                    "Miss"
-                  ) : (
-                    `${getLabel(this.state.roundHistory[1].points * -1)}${
-                      this.state.goals[this.state.round - 1]
-                    }`
-                  )
+                  `${getLabel(roundHistory[0].points * -1)}${goals[round - 1]}`
+                )
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
+            </Text>
+          </View>
+          <View style={styles.dartsDisplayDart}>
+            <Text style={styles.dartText}>
+              {roundHistory.length > 1 ? (
+                roundHistory[1].points === 0 ? (
+                  "Miss"
                 ) : (
-                  <Image
-                    source={require("../../assets/arrow.png")}
-                    style={{ width: 20, height: 20 }}
-                  />
-                )}
-              </Text>
-            </View>
-            <View style={styles.dartsDisplayDart}>
-              <Text style={styles.dartText}>
-                {this.state.roundHistory.length > 2 ? (
-                  this.state.roundHistory[2].points === 0 ? (
-                    "Miss"
-                  ) : (
-                    `${getLabel(this.state.roundHistory[2].points * -1)}${
-                      this.state.goals[this.state.round - 1]
-                    }`
-                  )
+                  `${getLabel(roundHistory[1].points * -1)}${goals[round - 1]}`
+                )
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
+            </Text>
+          </View>
+          <View style={styles.dartsDisplayDart}>
+            <Text style={styles.dartText}>
+              {roundHistory.length > 2 ? (
+                roundHistory[2].points === 0 ? (
+                  "Miss"
                 ) : (
-                  <Image
-                    source={require("../../assets/arrow.png")}
-                    style={{ width: 20, height: 20 }}
-                  />
-                )}
-              </Text>
-            </View>
-          </View>
-        </Scoreboard>
-        <View style={styles.buttonsWrapper}>
-          {this.state.goals[this.state.round - 1] !== 25 && (
-            <View style={{ flex: 0.25 }}>
-              <TouchableHighlight
-                onPress={() => this.countThrow(-3)}
-                style={styles.scoreButton}
-                underlayColor={theme.primaries.lightBlues.tenth}
-              >
-                <Text style={styles.buttonText}>{`T ${
-                  this.state.goals[this.state.round - 1]
-                }`}</Text>
-              </TouchableHighlight>
-            </View>
-          )}
-
-          <View
-            style={{
-              flex: this.state.goals[this.state.round - 1] === 25 ? 1 / 3 : 0.25
-            }}
-          >
-            <TouchableHighlight
-              onPress={() => this.countThrow(-2)}
-              style={styles.scoreButton}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text style={styles.buttonText}>{`D ${
-                this.state.goals[this.state.round - 1]
-              }`}</Text>
-            </TouchableHighlight>
-          </View>
-          <View
-            style={{
-              flex: this.state.goals[this.state.round - 1] === 25 ? 1 / 3 : 0.25
-            }}
-          >
-            <TouchableHighlight
-              onPress={() => this.countThrow(-1)}
-              style={styles.scoreButton}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text style={styles.buttonText}>{`S ${
-                this.state.goals[this.state.round - 1]
-              }`}</Text>
-            </TouchableHighlight>
-          </View>
-          <View
-            style={{
-              flex: this.state.goals[this.state.round - 1] === 25 ? 1 / 3 : 0.25
-            }}
-          >
-            <TouchableHighlight
-              onPress={() => this.countThrow(0)}
-              style={styles.scoreButton}
-              underlayColor={theme.primaries.lightBlues.tenth}
-            >
-              <Text style={styles.buttonText}>{`Miss`}</Text>
-            </TouchableHighlight>
+                  `${getLabel(roundHistory[2].points * -1)}${goals[round - 1]}`
+                )
+              ) : (
+                <Image
+                  source={require("../../assets/arrow.png")}
+                  style={{ width: 20, height: 20 }}
+                />
+              )}
+            </Text>
           </View>
         </View>
-        <GameNav
-          backDisabled={this.state.gameHistory.length < 1}
-          moveOn={this.advanceRound}
-          moveOnText="Next"
-          removeScore={this.removeScore}
-          underlayBack={
-            this.state.gameHistory.length < 1
-              ? theme.neutrals.seventh
-              : theme.neutrals.eighth
-          }
-          underlayMove={theme.primaries.lightBlues.eighth}
-        />
-        <FinishedModal
-          goHome={() => goHome(navigation)}
-          restart={() => {
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({
-                  routeName: "CricketCountUp"
-                })
-              ]
-            });
-
-            this.props.navigation.dispatch(resetAction);
-          }}
-          undo={this.removeScore}
-          finished={this.state.finished}
-        >
-          <View style={{ flexDirection: "column" }}>
-            <Text>{`You reached a total score of ${this.state.score} (MPR: ${(
-              this.state.score / 7
-            ).toFixed(1)}).`}</Text>
-
-            {this.state.finished && this.state.highscore < this.state.score ? (
-              <Text>{`That's a new Carreer High - Gratz!`}</Text>
-            ) : (
-              <Text>{`Carreer High: ${this.state.highscore}`}</Text>
-            )}
+      </Scoreboard>
+      <View style={styles.buttonsWrapper}>
+        {goals[round - 1] !== 25 && (
+          <View style={{ flex: 0.25 }}>
+            <TouchableHighlight
+              onPress={() => countThrow(-3)}
+              style={styles.scoreButton}
+              underlayColor={theme.primaries.lightBlues.tenth}
+            >
+              <Text style={styles.buttonText}>{`T ${goals[round - 1]}`}</Text>
+            </TouchableHighlight>
           </View>
-        </FinishedModal>
-      </Container>
-    );
-  }
-}
+        )}
+
+        <View
+          style={{
+            flex: goals[round - 1] === 25 ? 1 / 3 : 0.25
+          }}
+        >
+          <TouchableHighlight
+            onPress={() => countThrow(-2)}
+            style={styles.scoreButton}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text style={styles.buttonText}>{`D ${goals[round - 1]}`}</Text>
+          </TouchableHighlight>
+        </View>
+        <View
+          style={{
+            flex: goals[round - 1] === 25 ? 1 / 3 : 0.25
+          }}
+        >
+          <TouchableHighlight
+            onPress={() => countThrow(-1)}
+            style={styles.scoreButton}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text style={styles.buttonText}>{`S ${goals[round - 1]}`}</Text>
+          </TouchableHighlight>
+        </View>
+        <View
+          style={{
+            flex: goals[round - 1] === 25 ? 1 / 3 : 0.25
+          }}
+        >
+          <TouchableHighlight
+            onPress={() => countThrow(0)}
+            style={styles.scoreButton}
+            underlayColor={theme.primaries.lightBlues.tenth}
+          >
+            <Text style={styles.buttonText}>{`Miss`}</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+      <GameNav
+        backDisabled={gameHistory.length < 1}
+        moveOn={advanceRound}
+        moveOnText="Next"
+        removeScore={removeScore}
+        underlayBack={
+          gameHistory.length < 1
+            ? theme.neutrals.seventh
+            : theme.neutrals.eighth
+        }
+        underlayMove={theme.primaries.lightBlues.eighth}
+      />
+      <FinishedModal
+        goHome={() => goHome(navigation)}
+        restart={() => {
+          const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({
+                routeName: "CricketCountUp"
+              })
+            ]
+          });
+
+          navigation.dispatch(resetAction);
+        }}
+        undo={removeScore}
+        finished={finished}
+      >
+        <View style={{ flexDirection: "column" }}>
+          <Text>{`You reached a total score of ${score} (MPR: ${(
+            score / 7
+          ).toFixed(1)}).`}</Text>
+
+          {finished && highscore < score ? (
+            <Text>{`That's a new Carreer High - Gratz!`}</Text>
+          ) : (
+            <Text>{`Carreer High: ${highscore}`}</Text>
+          )}
+        </View>
+      </FinishedModal>
+    </Container>
+  );
+};
+
+CricketCountUp.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   buttonsWrapper: {

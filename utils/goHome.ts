@@ -1,6 +1,10 @@
-import { StackActions, NavigationActions } from "react-navigation";
+import {
+  StackActions,
+  NavigationActions,
+  NavigationParams
+} from "react-navigation";
 
-const goHome = (nav: any) => {
+const goHome = (navigation: NavigationParams) => {
   const resetAction = StackActions.reset({
     index: 0,
     actions: [
@@ -10,7 +14,7 @@ const goHome = (nav: any) => {
     ]
   });
 
-  nav.dispatch(resetAction);
+  navigation.dispatch(resetAction);
 };
 
 export default goHome;

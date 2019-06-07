@@ -1,48 +1,45 @@
-import React from "react";
+import React, { useState, FC } from "react";
 import { StyleSheet, Image, View } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
-import { Asset, AppLoading } from "expo";
+import { AppLoading } from "expo";
+import { Asset } from "expo-asset";
 
-// Components:
+const _cacheResourcesAsync = async () => {
+  const images = [
+    require("./assets/drkdrtsicn.png"),
+    require("./assets/drkdrtsicn-sm.png")
+  ];
 
-export default class App extends React.Component {
-  state = {
-    isReady: false
-  };
+  const cacheImages = images.map(image => {
+    return Asset.fromModule(image).downloadAsync();
+  });
+  return Promise.all(cacheImages);
+};
 
-  render() {
-    if (!this.state.isReady) {
-      return (
-        <AppLoading
-          //@ts-ignore
-          startAsync={this._cacheResourcesAsync}
-          onFinish={() => this.setState({ isReady: true })}
-          onError={() => console.log("kaput")}
-        />
-      );
-    }
+const App: FC = () => {
+  const [isReady, setIsReady] = useState(false);
+
+  if (!isReady) {
     return (
-      <View style={styles.container}>
-        <AppNavigator />
-      </View>
+      <AppLoading
+        //@ts-ignore
+        startAsync={_cacheResourcesAsync}
+        onFinish={() => setIsReady(true)}
+        onError={() => console.log("kaput")}
+      />
     );
   }
-
-  async _cacheResourcesAsync() {
-    const images = [
-      require("./assets/drkdrtsicn.png"),
-      require("./assets/drkdrtsicn-sm.png")
-    ];
-
-    const cacheImages = images.map(image => {
-      return Asset.fromModule(image).downloadAsync();
-    });
-    return Promise.all(cacheImages);
-  }
-}
+  return (
+    <View style={styles.container}>
+      <AppNavigator />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1
   }
 });
+
+export default App;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { FC, useState } from "react";
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -7,7 +7,10 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import { StackActions, NavigationActions } from "react-navigation";
+import {
+  NavigationScreenComponent,
+  NavigationScreenProps
+} from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -23,122 +26,86 @@ import Scoreboard from "components/Scoreboard";
 import { smallScreen } from "utils/deviceRatio";
 import goHome from "utils/goHome";
 
-const isSmall = smallScreen();
-
 // ================================================================================================
 
 // Props:
-export interface Props {
-  navigation: any;
-}
-
-// State:
-type State = {
-  doubleIn?: boolean;
-  input?: string;
-};
+export interface Props extends NavigationScreenProps {}
 
 // ================================================================================================
 
-class OneOOneSettings extends Component<Props, State> {
-  static navigationOptions = {
-    header: null
-  };
+const OneOOneSettings: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const [input, setInput] = useState("");
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      doubleIn: true,
-      input: ""
-    };
-  }
+  const suggestions = [101, 170];
 
-  toggleDoubleIn = () => {
-    this.setState({
-      ...this.state,
-      doubleIn: !this.state.doubleIn
-    });
-  };
+  return (
+    <Container>
+      <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
+        <Headline>Custom checkouts</Headline>
+        <Text>Pick or enter the starting score</Text>
+      </Scoreboard>
 
-  handleInputChange = (input: string) => {
-    this.setState({
-      ...this.state,
-      input: input
-    });
-  };
-
-  render() {
-    const { navigation } = this.props;
-
-    const suggestions = [101, 170];
-
-    return (
-      <Container>
-        <Scoreboard flexVal={0.25} goHome={() => goHome(navigation)}>
-          <Headline>Custom checkouts</Headline>
-          <Text>Pick or enter the starting score</Text>
-        </Scoreboard>
-
-        <KeyboardAvoidingView style={styles.content} behavior="padding">
-          <View style={styles.buttonsWrapper}>
-            {suggestions.map(s => {
-              return (
-                <TouchableHighlight
-                  key={`default - ${s}`}
-                  style={styles.quickStart}
-                  onPress={() => {
-                    navigation.navigate("OneOOne", {
-                      doubleIn: this.state.doubleIn,
-                      gameHistory: [],
-                      multiplier: 1,
-                      round: 1,
-                      roundHistory: [],
-                      finished: false,
-                      bust: false,
-                      score: s
-                    });
-                  }}
-                  underlayColor={theme.primaries.lightBlues.tenth}
-                >
-                  <Text style={styles.buttonText}>{s}</Text>
-                </TouchableHighlight>
-              );
-            })}
-            <View style={styles.scoreTextfieldWrapper}>
-              <TextInput
-                keyboardType="numeric"
-                onChangeText={this.handleInputChange}
-                placeholder="Enter score"
-                value={this.state.input}
-                style={styles.scoreTextfield}
-              />
-            </View>
-            <View style={{ flex: 0.175, width: "100%" }}>
+      <KeyboardAvoidingView style={styles.content} behavior="padding">
+        <View style={styles.buttonsWrapper}>
+          {suggestions.map(s => {
+            return (
               <TouchableHighlight
+                key={`default - ${s}`}
+                style={styles.quickStart}
                 onPress={() => {
                   navigation.navigate("OneOOne", {
-                    doubleIn: this.state.doubleIn,
                     gameHistory: [],
                     multiplier: 1,
                     round: 1,
                     roundHistory: [],
                     finished: false,
                     bust: false,
-                    score: this.state.input ? parseInt(this.state.input) : 101
+                    score: s
                   });
                 }}
-                style={styles.startButton}
                 underlayColor={theme.primaries.lightBlues.tenth}
               >
-                <Text style={styles.startButtonText}>Start</Text>
+                <Text style={styles.buttonText}>{s}</Text>
               </TouchableHighlight>
-            </View>
+            );
+          })}
+          <View style={styles.scoreTextfieldWrapper}>
+            <TextInput
+              keyboardType="numeric"
+              onChangeText={input => setInput(input)}
+              placeholder="Enter score"
+              value={input}
+              style={styles.scoreTextfield}
+            />
           </View>
-        </KeyboardAvoidingView>
-      </Container>
-    );
-  }
-}
+          <View style={{ flex: 0.175, width: "100%" }}>
+            <TouchableHighlight
+              onPress={() => {
+                navigation.navigate("OneOOne", {
+                  gameHistory: [],
+                  multiplier: 1,
+                  round: 1,
+                  roundHistory: [],
+                  finished: false,
+                  bust: false,
+                  score: input ? parseInt(input) : 101
+                });
+              }}
+              style={styles.startButton}
+              underlayColor={theme.primaries.lightBlues.tenth}
+            >
+              <Text style={styles.startButtonText}>Start</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Container>
+  );
+};
+
+OneOOneSettings.navigationOptions = {
+  header: null
+};
 
 const styles = StyleSheet.create({
   header: {
