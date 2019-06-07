@@ -48,6 +48,7 @@ export interface Props extends NavigationScreenProps {
 // ================================================================================================
 
 const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
+  // State:
   const [goal, setGoal] = useState(navigation.getParam("goal", 1));
   const [round, setRound] = useState(navigation.getParam("round", 1));
   const [score, setScore] = useState(navigation.getParam("score", 27));
@@ -56,6 +57,11 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
   const [finished, setFinished] = useState(false);
   const [highscore, setHighscore] = useState(0);
+
+  // Consts:
+  const hits = [0, 1, 2, 3];
+
+  // ================================================================================================
 
   const addScore = (multiplier: number) => {
     if (score > goal * 2 - 1 || multiplier > 0) {
@@ -150,7 +156,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   };
 
-  const hits = [0, 1, 2, 3];
+  // ================================================================================================
 
   return (
     <Container>
@@ -230,17 +236,24 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
 };
 
+// ===============================================================================================
+
 Bobs27.navigationOptions = {
   header: null
 };
 
+// ===============================================================================================
+
 const styles = StyleSheet.create({
   gamestats: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    alignItems: "center",
+    flex: 0.5,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    paddingTop: 10,
     width: "100%"
   },
-  pointWrapper: {},
+  pointWrapper: { flex: 0.5 },
   pointLabel: {
     color: theme.neutrals.text,
     fontSize: 28

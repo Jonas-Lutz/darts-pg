@@ -53,6 +53,7 @@ export interface Props extends NavigationScreenProps {
 // ================================================================================================
 
 const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
+  // State:
   const [gameHistory, setGameHistory] = useState<Array<Array<Dart>>>(
     navigation.getParam("gameHistory", [])
   );
@@ -68,14 +69,29 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
   const [bust, setBust] = useState(navigation.getParam("bust", false));
   const [score, setScore] = useState(navigation.getParam("score", 101));
-  const [initialScore, setInitialScore] = useState(
-    navigation.getParam("score", 101)
-  );
   const [wayOut, setWayOut] = useState(calculateFinish(score));
 
+  // Effects:
   useEffect(() => {
-    setWayOut(calculateFinish(score));
-  }, [score]);
+    setWayOut(calculateFinish(score, 3 - roundHistory.length));
+  }, [score, roundHistory.length]);
+
+  // Consts:
+  const buttons = [];
+  for (let i = 1; i < 21; i++) {
+    buttons.push({ value: i, type: "scoreBtn" });
+  }
+
+  const initialScore = navigation.getParam("score", 101);
+
+  const specials = [
+    { label: "Bull", value: 25, type: "scoreBtn" },
+    { label: "Miss", value: 0, type: "scoreBtn" },
+    { label: "Double", value: "Double", type: "trigger" },
+    { label: "Triple", value: "Triple", type: "trigger" }
+  ];
+
+  // ================================================================================================
 
   const advanceRound = () => {
     if (!bust) {
@@ -239,19 +255,8 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   };
 
-  const buttons = [];
-  for (let i = 1; i < 21; i++) {
-    buttons.push({ value: i, type: "scoreBtn" });
-  }
+  // ================================================================================================
 
-  const specials = [
-    { label: "Bull", value: 25, type: "scoreBtn" },
-    { label: "Miss", value: 0, type: "scoreBtn" },
-    { label: "Double", value: "Double", type: "trigger" },
-    { label: "Triple", value: "Triple", type: "trigger" }
-  ];
-  /*     specials.map(s => buttons.push(s));
-   */
   return (
     <Container>
       <StatusBar hidden />
@@ -463,9 +468,13 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
 };
 
+// ================================================================================================
+
 OneOOne.navigationOptions = {
   header: null
 };
+
+// ================================================================================================
 
 const styles = StyleSheet.create({
   headline: {

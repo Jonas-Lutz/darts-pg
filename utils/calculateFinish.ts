@@ -1,4 +1,4 @@
-export const calculateFinish = (score: number) => {
+export const calculateFinish = (score: number, darts: number = 3) => {
   const finishes = [
     { score: 170, finish: ["T20", "T20", "D25"] },
     { score: 167, finish: ["T20", "T19", "D25"] },
@@ -52,16 +52,16 @@ export const calculateFinish = (score: number) => {
     { score: 113, finish: ["T20", "13", "D20"] },
     { score: 112, finish: ["T20", "12", "D20"] },
     { score: 111, finish: ["T20", "19", "D16"] },
-    { score: 110, finish: ["T20", "18", "D16"] },
+    { score: 110, finish: ["T20", "18", "D16"] }, // ["T20", "D25"]
     { score: 109, finish: ["T19", "20", "D16"] },
     { score: 108, finish: ["T20", "16", "D16"] },
-    { score: 107, finish: ["T19", "18", "D16"] },
+    { score: 107, finish: ["T19", "18", "D16"] }, // ["T19", "D25"]
     { score: 106, finish: ["T20", "14", "D16"] },
     { score: 105, finish: ["T19", "16", "D16"] },
-    { score: 104, finish: ["T18", "18", "D16"] },
+    { score: 104, finish: ["T18", "18", "D16"] }, // ["T18", "D25"]
     { score: 103, finish: ["T20", "3", "D20"] },
     { score: 102, finish: ["T20", "10", "D16"] },
-    { score: 101, finish: ["T20", "1", "D20"] },
+    { score: 101, finish: ["T20", "1", "D20"] }, // ["T17", "D25"]
     { score: 100, finish: ["T20", "D20"] },
     { score: 99, finish: ["T19", "10", "D16"] },
     { score: 98, finish: ["T20", "D19"] },
@@ -163,6 +163,24 @@ export const calculateFinish = (score: number) => {
     { score: 3, finish: ["1", "D1"] },
     { score: 2, finish: ["D1"] }
   ];
+
+  if (darts === 2) {
+    if (score === 110) {
+      return ["T20", "D25"];
+    }
+    if (score === 107) {
+      return ["T19", "D25"];
+    }
+    if (score === 104) {
+      return ["T18", "D25"];
+    }
+    if (score === 101) {
+      return ["T17", "D25"];
+    }
+  }
+  if (darts === 1) {
+    if (score === 50) return ["D25"];
+  }
 
   let wayOut = finishes.find(f => f.score === score);
   if (wayOut && wayOut.finish) {
