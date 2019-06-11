@@ -377,15 +377,20 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
         undo={removeScore}
         finished={finished}
       >
-        <View style={{ flexDirection: "column" }}>
-          <Text>{`You reached a total score of ${score} (MPR: ${(
+        <View style={styles.resultWrapper}>
+          <Text style={styles.boldResultText}>Game Finished</Text>
+          <Text style={styles.resultText}>{`Score: ${score} (MPR: ${(
             score / 7
           ).toFixed(1)}).`}</Text>
 
           {finished && highscore < score ? (
-            <Text>{`That's a new Carreer High - Gratz!`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`That's a new Carreer High - Gratz!`}</Text>
           ) : (
-            <Text>{`Carreer High: ${highscore}`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`Carreer High: ${highscore}`}</Text>
           )}
         </View>
       </FinishedModal>
@@ -448,6 +453,17 @@ const styles = StyleSheet.create({
   buttonText: {
     color: theme.primaries.lightBlues.first,
     fontSize: 24
+  },
+  resultWrapper: {
+    flexDirection: "column",
+    padding: 10
+  },
+  resultText: {
+    fontSize: 20
+  },
+  boldResultText: {
+    fontWeight: "bold",
+    fontSize: 20
   }
 });
 

@@ -457,9 +457,11 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
         undo={removeScore}
         finished={finished}
       >
-        <View>
-          <Text>GG Bruh, nice finish!</Text>
-          <Text>{`Checked out ${initialScore} in ${round} Round${
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>GG Bruh, nice finish!</Text>
+          <Text
+            style={styles.resultText}
+          >{`Checked out ${initialScore} in ${round} Round${
             round > 1 ? "s" : ""
           } (${getThrownDarts(gameHistory)} Darts)`}</Text>
         </View>
@@ -562,7 +564,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: "29.5%",
     margin: 1
-  }
+  },
+  // Finished Content
+  resultContainer: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  resultText: { fontSize: 20 }
 });
 
 export default OneOOne;

@@ -218,7 +218,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         finished={finished}
       >
         <View style={{ flexDirection: "column" }}>
-          <Text>
+          <Text style={styles.resultText}>
             {score > 0
               ? `You finished with ${score} points!`
               : `Game ended at D${goal}`}
@@ -226,9 +226,13 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
 
           {score > 1436 && <Text>We both know you cheated tho</Text>}
           {highscore && highscore > 0 && finished && highscore < score ? (
-            <Text>{`That's a new Carreer High - Gratz!`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`That's a new Carreer High - Gratz!`}</Text>
           ) : (
-            <Text>{`Carreer High: ${highscore}`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`Carreer High: ${highscore}`}</Text>
           )}
         </View>
       </FinishedModal>
@@ -252,6 +256,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 10,
     width: "100%"
+  },
+  resultText: {
+    fontSize: 20
   },
   pointWrapper: { flex: 0.5 },
   pointLabel: {

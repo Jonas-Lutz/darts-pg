@@ -411,22 +411,29 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
               })
             ]
           });
-
           navigation.dispatch(resetAction);
         }}
         undo={removeScore}
         finished={finished}
       >
-        <View style={{ flexDirection: "column" }}>
-          {shanghai && <Text>Finished by Shanghai</Text>}
-          <Text>{`You reached a total score of ${score} (MPR: ${(
+        <View style={styles.resultWrapper}>
+          {shanghai && (
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              Finished by Shanghai
+            </Text>
+          )}
+          <Text style={styles.resultText}>{`Score: ${score} (MPR: ${(
             score / gameHistory.length
           ).toFixed(1)}).`}</Text>
 
           {finished && highscore < score ? (
-            <Text>{`That's a new Carreer High - Gratz!`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`That's a new Carreer High - Gratz!`}</Text>
           ) : (
-            <Text>{`Carreer High: ${highscore}`}</Text>
+            <Text
+              style={styles.resultText}
+            >{`Carreer High: ${highscore}`}</Text>
           )}
         </View>
       </FinishedModal>
@@ -487,7 +494,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: theme.primaries.lightBlues.first,
     fontSize: 24
-  }
+  },
+  resultText: {
+    fontSize: 20
+  },
+  resultWrapper: { flexDirection: "column", padding: 10 }
 });
 
 export default Shanghai;
