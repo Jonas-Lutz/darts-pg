@@ -1,11 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  StatusBar,
-  Text,
-  TouchableHighlight,
-  View
-} from "react-native";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import {
   StackActions,
   NavigationActions,
@@ -32,12 +26,9 @@ import goHome from "utils/goHome";
 const isSmall = smallScreen();
 
 // ================================================================================================
-
 // Types:
-export interface Dart {
-  points: number;
-  multiplier: number;
-}
+import Dart from "interfaces/dart";
+import Player from "interfaces/player";
 
 // Props:
 export interface Props extends NavigationScreenProps {
@@ -48,6 +39,7 @@ export interface Props extends NavigationScreenProps {
   finished: boolean;
   bust: boolean;
   score: number;
+  selectedPlayer: Player;
 }
 
 // ================================================================================================
@@ -83,6 +75,7 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
   }
 
   const initialScore = navigation.getParam("score", 101);
+  const selectedPlayer = navigation.getParam("selectedPlayer");
 
   const specials = [
     { label: "Bull", value: 25, type: "scoreBtn" },
@@ -259,14 +252,16 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   return (
     <Container>
-      <StatusBar hidden />
-      <Scoreboard flexVal={0.33} bust={bust} goHome={() => goHome(navigation)}>
-        {/* Headline */}
-        <View style={bust ? styles.headlineBust : styles.headline}>
-          <Text style={{ color: theme.neutrals.text }}>{`Round ${round}`}</Text>
-        </View>
+      <Scoreboard
+        flexVal={0.33}
+        bust={bust}
+        headline="Checkouts"
+        leftHeadline={`Round ${round}`}
+        goHome={() => goHome(navigation)}
+      >
         {/* Score - Label */}
         <View style={styles.scoreWrapper}>
+          <Text>{selectedPlayer.name}</Text>
           <Text style={styles.scoreLabel}>{score}</Text>
         </View>
 
@@ -416,7 +411,6 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
           </View>
         </View>
       </View>
-
       {/* Navigation */}
       <GameNav
         backDisabled={gameHistory.length < 1}
@@ -497,7 +491,8 @@ const styles = StyleSheet.create({
   },
   // Score
   scoreWrapper: {
-    flex: 0.5,
+    alignItems: "center",
+    flex: 0.8,
     justifyContent: "center"
   },
   scoreLabel: {

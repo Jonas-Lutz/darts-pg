@@ -11,13 +11,15 @@
     "validate": "npm test && npm lint && tsc --noEmit"
   },
   "dependencies": {
+    "@types/uuid": "^3.4.4",
     "expo": "33.0.0",
     "expo-asset": "5.0.1",
     "expo-linear-gradient": "5.0.1",
     "react": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
     "react-navigation": "3.11.0",
-    "scheduler": "0.14.0"
+    "scheduler": "0.14.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/expo": "32.0.13",

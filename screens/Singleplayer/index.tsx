@@ -4,7 +4,6 @@ import {
   Text,
   Image,
   TouchableHighlight,
-  StatusBar,
   View
 } from "react-native";
 import {
@@ -47,7 +46,6 @@ const Singleplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   return (
     <Container>
-      <StatusBar hidden />
       <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -56,9 +54,6 @@ const Singleplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
           />
           <View style={{ alignItems: "center", justifyContent: "center" }}>
             <Headline>Singleplayer Games</Headline>
-            {/* <Text style={{ color: theme.neutrals.text }}>
-                Select a game mode
-              </Text> */}
           </View>
         </View>
       </Scoreboard>
@@ -68,7 +63,13 @@ const Singleplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
           <TouchableHighlight
             key={b.destination}
             onPress={() => {
-              navigation.navigate(b.destination);
+              navigation.navigate("PlayerSelection", {
+                followUp: b.destination,
+                multi:
+                  b.destination === "Bobs" ||
+                  b.destination === "Shanghai" ||
+                  b.destination === "CricketCountUp"
+              });
             }}
             style={
               !(index === buttons.length - 1)
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   gameBtnBorder: {
     alignItems: "center",
     justifyContent: "center",
-    borderColor: theme.neutrals.seventh,
+    borderColor: theme.neutrals.ninth,
     borderBottomWidth: 1,
     flex: 0.2,
     width: "100%"

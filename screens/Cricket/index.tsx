@@ -1,12 +1,5 @@
 import React, { FC, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  Image,
-  StatusBar,
-  View
-} from "react-native";
+import { StyleSheet, Text, Image, View } from "react-native";
 import {
   NavigationScreenComponent,
   NavigationScreenProps
@@ -35,7 +28,6 @@ export interface Props extends NavigationScreenProps {}
 const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   return (
     <Container>
-      <StatusBar hidden />
       <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
         <View style={{ flexDirection: "row" }}>
           <Image

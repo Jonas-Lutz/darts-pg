@@ -4,7 +4,6 @@ import {
   Text,
   TouchableHighlight,
   Image,
-  StatusBar,
   View
 } from "react-native";
 import {
@@ -38,7 +37,6 @@ const Home: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   return (
     <Container>
-      <StatusBar hidden />
       <Scoreboard flexVal={0.2}>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -141,7 +139,7 @@ const styles = StyleSheet.create({
   gameBtnBorder: {
     alignItems: "center",
     justifyContent: "center",
-    borderColor: theme.neutrals.seventh,
+    borderColor: theme.neutrals.ninth,
     borderBottomWidth: 1,
     flex: 0.25,
     width: "100%"

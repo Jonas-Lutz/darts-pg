@@ -1,11 +1,11 @@
-import React, { FC, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   AsyncStorage,
   StyleSheet,
-  StatusBar,
   Text,
   TouchableHighlight,
   Image,
+  ScrollView,
   View
 } from "react-native";
 import {
@@ -29,19 +29,28 @@ import { smallScreen } from "utils/deviceRatio";
 import { getLabel } from "utils/getLabel";
 import calcMPR from "utils/calcMPR";
 import goHome from "utils/goHome";
+import updateStats from "utils/updateStats";
 
 // ================================================================================================
 // Types:
 export interface ShanghaiStats {
   highscore: number;
 }
+import Player from "interfaces/player";
+
+export interface Dart {
+  multiplier: number;
+  points: number;
+}
+
+export interface PlayerRound {
+  playerId: string;
+  rounds: Dart[][];
+}
 
 // Props:
-export interface Props extends NavigationScreenProps {}
-
-export interface ThrownDart {
-  points: number;
-  multiplier: number;
+export interface Props extends NavigationScreenProps {
+  selectedPlayers: Player[];
 }
 
 // ================================================================================================
@@ -49,10 +58,6 @@ export interface ThrownDart {
 const isSmall = smallScreen();
 
 const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
-  /* static navigationOptions = {
-    header: null
-  }; */
-
   const goals = [
     1,
     2,
@@ -76,50 +81,98 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
     20
   ];
 
-  const [score, setScore] = useState(0);
-  const [gameHistory, setGameHistory] = useState<Array<Array<ThrownDart>>>([]);
-  const [roundHistory, setRoundHistory] = useState<Array<ThrownDart>>([]);
+  const selectedPlayers = navigation.getParam("selectedPlayers");
+  const [activePlayer, setActivePlayer] = useState(0);
+  const [scores, setScores] = useState(selectedPlayers.map(sp => 0));
+  const [gameHistory, setGameHistory] = useState<Array<PlayerRound>>(
+    selectedPlayers.map(sp => ({ playerId: sp.id, rounds: [] }))
+  );
+  const [roundHistory, setRoundHistory] = useState<Array<Dart>>([]);
   const [round, setRound] = useState(1);
   const [finished, setFinished] = useState(false);
   const [highscore, setHighscore] = useState(0);
   const [shanghai, setShanghai] = useState(false);
-  const [multiplier, setMultiplier] = useState(1);
+  const didMountRef = useRef(false);
+
+  // ================================================================================================
+
+  useEffect(() => {
+    if (didMountRef.current) {
+      const mode = "shanghai";
+      const shanghaiStats = selectedPlayers.map((sp, index) => ({
+        gameMode: mode as "shanghai",
+        playerId: sp.id,
+        stats: { total: scores[index] }
+      }));
+      updateStats(shanghaiStats);
+    } else {
+      didMountRef.current = true;
+    }
+  }, [finished]);
+
+  useEffect(() => {
+    console.log(
+      "// =======================NEUE RUNDE ============================================================="
+    );
+    console.log(gameHistory);
+  }, [gameHistory]);
+
+  // ================================================================================================
 
   const advanceRound = () => {
-    if (round === 20) {
-      setFinished(true);
-      updateStats();
-    } else {
-      let filledUpRoundHistory = [...roundHistory];
-      const copyGameHistory = [...gameHistory];
+    const lastPlayer = activePlayer === selectedPlayers.length - 1;
+    // Darts dieser Runde:
+    let filledUpRoundHistory: Dart[] = [...roundHistory];
 
-      // Add Misses, if less than 3 Darts were entered
-      if (filledUpRoundHistory.length < 3) {
-        for (let i = filledUpRoundHistory.length; i < 3; i++) {
-          filledUpRoundHistory.push({
-            points: 0,
-            multiplier: 0
-          });
-        }
+    // Das Gesamte Spiel:
+    const copyGameHistory = [...gameHistory];
+
+    // Runden Nummber
+    const newRound = lastPlayer ? round + 1 : round;
+
+    // Add Misses, if less than 3 Darts were entered
+    if (filledUpRoundHistory.length < 3) {
+      if (filledUpRoundHistory.length > 0) {
+        copyGameHistory[activePlayer].rounds.pop();
       }
+      for (let i = filledUpRoundHistory.length; i < 3; i++) {
+        filledUpRoundHistory.push({
+          points: 0,
+          multiplier: 0
+        });
+      }
+    }
 
-      copyGameHistory.splice(round - 1, 1, filledUpRoundHistory);
+    // filledUpRoundHistory an letzte Stelle in ActiverSpieler -> rounds packen
+    const newRounds = [
+      ...copyGameHistory[activePlayer].rounds,
+      filledUpRoundHistory
+    ];
 
-      // Update State
-      setRound(round + 1);
-      setRoundHistory([]);
-      setGameHistory(copyGameHistory);
-      setMultiplier(1);
-      setShanghai(false);
+    // neue Player history in Gamehistory verstauen
+    copyGameHistory.splice(activePlayer, 1, {
+      playerId: selectedPlayers[activePlayer].id,
+      rounds: newRounds
+    });
+
+    // Update State
+    setActivePlayer(lastPlayer ? 0 : activePlayer + 1);
+    setRound(newRound);
+    setRoundHistory([]);
+    setGameHistory(copyGameHistory);
+    setShanghai(false);
+    if (round === 20 && lastPlayer) {
+      setFinished(true);
     }
   };
 
   const countThrow = (points: number) => {
+    const playerRoundHistory = gameHistory[activePlayer].rounds;
     if (roundHistory.length < 3) {
       // Removes the current Round from Game-History
-      const copyGameHistory = [...gameHistory];
+      const copyPlayerGameHistory = [...playerRoundHistory];
       if (roundHistory.length > 0) {
-        copyGameHistory.pop();
+        copyPlayerGameHistory.pop();
       }
 
       // Update new Round-History with current throw
@@ -131,16 +184,26 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
         }
       ];
 
-      // Add Updated Round-History to Game-History
-      copyGameHistory.push(newRoundHistory);
+      // Add Updated Round-History to Player-Game-History
+      copyPlayerGameHistory.push(newRoundHistory);
 
+      // Add Updated Player Game History to overall History
+      const newGameHistory = [...gameHistory];
+
+      newGameHistory[activePlayer].rounds = copyPlayerGameHistory;
       // Shanghai ?
       const isShanghai = newRoundHistory.map(dart => dart.points);
 
-      setGameHistory(copyGameHistory);
+      setGameHistory(newGameHistory);
       setRoundHistory(newRoundHistory);
-      setMultiplier(1);
-      setScore(score - points * goals[round - 1]);
+      const newScores = [...scores];
+      newScores.splice(
+        activePlayer,
+        1,
+        scores[activePlayer] - points * goals[round - 1]
+      );
+
+      setScores(newScores);
 
       if (
         isShanghai.includes(-1) &&
@@ -158,13 +221,18 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
   };
 
   const removeScore = () => {
+    let newActivePlayer = activePlayer;
+    const firstPlayer = activePlayer === 0;
+    const prevPlayer =
+      activePlayer > 0 ? activePlayer - 1 : selectedPlayers.length - 1;
+
     // At least 1 dart thrown
-    if (gameHistory.length > 0) {
+    if (gameHistory[0].rounds.length > 0) {
       if (
         // Dart thrown previous round
-        gameHistory[gameHistory.length - 1].length > 0 ||
+        gameHistory[prevPlayer].rounds.length > 0 ||
         // or this round
-        gameHistory.length > 1
+        gameHistory[activePlayer].rounds.length > 0
       ) {
         let newRound = round;
         let newRoundHistory = [...roundHistory];
@@ -179,41 +247,73 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
 
           newRoundHistory.pop();
 
+          // Still darts left this round
           if (newRoundHistory.length > 0) {
-            updatedGameHistory.splice(
-              updatedGameHistory.length - 1,
-              1,
-              newRoundHistory
-            );
+            const removedLast = [...gameHistory[activePlayer].rounds];
+            removedLast.pop();
+
+            updatedGameHistory.splice(activePlayer, 1, {
+              playerId: selectedPlayers[activePlayer].id,
+              rounds: [...removedLast, newRoundHistory]
+            });
           } else {
-            updatedGameHistory.splice(updatedGameHistory.length - 1, 1);
+            // Removed the only dart this round
+            const removedLast = [...gameHistory[activePlayer].rounds];
+            removedLast.pop();
+            updatedGameHistory.splice(activePlayer, 1, {
+              playerId: selectedPlayers[activePlayer].id,
+              rounds: removedLast
+            });
           }
         }
         // ELSE: No darts thrown this round
         else {
-          newRound = newRound - 1 >= 1 ? newRound - 1 : 1;
-          addValue = gameHistory[newRound - 1][2].points * goals[newRound - 1];
-          newRoundHistory = [...gameHistory[newRound - 1]];
+          newActivePlayer = prevPlayer;
+          newRound = firstPlayer
+            ? newRound - 1 >= 1
+              ? newRound - 1
+              : 1
+            : round;
+
+          console.log(
+            "// ============================================================================================="
+          );
+          console.log("GameHistory: ", gameHistory);
+          console.log("NR: ", newRound);
+          addValue =
+            gameHistory[prevPlayer].rounds[newRound - 1][2].points *
+            goals[newRound - 1];
+          newRoundHistory = [...gameHistory[prevPlayer].rounds[newRound - 1]];
 
           newRoundHistory.pop();
+          gameHistory[activePlayer].rounds.pop();
 
           if (newRoundHistory.length > 0) {
-            updatedGameHistory.splice(
-              updatedGameHistory.length - 1,
-              1,
-              newRoundHistory
-            );
+            updatedGameHistory.splice(activePlayer, 1, {
+              playerId: selectedPlayers[activePlayer].id,
+              rounds: [...gameHistory[activePlayer].rounds, newRoundHistory]
+            });
           } else {
-            updatedGameHistory.splice(updatedGameHistory.length - 2, 1);
+            updatedGameHistory.splice(prevPlayer, 1, {
+              playerId: selectedPlayers[prevPlayer].id,
+              rounds: [...gameHistory[prevPlayer].rounds, newRoundHistory]
+            });
           }
         }
 
+        const newScores = [...scores];
+        newScores.splice(
+          newActivePlayer,
+          1,
+          newScores[newActivePlayer] + addValue
+        );
+
         // Update State
+        setActivePlayer(newActivePlayer);
         setRound(newRound <= 1 ? 1 : newRound);
-        setScore(score + addValue);
+        setScores(newScores);
         setRoundHistory(newRoundHistory);
         setGameHistory(updatedGameHistory);
-        setMultiplier(1);
         setFinished(false);
         setShanghai(false);
       }
@@ -222,67 +322,54 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   };
 
-  // Fetch existing stats from storage
-  const fetchStats = async () => {
-    try {
-      const value = await AsyncStorage.getItem("shanghai");
-      if (value) {
-        return JSON.parse(value);
-      } else {
-        return { highscore: 0 };
-      }
-    } catch {
-      return { highscore: 0 };
-    }
-  };
-
-  // Append new stats to old existing
-  const mergeStats = (oldStats: ShanghaiStats) => {
-    const highscore = Math.max(oldStats.highscore, score);
-    return {
-      highscore: highscore
-    };
-  };
-
-  // Update stats in storage
-  const saveStats = async (highscore: ShanghaiStats) => {
-    try {
-      const res = await AsyncStorage.setItem(
-        "shanghai",
-        JSON.stringify(highscore)
-      );
-      //@ts-ignore
-      if (res) console.log("saved: ", res);
-    } catch {
-      console.log("error saving stats");
-    }
-  };
-
-  // Calls the methods
-  const updateStats = async () => {
-    try {
-      let currHigh = await fetchStats();
-      setHighscore(currHigh.highscore);
-      const mergedStats = mergeStats(currHigh);
-      saveStats(mergedStats);
-    } catch {
-      console.log("error updating stats");
-    }
-  };
+  // ================================================================================================
 
   return (
     <Container>
-      <StatusBar hidden />
-      <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
-        <View style={styles.mprWrapper}>
-          <Text style={styles.mprText}>{`MPR: ${calcMPR(
-            score,
-            Math.max(1, round - 1 + roundHistory.length / 3)
-          )}`}</Text>
-        </View>
-        <View style={styles.scoreWrapper}>
-          <Text style={styles.scoreText}>{`${score}`}</Text>
-        </View>
+      <Scoreboard
+        flexVal={0.3}
+        goHome={() => goHome(navigation)}
+        headline="Shanghai"
+      >
+        <ScrollView
+          horizontal
+          contentContainerStyle={{
+            width: "100%",
+            flex: 1,
+            flexDirection: "row"
+          }}
+        >
+          {selectedPlayers.map((sp: Player, index: number) => (
+            <View
+              key={sp.id}
+              style={{
+                alignItems: "center",
+                backgroundColor:
+                  index === activePlayer
+                    ? theme.primaries.yellows.ninth
+                    : "transparent",
+                marginBottom: 2,
+                width:
+                  selectedPlayers.length > 2
+                    ? "33.3333%"
+                    : selectedPlayers.length === 1
+                    ? "100%"
+                    : "50%"
+              }}
+            >
+              <Text style={styles.nameText}>{sp.name}</Text>
+              <View style={styles.scoreWrapper}>
+                <Text style={styles.scoreText}>{`${scores[index]}`}</Text>
+              </View>
+              <View style={styles.mprWrapper}>
+                <Text style={styles.mprText}>{`MPR: ${calcMPR(
+                  scores[index],
+                  Math.max(1, round - 1 + roundHistory.length / 3)
+                )}`}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
         <View style={styles.dartsDisplay}>
           <View style={styles.dartsDisplayDart}>
             <Text style={styles.dartText}>
@@ -407,7 +494,10 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
             index: 0,
             actions: [
               NavigationActions.navigate({
-                routeName: "Shanghai"
+                routeName: "Shanghai",
+                params: {
+                  selectedPlayers: selectedPlayers
+                }
               })
             ]
           });
@@ -419,22 +509,32 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
         <View style={styles.resultWrapper}>
           {shanghai && (
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-              Finished by Shanghai
+              {`${
+                selectedPlayers[activePlayer].name
+              } wins! Finished by Shanghai`}
             </Text>
           )}
-          <Text style={styles.resultText}>{`Score: ${score} (MPR: ${(
-            score / gameHistory.length
-          ).toFixed(1)}).`}</Text>
+          {selectedPlayers.map((sp, index) => (
+            <View key={sp.id}>
+              <Text>{sp.name}</Text>
+              <Text style={styles.resultText}>{`Score: ${
+                scores[index]
+              } (MPR: ${(
+                scores[index] /
+                (gameHistory.length / selectedPlayers.length)
+              ).toFixed(1)}).`}</Text>
 
-          {finished && highscore < score ? (
-            <Text
-              style={styles.resultText}
-            >{`That's a new Carreer High - Gratz!`}</Text>
-          ) : (
-            <Text
-              style={styles.resultText}
-            >{`Carreer High: ${highscore}`}</Text>
-          )}
+              {finished && highscore < scores[index] ? (
+                <Text
+                  style={styles.resultText}
+                >{`That's a new Carreer High - Gratz!`}</Text>
+              ) : (
+                <Text
+                  style={styles.resultText}
+                >{`Carreer High: ${highscore}`}</Text>
+              )}
+            </View>
+          ))}
         </View>
       </FinishedModal>
     </Container>
@@ -458,6 +558,9 @@ const styles = StyleSheet.create({
     marginBottom: 1,
     height: "100%",
     width: "100%"
+  },
+  nameText: {
+    color: theme.neutrals.text
   },
   mprText: {
     color: theme.neutrals.text,
@@ -488,7 +591,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     color: theme.neutrals.text,
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: "bold"
   },
   buttonText: {

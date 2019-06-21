@@ -15,16 +15,18 @@ import Scoreboard from "components/Scoreboard";
 import goHome from "utils/goHome";
 
 // ================================================================================================
+// Types:
+import Player from "interfaces/player";
 
 // Props:
-export interface Props extends NavigationScreenProps {}
+export interface Props extends NavigationScreenProps {
+  selectedPlayers: Player[];
+}
 
 // ================================================================================================
 
-const Settings: NavigationScreenComponent<Props> = ({
-  children,
-  navigation
-}) => {
+const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
+  const selectedPlayer = navigation.getParam("selectedPlayers")[0];
   const buttonArray = [];
 
   for (let i = 1; i <= 20; i++) {
@@ -34,7 +36,11 @@ const Settings: NavigationScreenComponent<Props> = ({
 
   return (
     <Container>
-      <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
+      <Scoreboard
+        flexVal={0.2}
+        goHome={() => goHome(navigation)}
+        headline="60 on X"
+      >
         <Text style={{ color: theme.neutrals.text, fontSize: 24 }}>
           Select a field
         </Text>
@@ -50,7 +56,8 @@ const Settings: NavigationScreenComponent<Props> = ({
                 score: 0,
                 gameHistory: [],
                 roundHistory: [],
-                fetchedStats: []
+                fetchedStats: [],
+                selectedPlayer: selectedPlayer
               });
             }}
             style={styles.goalButton}

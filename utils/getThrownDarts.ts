@@ -1,8 +1,5 @@
 // Types:
-export interface Dart {
-  points: number;
-  multiplier: number;
-}
+import Dart from "interfaces/dart";
 
 export default (darts: Dart[][]) => {
   let throwndarts = 0;

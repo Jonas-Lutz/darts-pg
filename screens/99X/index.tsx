@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
-  StatusBar,
   Image,
   Text,
   TouchableHighlight,
@@ -23,31 +22,40 @@ import Scoreboard from "components/Scoreboard";
 // Utils
 import { getLabel } from "utils/getLabel";
 import goHome from "utils/goHome";
+import updateStats from "utils/updateStats";
 
 // ================================================================================================
+// Types
+import NoIdDart from "interfaces/noIdDart";
+import Player from "interfaces/player";
 
 // Props:
 export interface Props extends NavigationScreenProps {
   goal: number;
   round: number;
   score: number;
-}
-
-export interface ThrownDart {
-  goal: number;
-  multiplier: number;
+  selectedPlayer: Player;
 }
 
 // ================================================================================================
 
 const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
-  // State
+  // State + Constants
   const [round, setRound] = useState(navigation.getParam("round", 1));
   const [score, setScore] = useState(navigation.getParam("score", 0));
-  const [gameHistory, setGameHistory] = useState<Array<Array<ThrownDart>>>([]);
-  const [roundHistory, setRoundHistory] = useState<Array<ThrownDart>>([]);
-
+  const [gameHistory, setGameHistory] = useState<Array<Array<NoIdDart>>>([]);
+  const [roundHistory, setRoundHistory] = useState<Array<NoIdDart>>([]);
   const goal = navigation.getParam("goal", 20);
+  const selectedPlayer = navigation.getParam("selectedPlayer");
+
+  // ==============================================================================================
+  /* 
+  useEffect(() => {
+    console.log(
+      "// =============================================================================================="
+    );
+    console.log(gameHistory);
+  }, [gameHistory]); */
 
   // ==============================================================================================
 
@@ -60,8 +68,9 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
         const newRoundHistory = [
           ...roundHistory,
           {
-            goal: goal,
-            multiplier: multiplier
+            points: goal,
+            multiplier: multiplier,
+            playerId: selectedPlayer.id
           }
         ];
 
@@ -84,7 +93,7 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
       if (filledUpRoundHistory.length < 3) {
         for (let i = filledUpRoundHistory.length; i < 3; i++) {
           filledUpRoundHistory.push({
-            goal: goal,
+            points: goal,
             multiplier: 0
           });
         }
@@ -176,9 +185,16 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   return (
     <Container>
-      <StatusBar hidden />
-      <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
+      <Scoreboard
+        flexVal={0.3}
+        headline={`60 on ${goal}`}
+        goHome={() => goHome(navigation)}
+        leftHeadline={round < 21 ? `Round ${round}` : "Finished"}
+      >
         <View style={styles.gamestats}>
+          <Text style={styles.playerLabel}>{selectedPlayer.name}</Text>
+          <Text style={styles.scoreLabelText}>{`${score}`}</Text>
+
           <View
             style={{
               flexDirection: "row",
@@ -187,14 +203,6 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
             }}
           >
             <Text style={{ color: theme.neutrals.text }}>
-              {round < 21 ? `Round ${round}` : "Finished"}
-            </Text>
-            <Text style={{ color: theme.neutrals.text }}>
-              {`PPR: ${(
-                score / Math.max(1, round - 1 + roundHistory.length / 3)
-              ).toFixed(2)}`}
-            </Text>
-            <Text style={{ color: theme.neutrals.text }}>
               {`MPR: ${(
                 score /
                 goal /
@@ -202,8 +210,6 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
               ).toFixed(2)}`}
             </Text>
           </View>
-
-          <Text style={styles.scoreLabelText}>{`${score}`}</Text>
         </View>
         <View style={styles.thrownDarts}>
           <View style={styles.dartScore}>
@@ -320,10 +326,45 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
         backDisabled={gameHistory.length < 1}
         moveOn={() => {
           if ((round === 20 && roundHistory.length === 3) || round > 20) {
+            const mode = "nineNineX";
+            let darts: NoIdDart[] = [];
+            gameHistory.map((round: NoIdDart[]) => {
+              round.map((dart: NoIdDart) => {
+                darts.push(dart);
+              });
+            });
+            const misses = darts.filter(dart => dart.multiplier === 0).length;
+            const triples = darts.filter(dart => dart.multiplier === 3).length;
+            const doubles = darts.filter(dart => dart.multiplier === 2).length;
+            const singles = darts.filter(dart => dart.multiplier === 1).length;
+            const hits = darts.length - misses;
+            const successRate = (100 * hits) / darts.length;
+            const tripleRate = (100 * triples) / darts.length;
+            const doubleRate = (100 * doubles) / darts.length;
+            const singleRate = (100 * singles) / darts.length;
+            const ppr =
+              ((triples * 3 + doubles * 2 + singles) * 3) / darts.length;
+            updateStats([
+              {
+                gameMode: mode as "nineNineX",
+                stats: {
+                  goal: goal,
+                  darts: darts,
+                  tripleRate: tripleRate,
+                  doubleRate: doubleRate,
+                  singleRate: singleRate,
+                  hitRate: successRate,
+                  ppr: ppr
+                },
+                playerId: selectedPlayer.id
+              }
+            ]);
+
             navigation.navigate("NineNineXStats", {
               gameHistory: gameHistory,
               goal: goal,
-              score: score
+              score: score,
+              selectedPlayer: selectedPlayer
             });
           } else {
             advanceRound();
@@ -419,8 +460,12 @@ const styles = StyleSheet.create({
   },
   scoreLabelText: {
     color: theme.neutrals.text,
-    fontSize: 26,
+    fontSize: 34,
     fontWeight: "bold"
+  },
+  playerLabel: {
+    color: theme.neutrals.text,
+    fontSize: 15
   }
 });
 

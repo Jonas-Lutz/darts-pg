@@ -1,5 +1,5 @@
 import React, { useState, FC } from "react";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import { AppLoading } from "expo";
 import { Asset } from "expo-asset";

@@ -1,18 +1,19 @@
-import React, { FC, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
+  AsyncStorage,
   StyleSheet,
   Text,
   TextInput,
-  TouchableHighlight,
   Image,
-  StatusBar,
   ScrollView,
-  View
+  View,
+  Keyboard
 } from "react-native";
 import {
   NavigationScreenComponent,
   NavigationScreenProps
 } from "react-navigation";
+import uuidv4 from "uuid";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -22,66 +23,69 @@ import theme from "theme";
 
 // Components:
 import Container from "components/Container";
+import Profile from "components/Profile";
 import Scoreboard from "components/Scoreboard";
 
 // Utils
 import goHome from "utils/goHome";
+import loadPlayers from "utils/loadPlayers";
+import savePlayers from "utils/savePlayers";
+import initPlayerStats from "utils/initPlayerStats";
+import deletePlayerStats from "utils/deletePlayerStats";
 
 // ================================================================================================
 
 // Props:
 export interface Props extends NavigationScreenProps {}
 
-export interface Player {
-  name: string;
-}
+// Types:
+import Player from "interfaces/player";
 
 // ================================================================================================
 
 const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
-  const [editInput, setEditInput] = useState("");
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Array<Player>>([]);
-  const [editPosition, setEditPosition] = useState(-1);
 
-  const editFieldRef = useRef<TextInput>(null);
+  useEffect(() => {
+    loadPlayers({ setLoading, setPlayers });
+  }, []);
 
   const handleAddPlayer = () => {
+    Keyboard.dismiss();
+    const id = uuidv4();
+    const newPlayers = [
+      ...players,
+      { name: input, id: id, lastGamePlayed: new Date("timestamp") }
+    ];
     setInput("");
-    setPlayers([...players, { name: input }]);
+    setPlayers(newPlayers);
+    savePlayers(newPlayers);
+    initPlayerStats(id);
   };
 
   const handleDeletePlayer = (index: number) => {
     const newPlayers = [...players];
     newPlayers.splice(index, 1);
     setPlayers(newPlayers);
-  };
-
-  const handleRenamePlayer = () => {
-    const newPlayers = [...players];
-    newPlayers.splice(editPosition, 1, {
-      name: editInput
-    });
-    setPlayers(newPlayers);
-  };
-
-  const handleToggleEditPlayer = (index: number) => {
-    if (editFieldRef.current) editFieldRef.current.focus();
-    setEditInput(players[index].name);
-    setEditPosition(index);
+    savePlayers(newPlayers);
+    deletePlayerStats(players[index].id);
   };
 
   const handleInputChange = (input: string) => {
     setInput(input);
   };
 
-  const handleEditInputChange = (input: string) => {
-    setEditInput(input);
+  const handleRenamePlayer = (player: Player, index: number) => {
+    const newPlayers = [...players];
+    newPlayers.splice(index, 1, { name: player.name, ...player });
+    setPlayers(newPlayers);
+    savePlayers(newPlayers);
   };
 
   return (
     <Container>
-      <StatusBar hidden />
       <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>
         <View style={{ flexDirection: "row" }}>
           <Image
@@ -90,62 +94,54 @@ const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
           />
           <View style={{ alignItems: "center", justifyContent: "center" }}>
             <Headline>Settings</Headline>
-            {/*               <Text style={{ color: theme.neutrals.text }}>Coming soon!</Text>
-             */}
           </View>
           <View style={{ width: 75 }} />
         </View>
       </Scoreboard>
       <View style={styles.statContent}>
-        <Text style={styles.contentHeadline}>Players</Text>
-        <View style={styles.addPlayer}>
-          <TextInput
-            onChangeText={handleInputChange}
-            onSubmitEditing={handleAddPlayer}
-            placeholder="Add player"
-            style={styles.addPlayerTextfield}
-            value={input}
-          />
-          <TouchableHighlight onPress={handleAddPlayer}>
-            <Text>Add</Text>
-          </TouchableHighlight>
-        </View>
-        <View style={styles.playerListWrapper}>
-          <ScrollView style={styles.playerList}>
-            {players && players.length ? (
-              players.map((p: Player, index: number) => (
-                <View key={`${index}-${p.name}`} style={styles.player}>
-                  {editPosition === index ? (
-                    <TextInput
-                      ref={editFieldRef}
-                      onChangeText={handleEditInputChange}
-                      onSubmitEditing={handleRenamePlayer}
-                      placeholder={players[index].name}
-                      style={styles.addPlayerTextfield}
-                      value={editInput}
+        {loading ? (
+          <Text>Loading Players</Text>
+        ) : (
+          <>
+            <Text style={styles.contentHeadline}>Players</Text>
+            <View style={styles.addPlayer}>
+              <TextInput
+                onChangeText={handleInputChange}
+                onSubmitEditing={handleAddPlayer}
+                placeholder="Add player"
+                style={styles.addPlayerTextfield}
+                value={input}
+              />
+            </View>
+            <View style={styles.playerListWrapper}>
+              <ScrollView style={styles.playerList}>
+                {players && players.length ? (
+                  players.map((p: Player, index: number) => (
+                    <Profile
+                      key={p.id}
+                      id={p.id}
+                      index={index}
+                      name={p.name}
+                      onDelete={index => handleDeletePlayer(index)}
+                      onRename={() => {
+                        handleRenamePlayer(p, index);
+                      }}
                     />
-                  ) : (
-                    <Text style={styles.playerText}>{p.name}</Text>
-                  )}
-                  <View style={{ flexDirection: "row" }}>
-                    <TouchableHighlight
-                      onPress={() => handleToggleEditPlayer(index)}
-                    >
-                      <Text>Edt</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                      onPress={() => handleDeletePlayer(index)}
-                    >
-                      <Text>Del</Text>
-                    </TouchableHighlight>
-                  </View>
-                </View>
-              ))
-            ) : (
-              <Text style={{ fontSize: 20 }}>Please create a Player</Text>
-            )}
-          </ScrollView>
-        </View>
+                  ))
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      color: theme.neutrals.text
+                    }}
+                  >
+                    Please create a Player
+                  </Text>
+                )}
+              </ScrollView>
+            </View>
+          </>
+        )}
       </View>
     </Container>
   );
@@ -163,7 +159,7 @@ const styles = StyleSheet.create({
   statContent: {
     alignItems: "center",
     flex: 0.8,
-    padding: 5,
+    padding: 10,
     width: "100%"
   },
   addPlayer: {
@@ -220,7 +216,8 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   playerText: {
-    fontSize: 20
+    fontSize: 20,
+    color: theme.neutrals.text
   }
 });
 

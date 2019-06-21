@@ -27,15 +27,19 @@ import { smallScreen } from "utils/deviceRatio";
 import goHome from "utils/goHome";
 
 // ================================================================================================
+// Types:
+import Player from "interfaces/player";
 
 // Props:
-export interface Props extends NavigationScreenProps {}
+export interface Props extends NavigationScreenProps {
+  selectedPlayers: Player[];
+}
 
 // ================================================================================================
 
 const OneOOneSettings: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [input, setInput] = useState("");
-
+  const selectedPlayer = navigation.getParam("selectedPlayers")[0];
   const suggestions = [101, 170];
 
   return (
@@ -60,7 +64,8 @@ const OneOOneSettings: NavigationScreenComponent<Props> = ({ navigation }) => {
                     roundHistory: [],
                     finished: false,
                     bust: false,
-                    score: s
+                    score: s,
+                    selectedPlayer: selectedPlayer
                   });
                 }}
                 underlayColor={theme.primaries.lightBlues.tenth}

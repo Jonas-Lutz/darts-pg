@@ -26,6 +26,9 @@ import HomeScreen from "screens/Home";
 // Multiplayer:
 import Multiplayer from "screens/Multiplayer";
 
+// PlayerSelection:
+import PlayerSelection from "screens/PlayerSelection";
+
 // Settings:
 import Settings from "screens/Settings";
 
@@ -53,6 +56,7 @@ const AppNavigator = createStackNavigator(
     NineNineXStats,
     OneOOne,
     OneOOneSettings,
+    PlayerSelection,
     Settings,
     Shanghai,
     Singleplayer,

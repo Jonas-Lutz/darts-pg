@@ -1,12 +1,12 @@
-import React, { FC, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   AsyncStorage,
   StyleSheet,
-  StatusBar,
   Text,
   TouchableHighlight,
   Image,
-  View
+  View,
+  ScrollView
 } from "react-native";
 import {
   NavigationScreenComponent,
@@ -29,14 +29,18 @@ import { smallScreen } from "utils/deviceRatio";
 import { getLabel } from "utils/getLabel";
 import calcMPR from "utils/calcMPR";
 import goHome from "utils/goHome";
+import updateStats from "utils/updateStats";
 
 const isSmall = smallScreen();
 
 // ================================================================================================
 // Types:
-export interface ThrowObject {
-  points: number;
-  multiplier: number;
+import noIdDart from "interfaces/noIdDart";
+import Player from "interfaces/player";
+
+export interface PlayerRound {
+  playerId: string;
+  rounds: number[][];
 }
 
 export interface CricketCountUpStats {
@@ -44,214 +48,265 @@ export interface CricketCountUpStats {
 }
 
 // Props:
-export interface Props extends NavigationScreenProps {}
+export interface Props extends NavigationScreenProps {
+  selectedPlayers: Player[];
+}
 
 // ================================================================================================
 
 const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
-  const [score, setScore] = useState(0);
-  const [gameHistory, setGameHistory] = useState<
-    Array<Array<ThrowObject>> | []
-  >([]);
-  const [roundHistory, setRoundHistory] = useState<Array<ThrowObject> | []>([]);
-  const [round, setRound] = useState(1);
-  const [finished, setFinished] = useState(false);
-  const [highscore, setHighscore] = useState(0);
-  const [multiplier, setMultiplier] = useState(1);
-  const [bust, setBust] = useState(false);
-
   const goals = [20, 19, 18, 17, 16, 15, 25];
 
-  const advanceRound = () => {
-    if (round === 7) {
-      setFinished(true);
-      updateStats();
+  const selectedPlayers = navigation.getParam("selectedPlayers");
+  const [gameHistory, setGameHistory] = useState<Array<PlayerRound>>(
+    selectedPlayers.map(sp => ({ playerId: sp.id, rounds: [] }))
+  );
+  const [scores, setScores] = useState(selectedPlayers.map(sp => 0));
+  const [roundHistory, setRoundHistory] = useState<Array<number>>([]);
+  const [round, setRound] = useState(1);
+
+  const [finished, setFinished] = useState(false);
+  const [highscore, setHighscore] = useState(0);
+  const [activePlayer, setActivePlayer] = useState(0);
+  const didMountRef = useRef(false);
+
+  // ================================================================================================
+
+  useEffect(() => {
+    if (didMountRef.current) {
+      const mode = "cricketCountUp";
+      /* const shanghaiStats = selectedPlayers.map((sp, index) => ({
+        gameMode: mode as "shanghai",
+        playerId: sp.id,
+        stats: { total: scores[index] }
+      }));
+      updateStats(shanghaiStats); */
     } else {
-      let filledUpRoundHistory: ThrowObject[] = [...roundHistory];
-      const copyGameHistory: ThrowObject[][] = [...gameHistory];
+      didMountRef.current = true;
+    }
+  }, [finished]);
 
-      // Add Misses, if less than 3 Darts were entered
-      if (filledUpRoundHistory.length < 3) {
-        for (let i = filledUpRoundHistory.length; i < 3; i++) {
-          filledUpRoundHistory.push({
-            points: 0,
-            multiplier: 0
-          });
-        }
+  useEffect(() => {
+    console.log(
+      "================================================================="
+    );
+    console.log(gameHistory);
+  }, [gameHistory]);
+
+  // ================================================================================================
+
+  /* 
+    Advances the round and/or player
+    Fills up the roundHistory with misses, if less than 3 darts were entered
+   */
+  const advanceRound = () => {
+    const copyGameHistory = [...gameHistory];
+    // Last player in Array?
+    const isLastPlayer = activePlayer === selectedPlayers.length - 1;
+
+    // Darts dieser Runde:
+    let filledUpRoundHistory: number[] = [...roundHistory];
+    // Add Misses
+    if (filledUpRoundHistory.length < 3) {
+      for (let i = filledUpRoundHistory.length; i < 3; i++) {
+        filledUpRoundHistory.push(0);
       }
+    }
 
-      copyGameHistory.splice(round - 1, 1, filledUpRoundHistory);
+    // letztes Element aus Player-Round-History entfernen (wird ersetzt)
+    if (copyGameHistory[activePlayer].rounds.length === round) {
+      copyGameHistory[activePlayer].rounds.pop();
+    }
 
-      // Update State
-      setRound(round + 1);
-      setRoundHistory([]);
-      setGameHistory(copyGameHistory);
-      setMultiplier(1);
+    // filledUpRoundHistory an letzte Stelle in Player-Round-History packen
+    const newRounds = [
+      ...copyGameHistory[activePlayer].rounds,
+      filledUpRoundHistory
+    ];
+
+    // neue Player history in Gamehistory verstauen
+    copyGameHistory.splice(activePlayer, 1, {
+      playerId: selectedPlayers[activePlayer].id,
+      rounds: newRounds
+    });
+
+    // Update State
+    setActivePlayer(isLastPlayer ? 0 : activePlayer + 1);
+    setRound(isLastPlayer ? round + 1 : round);
+    setRoundHistory([]);
+    setGameHistory(copyGameHistory);
+    if (round === 7 && isLastPlayer) {
+      setFinished(true);
     }
   };
 
   const countThrow = (points: number) => {
-    if (roundHistory.length < 3 && !bust) {
-      // Removes the current Round from Game-History
-      const copyGameHistory: Array<Array<ThrowObject>> = [...gameHistory];
+    const playerRoundHistory = gameHistory[activePlayer].rounds;
+
+    if (roundHistory.length < 3) {
+      // Removes the current Round from Players Game-History
+      const copyPlayerGameHistory = [...playerRoundHistory];
       if (roundHistory.length > 0) {
-        copyGameHistory.pop();
+        copyPlayerGameHistory.pop();
       }
 
       // Update new Round-History with current throw
-      const newRoundHistory: Array<ThrowObject> = [
-        ...roundHistory,
-        {
-          points: points,
-          multiplier: points === 0 ? 0 : 1
-        }
-      ];
+      const newRoundHistory = [...roundHistory, points];
 
-      // Add Updated Round-History to Game-History
-      copyGameHistory.push(newRoundHistory);
+      // Add Updated Round-History to Player Game-History
+      copyPlayerGameHistory.push(newRoundHistory);
+
+      // Add Updated Player Game History to overall History
+      const newGameHistory = [...gameHistory];
+
+      newGameHistory[activePlayer].rounds = copyPlayerGameHistory;
 
       // Update State
-      setScore(score - points);
-      setGameHistory(copyGameHistory);
+      const newScores = [...scores];
+      newScores.splice(activePlayer, 1, scores[activePlayer] + points);
+
+      setScores(newScores);
+      setGameHistory(newGameHistory);
       setRoundHistory(newRoundHistory);
-      setMultiplier(1);
-      setFinished(false);
     }
   };
-
   const removeScore = () => {
-    // At least 1 dart thrown
-    if (gameHistory.length > 0) {
-      if (
-        // Dart thrown previous round
-        gameHistory[gameHistory.length - 1].length > 0 ||
-        // or this round
-        gameHistory.length > 1
-      ) {
-        let newRound = round;
-        let newRoundHistory = [...roundHistory];
-        let updatedGameHistory = [...gameHistory];
-        let addValue = 0;
+    const firstPlayer = activePlayer === 0;
+    const prevPlayer =
+      activePlayer > 0 ? activePlayer - 1 : selectedPlayers.length - 1;
 
-        // IF: darts thrown this round
-        if (roundHistory.length > 0) {
-          // Value to add to game score
-          addValue = roundHistory[roundHistory.length - 1].points;
+    const removePlayer = roundHistory.length > 0 ? activePlayer : prevPlayer;
 
-          newRoundHistory.pop();
+    if (
+      // Dart thrown previous round
+      gameHistory[prevPlayer].rounds.length > 0 ||
+      // or this round
+      gameHistory[activePlayer].rounds.length > 0
+    ) {
+      let newRound = round;
+      let newRoundHistory = [...roundHistory];
+      let updatedGameHistory = [...gameHistory];
+      let removeValue = 0;
 
-          if (newRoundHistory.length > 0) {
-            updatedGameHistory.splice(
-              updatedGameHistory.length - 1,
-              1,
-              newRoundHistory
-            );
-          } else {
-            updatedGameHistory.splice(updatedGameHistory.length - 1, 1);
-          }
+      // IF: darts thrown this round
+      if (roundHistory.length > 0) {
+        // Value to add to game score
+        removeValue = roundHistory[roundHistory.length - 1];
+
+        newRoundHistory.pop();
+
+        // Still darts left this round
+        if (newRoundHistory.length > 0) {
+          const removedLast = [...gameHistory[removePlayer].rounds];
+          removedLast.pop();
+
+          updatedGameHistory.splice(removePlayer, 1, {
+            playerId: selectedPlayers[removePlayer].id,
+            rounds: [...removedLast, newRoundHistory]
+          });
+        } else {
+          // Removed the only dart this round
+          const removedLast = [...gameHistory[removePlayer].rounds];
+          removedLast.pop();
+          updatedGameHistory.splice(removePlayer, 1, {
+            playerId: selectedPlayers[removePlayer].id,
+            rounds: removedLast
+          });
         }
-        // ELSE: No darts thrown this round
-        else {
-          newRound = newRound - 1 >= 1 ? newRound - 1 : 1;
-          addValue = gameHistory[newRound - 1][2].points;
-          newRoundHistory = [...gameHistory[newRound - 1]];
+      }
+      // ELSE: No darts thrown this round
+      else {
+        newRound = firstPlayer ? (newRound - 1 >= 1 ? newRound - 1 : 1) : round;
 
-          newRoundHistory.pop();
+        removeValue = gameHistory[removePlayer].rounds[newRound - 1][2];
+        newRoundHistory = [...gameHistory[removePlayer].rounds[newRound - 1]];
 
-          if (newRoundHistory.length > 0) {
-            updatedGameHistory.splice(
-              updatedGameHistory.length - 1,
-              1,
-              newRoundHistory
-            );
-          } else {
-            updatedGameHistory.splice(updatedGameHistory.length - 2, 1);
-          }
+        newRoundHistory.pop();
+
+        if (newRoundHistory.length > 0) {
+          updatedGameHistory[removePlayer].rounds.pop();
+          updatedGameHistory.splice(removePlayer, 1, {
+            playerId: selectedPlayers[removePlayer].id,
+            rounds: [...gameHistory[removePlayer].rounds, newRoundHistory]
+          });
+        } else {
+          updatedGameHistory.splice(removePlayer, 1, {
+            playerId: selectedPlayers[removePlayer].id,
+            rounds: [...gameHistory[removePlayer].rounds, newRoundHistory]
+          });
         }
-
-        // Update State
-        setRound(newRound <= 1 ? 1 : newRound);
-        setScore(score + addValue);
-        setRoundHistory(newRoundHistory);
-        setGameHistory(updatedGameHistory);
-        setMultiplier(1);
-        setFinished(false);
-        setBust(false);
       }
-    } else {
-      setRound(1);
-    }
-  };
 
-  // Fetch existing stats from storage
-  const fetchStats = async () => {
-    try {
-      const value = await AsyncStorage.getItem("cricketCountUp");
-      if (value) {
-        return JSON.parse(value);
-      } else {
-        return { highscore: 0 };
-      }
-    } catch {
-      return { highscore: 0 };
-    }
-  };
+      const newScores = [...scores];
+      newScores.splice(removePlayer, 1, newScores[removePlayer] - removeValue);
 
-  // Append new stats to old existing
-  const mergeStats = (oldStats: CricketCountUpStats) => {
-    const highscore = Math.max(oldStats.highscore, score);
-    return {
-      highscore: highscore
-    };
-  };
-
-  // Update stats in storage
-  const saveStats = async (highscore: CricketCountUpStats) => {
-    try {
-      const res = await AsyncStorage.setItem(
-        "cricketCountUp",
-        JSON.stringify(highscore)
-      );
-      //@ts-ignore
-      if (res) console.log("saved: ", res);
-    } catch {
-      console.log("error saving stats");
-    }
-  };
-
-  // Calls the methods
-  const updateStats = async () => {
-    try {
-      let currHigh = await fetchStats();
-      setHighscore(currHigh.highscore);
-      const mergedStats = mergeStats(currHigh);
-      saveStats(mergedStats);
-    } catch {
-      console.log("error updating stats");
+      // Update State
+      setActivePlayer(removePlayer);
+      setRound(newRound <= 1 ? 1 : newRound);
+      setScores(newScores);
+      setRoundHistory(newRoundHistory);
+      setGameHistory(updatedGameHistory);
+      setFinished(false);
     }
   };
 
   return (
     <Container>
-      <StatusBar hidden />
-      <Scoreboard flexVal={0.3} goHome={() => goHome(navigation)}>
-        <View style={styles.mprWrapper}>
-          <Text style={styles.mprText}>{`MPR: ${calcMPR(
-            score,
-            Math.max(1, round - 1 + roundHistory.length / 3)
-          )}`}</Text>
-        </View>
-        <View style={styles.scoreWrapper}>
-          <Text style={styles.scoreText}>{`${score}`}</Text>
-        </View>
+      <Scoreboard
+        flexVal={0.3}
+        headline="Cricket Count Up"
+        goHome={() => goHome(navigation)}
+      >
+        <ScrollView
+          horizontal
+          contentContainerStyle={{
+            width: "100%",
+            flex: 1,
+            flexDirection: "row"
+          }}
+        >
+          {selectedPlayers.map((sp: Player, index: number) => (
+            <View
+              key={sp.id}
+              style={{
+                alignItems: "center",
+                backgroundColor:
+                  index === activePlayer
+                    ? theme.primaries.yellows.ninth
+                    : "transparent",
+                marginBottom: 2,
+                width:
+                  selectedPlayers.length > 2
+                    ? "33.3333%"
+                    : selectedPlayers.length === 1
+                    ? "100%"
+                    : "50%"
+              }}
+            >
+              <View style={styles.playerNameWrapper}>
+                <Text style={styles.playerName}>Player 1</Text>
+              </View>
+              <View style={styles.scoreWrapper}>
+                <Text style={styles.scoreText}>{`${scores[index]}`}</Text>
+              </View>
+              <View style={styles.mprWrapper}>
+                <Text style={styles.mprText}>{`MPR: ${calcMPR(
+                  scores[index],
+                  Math.max(1, round - 1 + roundHistory.length / 3)
+                )}`}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+
         <View style={styles.dartsDisplay}>
           <View style={styles.dartsDisplayDart}>
             <Text style={styles.dartText}>
               {roundHistory.length > 0 ? (
-                roundHistory[0].points === 0 ? (
+                roundHistory[0] === 0 ? (
                   "Miss"
                 ) : (
-                  `${getLabel(roundHistory[0].points * -1)}${goals[round - 1]}`
+                  `${getLabel(roundHistory[0] * -1)}${goals[round - 1]}`
                 )
               ) : (
                 <Image
@@ -264,10 +319,10 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
           <View style={styles.dartsDisplayDart}>
             <Text style={styles.dartText}>
               {roundHistory.length > 1 ? (
-                roundHistory[1].points === 0 ? (
+                roundHistory[1] === 0 ? (
                   "Miss"
                 ) : (
-                  `${getLabel(roundHistory[1].points * -1)}${goals[round - 1]}`
+                  `${getLabel(roundHistory[1] * -1)}${goals[round - 1]}`
                 )
               ) : (
                 <Image
@@ -280,10 +335,10 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
           <View style={styles.dartsDisplayDart}>
             <Text style={styles.dartText}>
               {roundHistory.length > 2 ? (
-                roundHistory[2].points === 0 ? (
+                roundHistory[2] === 0 ? (
                   "Miss"
                 ) : (
-                  `${getLabel(roundHistory[2].points * -1)}${goals[round - 1]}`
+                  `${getLabel(roundHistory[2] * -1)}${goals[round - 1]}`
                 )
               ) : (
                 <Image
@@ -299,7 +354,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
         {goals[round - 1] !== 25 && (
           <View style={{ flex: 0.25 }}>
             <TouchableHighlight
-              onPress={() => countThrow(-3)}
+              onPress={() => countThrow(3)}
               style={styles.scoreButton}
               underlayColor={theme.primaries.lightBlues.tenth}
             >
@@ -314,7 +369,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
           }}
         >
           <TouchableHighlight
-            onPress={() => countThrow(-2)}
+            onPress={() => countThrow(2)}
             style={styles.scoreButton}
             underlayColor={theme.primaries.lightBlues.tenth}
           >
@@ -327,7 +382,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
           }}
         >
           <TouchableHighlight
-            onPress={() => countThrow(-1)}
+            onPress={() => countThrow(1)}
             style={styles.scoreButton}
             underlayColor={theme.primaries.lightBlues.tenth}
           >
@@ -349,7 +404,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
         </View>
       </View>
       <GameNav
-        backDisabled={gameHistory.length < 1}
+        backDisabled={!(gameHistory[0].rounds.length > 0)}
         moveOn={advanceRound}
         moveOnText="Next"
         removeScore={removeScore}
@@ -379,19 +434,23 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
       >
         <View style={styles.resultWrapper}>
           <Text style={styles.boldResultText}>Game Finished</Text>
-          <Text style={styles.resultText}>{`Score: ${score} (MPR: ${(
-            score / 7
-          ).toFixed(1)}).`}</Text>
+          {selectedPlayers.map((sp: Player, index: number) => (
+            <View key={`result-${sp.id}`}>
+              <Text style={styles.resultText}>{`Score: ${
+                scores[index]
+              } (MPR: ${(scores[index] / 7).toFixed(1)}).`}</Text>
 
-          {finished && highscore < score ? (
-            <Text
-              style={styles.resultText}
-            >{`That's a new Carreer High - Gratz!`}</Text>
-          ) : (
-            <Text
-              style={styles.resultText}
-            >{`Carreer High: ${highscore}`}</Text>
-          )}
+              {finished && highscore < scores[index] ? (
+                <Text
+                  style={styles.resultText}
+                >{`That's a new Carreer High - Gratz!`}</Text>
+              ) : (
+                <Text
+                  style={styles.resultText}
+                >{`Carreer High: ${highscore}`}</Text>
+              )}
+            </View>
+          ))}
         </View>
       </FinishedModal>
     </Container>
@@ -439,7 +498,14 @@ const styles = StyleSheet.create({
   },
   mprWrapper: {
     flex: 0.2,
-    justifyContent: "center"
+    justifyContent: "center",
+    marginBottom: 5
+  },
+  playerName: {
+    color: theme.neutrals.text
+  },
+  playerNameWrapper: {
+    marginTop: 5
   },
   scoreWrapper: {
     justifyContent: "center",
@@ -447,7 +513,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     color: theme.neutrals.text,
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: "bold"
   },
   buttonText: {

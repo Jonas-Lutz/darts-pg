@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   AsyncStorage,
   StyleSheet,
@@ -29,88 +29,35 @@ import goHome from "utils/goHome";
 // ================================================================================================
 
 // Types:
-export interface ThrownDart {
-  goal: number;
-  multiplier: number;
-}
+import Dart from "interfaces/dart";
 
 export interface Stats {
-  darts: ThrownDart[][];
+  darts: Dart[][];
   highscore: number;
 }
 
-// Props:
+import Player from "interfaces/player";
 
+// Props:
 export interface Props extends NavigationScreenProps {
-  gameHistory: ThrownDart[][];
+  gameHistory: Dart[][];
   goal: number;
   score: number;
+  selectedPlayer: Player;
 }
 
 // ================================================================================================
 
 const Stats: NavigationScreenComponent<Props> = ({ navigation }) => {
-  const [gameHistory, setGameHistory] = useState(
-    navigation.getParam("gameHistory")
-  );
-  const [goal, setGoal] = useState(navigation.getParam("goal"));
-  const [score, setScore] = useState(navigation.getParam("score"));
+  const gameHistory = navigation.getParam("gameHistory");
 
-  useEffect(() => {
-    updateStats();
-  }, []);
+  const goal = navigation.getParam("goal");
+  const score = navigation.getParam("score");
+  const selectedPlayer = navigation.getParam("selectedPlayer");
 
-  // Fetch existing stats from storage
-  const fetchStats = async () => {
-    try {
-      const value = await AsyncStorage.getItem(`99-${goal}`);
-      if (value) {
-        return JSON.parse(value);
-      } else {
-        return { highscore: 0, darts: [] };
-      }
-    } catch {
-      return { highscore: 0, darts: [] };
-    }
-  };
-
-  // Append new stats to old existing
-  const mergeStats = (oldStats: Stats) => {
-    const highscore = Math.max(oldStats.highscore, score);
-    return {
-      darts: [...oldStats.darts, ...gameHistory],
-      highscore: highscore
-    };
-  };
-
-  // Update stats in storage
-  const saveStats = async (goal: number, stats: Stats) => {
-    try {
-      const res = await AsyncStorage.setItem(
-        `99-${goal}`,
-        JSON.stringify(stats)
-      );
-      // @ts-ignore
-      if (res) console.log(res);
-    } catch {
-      console.log("error saving stats");
-    }
-  };
-
-  // Calls the methods
-  const updateStats = async () => {
-    try {
-      let stats = await fetchStats();
-      const mergedStats = mergeStats(stats);
-      saveStats(goal, mergedStats);
-    } catch {
-      console.log("error updating stats");
-    }
-  };
-
-  let darts: ThrownDart[] = [];
-  gameHistory.map((round: ThrownDart[]) => {
-    round.map((dart: ThrownDart) => {
+  let darts: Dart[] = [];
+  gameHistory.map((round: Dart[]) => {
+    round.map((dart: Dart) => {
       darts.push(dart);
     });
   });
@@ -217,7 +164,8 @@ const Stats: NavigationScreenComponent<Props> = ({ navigation }) => {
                       score: 0,
                       gameHistory: [],
                       roundHistory: [],
-                      fetchedStats: []
+                      fetchedStats: [],
+                      selectedPlayer: selectedPlayer
                     }
                   })
                 ]
