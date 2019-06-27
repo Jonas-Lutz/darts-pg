@@ -78,7 +78,7 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
           />
           <View style={{ alignItems: "center" }}>
             <Headline>
-              {setTimeFrame ? "Stats Settings" : "Select Players"}
+              {showTimeFilter ? "Stats Settings" : "Select Players"}
             </Headline>
             {showTimeFilter && (
               <Text style={{ color: theme.neutrals.text }}>
@@ -115,6 +115,7 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
                     }
                   }
                 }}
+                underlayColor={theme.primaries.lightBlues.tenth}
                 style={
                   selected ? styles.playerButtonSelected : styles.playerButton
                 }
@@ -208,6 +209,7 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
               navigation.navigate(followUp, { selectedPlayers });
             }}
             style={styles.gameBtn}
+            underlayColor={theme.primaries.lightBlues.second}
           >
             <Text style={styles.gameBtnText}>Game on</Text>
           </TouchableHighlight>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   Image,
@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import theme from "theme";
 
+// ==============================================================================================================
+
 // Props:
 export interface Props {
   id: string;
@@ -18,18 +20,32 @@ export interface Props {
   onRename: (name: string, index: number) => void;
 }
 
+// ==============================================================================================================
+
 const Player = ({ id, index, name, onDelete, onRename }: Props) => {
   const [editmode, setEditmode] = useState(false);
   const [newName, setNewName] = useState(name);
 
   const textfieldRef = useRef<TextInput>(null);
 
+  useEffect(() => {
+    if (editmode && textfieldRef.current) {
+      textfieldRef.current.focus();
+    }
+  }, [editmode, textfieldRef.current]);
+
+  // ==============================================================================================================
+
   return (
     <View key={id} style={styles.player}>
       <TextInput
         ref={textfieldRef}
         onChangeText={setNewName}
-        onSubmitEditing={() => onRename(newName, index)}
+        onBlur={() => setEditmode(false)}
+        onSubmitEditing={() => {
+          setEditmode(false);
+          onRename(newName, index);
+        }}
         placeholder={newName}
         style={editmode ? styles.addPlayerTextfield : styles.hidden}
         value={newName}
@@ -46,15 +62,16 @@ const Player = ({ id, index, name, onDelete, onRename }: Props) => {
         <TouchableHighlight
           onPress={() => {
             setEditmode(true);
-            if (textfieldRef.current) textfieldRef.current.focus();
           }}
           style={styles.playerBtn}
+          underlayColor={theme.primaries.lightBlues.ninth}
         >
           <Image source={require("../assets/edit.png")} style={styles.icnBtn} />
         </TouchableHighlight>
         <TouchableHighlight
           onPress={() => onDelete(index)}
           style={styles.playerBtn}
+          underlayColor={theme.primaries.lightBlues.ninth}
         >
           <Image
             source={require("../assets/delete.png")}
@@ -66,10 +83,13 @@ const Player = ({ id, index, name, onDelete, onRename }: Props) => {
   );
 };
 
+// ==============================================================================================================
+
 const styles = StyleSheet.create({
   addPlayerTextfield: {
     fontSize: 20,
-    flex: 1
+    flex: 1,
+    paddingBottom: 10
   },
   hidden: {
     display: "none"

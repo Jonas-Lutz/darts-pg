@@ -57,6 +57,7 @@ const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
   // ================================================================================================
 
   const handleAddPlayer = () => {
+    console.log("dismisse den mist");
     Keyboard.dismiss();
     const id = uuidv4();
     const newPlayers = [
