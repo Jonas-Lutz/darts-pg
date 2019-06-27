@@ -412,18 +412,20 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
         </View>
       </View>
       {/* Navigation */}
-      <GameNav
-        backDisabled={gameHistory.length < 1}
-        moveOn={advanceRound}
-        moveOnText="Next"
-        removeScore={removeScore}
-        underlayBack={
-          gameHistory.length < 1
-            ? theme.neutrals.seventh
-            : theme.neutrals.eighth
-        }
-        underlayMove={theme.primaries.lightBlues.eighth}
-      />
+      <View style={{ flex: 0.1 }}>
+        <GameNav
+          backDisabled={gameHistory.length < 1}
+          moveOn={advanceRound}
+          moveOnText="Next"
+          removeScore={removeScore}
+          underlayBack={
+            gameHistory.length < 1
+              ? theme.neutrals.seventh
+              : theme.neutrals.eighth
+          }
+          underlayMove={theme.primaries.lightBlues.eighth}
+        />
+      </View>
       <FinishedModal
         goHome={() => goHome(navigation)}
         restart={() => {

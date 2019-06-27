@@ -320,69 +320,73 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
           </TouchableHighlight>
         </View>
       </View>
-
-      <GameNav
-        backDisabled={gameHistory.length < 1}
-        moveOn={() => {
-          if ((round === 20 && roundHistory.length === 3) || round > 20) {
-            const mode = "nineNineX";
-            let darts: NoIdDart[] = [];
-            gameHistory.map((round: NoIdDart[]) => {
-              round.map((dart: NoIdDart) => {
-                darts.push(dart);
+      <View style={{ flex: 0.1 }}>
+        <GameNav
+          backDisabled={gameHistory.length < 1}
+          moveOn={() => {
+            if ((round === 20 && roundHistory.length === 3) || round > 20) {
+              const mode = "nineNineX";
+              let darts: NoIdDart[] = [];
+              gameHistory.map((round: NoIdDart[]) => {
+                round.map((dart: NoIdDart) => {
+                  darts.push(dart);
+                });
               });
-            });
-            const misses = darts.filter(dart => dart.multiplier === 0).length;
-            const triples = darts.filter(dart => dart.multiplier === 3).length;
-            const doubles = darts.filter(dart => dart.multiplier === 2).length;
-            const singles = darts.filter(dart => dart.multiplier === 1).length;
-            const hits = darts.length - misses;
-            const successRate = (100 * hits) / darts.length;
-            const tripleRate = (100 * triples) / darts.length;
-            const doubleRate = (100 * doubles) / darts.length;
-            const singleRate = (100 * singles) / darts.length;
-            const ppr =
-              ((triples * 3 + doubles * 2 + singles) * 3) / darts.length;
-            updateStats([
-              {
-                gameMode: mode as "nineNineX",
-                stats: {
-                  goal: goal,
-                  darts: darts,
-                  tripleRate: tripleRate,
-                  doubleRate: doubleRate,
-                  singleRate: singleRate,
-                  hitRate: successRate,
-                  ppr: ppr,
-                  highscore: score
-                },
-                playerId: selectedPlayer.id
-              }
-            ]);
+              const misses = darts.filter(dart => dart.multiplier === 0).length;
+              const triples = darts.filter(dart => dart.multiplier === 3)
+                .length;
+              const doubles = darts.filter(dart => dart.multiplier === 2)
+                .length;
+              const singles = darts.filter(dart => dart.multiplier === 1)
+                .length;
+              const hits = darts.length - misses;
+              const successRate = (100 * hits) / darts.length;
+              const tripleRate = (100 * triples) / darts.length;
+              const doubleRate = (100 * doubles) / darts.length;
+              const singleRate = (100 * singles) / darts.length;
+              const ppr =
+                ((triples * 3 + doubles * 2 + singles) * 3) / darts.length;
+              updateStats([
+                {
+                  gameMode: mode as "nineNineX",
+                  stats: {
+                    goal: goal,
+                    darts: darts,
+                    tripleRate: tripleRate,
+                    doubleRate: doubleRate,
+                    singleRate: singleRate,
+                    hitRate: successRate,
+                    ppr: ppr,
+                    highscore: score
+                  },
+                  playerId: selectedPlayer.id
+                }
+              ]);
 
-            navigation.navigate("NineNineXStats", {
-              gameHistory: gameHistory,
-              goal: goal,
-              score: score,
-              selectedPlayer: selectedPlayer
-            });
-          } else {
-            advanceRound();
+              navigation.navigate("NineNineXStats", {
+                gameHistory: gameHistory,
+                goal: goal,
+                score: score,
+                selectedPlayer: selectedPlayer
+              });
+            } else {
+              advanceRound();
+            }
+          }}
+          moveOnText={
+            (round === 20 && roundHistory.length === 3) || round > 20
+              ? "Finish"
+              : "Next"
           }
-        }}
-        moveOnText={
-          (round === 20 && roundHistory.length === 3) || round > 20
-            ? "Finish"
-            : "Next"
-        }
-        removeScore={removeScore}
-        underlayBack={
-          gameHistory.length < 1
-            ? theme.neutrals.eighth
-            : theme.neutrals.seventh
-        }
-        underlayMove={theme.primaries.lightBlues.tenth}
-      />
+          removeScore={removeScore}
+          underlayBack={
+            gameHistory.length < 1
+              ? theme.neutrals.eighth
+              : theme.neutrals.seventh
+          }
+          underlayMove={theme.primaries.lightBlues.tenth}
+        />
+      </View>
     </Container>
   );
 };

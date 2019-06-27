@@ -63,6 +63,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
   const [finished, setFinished] = useState(false);
   const [activePlayer, setActivePlayer] = useState(0);
+  const [winners, setWinners] = useState<Array<number>>([]);
 
   const hits = [0, 1, 2, 3];
   const didMountRef = useRef(false);
@@ -86,6 +87,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
     } else {
       didMountRef.current = true;
     }
+    getWinner();
   }, [finished]);
 
   // Effect - Check, if someone has negative score
@@ -147,6 +149,20 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
       /*         updateStats();
        */
     }
+  };
+
+  const getWinner = () => {
+    let maxVal = 0;
+    let winnerIdexes: number[] = [];
+    scores.map((score, index) => {
+      if (score > maxVal) {
+        maxVal = score;
+        winnerIdexes = [index];
+      } else if (score === maxVal) {
+        winnerIdexes.push(index);
+      }
+    });
+    setWinners(winnerIdexes);
   };
 
   const removeScore = (ended: boolean) => {
@@ -257,20 +273,22 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
           </View>
         ))}
       </View>
-      <GameNav
-        backDisabled={gameHistory[0].scores.length < 1}
-        moveOn={() => {
-          addScore(0);
-        }}
-        moveOnText={round < 21 ? "Next" : "Finish"}
-        removeScore={() => removeScore(false)}
-        underlayBack={
-          gameHistory.length < 1
-            ? theme.neutrals.eighth
-            : theme.neutrals.seventh
-        }
-        underlayMove={theme.primaries.lightBlues.eighth}
-      />
+      <View style={{ flex: 0.1 }}>
+        <GameNav
+          backDisabled={gameHistory[0].scores.length < 1}
+          moveOn={() => {
+            addScore(0);
+          }}
+          moveOnText={round < 21 ? "Next" : "Finish"}
+          removeScore={() => removeScore(false)}
+          underlayBack={
+            gameHistory.length < 1
+              ? theme.neutrals.eighth
+              : theme.neutrals.seventh
+          }
+          underlayMove={theme.primaries.lightBlues.eighth}
+        />
+      </View>
       <FinishedModal
         goHome={() => goHome(navigation)}
         headline={"Bob's 27 - Statistics"}
@@ -290,14 +308,28 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         finished={finished}
       >
         <View style={{ flexDirection: "column" }}>
+          {selectedPlayers.length > 1 && winners.length > 0 && (
+            <View style={styles.subHeader}>
+              {winners.length > 1 ? (
+                <Text style={styles.subHeaderText}>{`Draw!`}</Text>
+              ) : (
+                <Text style={styles.subHeaderText}>{`${
+                  selectedPlayers[winners[0]].name
+                } wins!`}</Text>
+              )}
+            </View>
+          )}
           {selectedPlayers.map((sp, index) => {
             return (
-              <View key={`Stats-${sp.id}`} style={{ marginBottom: 10 }}>
-                <Text style={styles.resultText}>{sp.name}</Text>
+              <View
+                key={`Stats-${sp.id}`}
+                style={{ flexDirection: "row", marginBottom: 10 }}
+              >
+                <Text style={styles.resultTextBold}>{sp.name}</Text>
                 <Text style={styles.resultText}>
                   {scores[index] > 0
-                    ? `Finished with ${scores[index]} points!`
-                    : `Busted at D${goal}`}
+                    ? ` - finished with ${scores[index]} points`
+                    : ` - busted at D${goal}`}
                 </Text>
 
                 {scores[index] > 1436 && (
@@ -332,7 +364,14 @@ const styles = StyleSheet.create({
   resultText: {
     fontSize: 20
   },
-  pointWrapper: { alignItems: "center", flex: 0.5 },
+  resultTextBold: {
+    fontWeight: "bold",
+    fontSize: 20
+  },
+  pointWrapper: {
+    alignItems: "center",
+    flex: 0.5
+  },
   pointLabel: {
     color: theme.neutrals.text,
     fontSize: 34
@@ -352,6 +391,14 @@ const styles = StyleSheet.create({
   },
   scoreButtonText: {
     color: theme.primaries.lightBlues.first,
+    fontSize: 24
+  },
+  subHeader: {
+    alignItems: "center",
+    marginBottom: 20
+  },
+  subHeaderText: {
+    fontWeight: "bold",
     fontSize: 24
   }
 });

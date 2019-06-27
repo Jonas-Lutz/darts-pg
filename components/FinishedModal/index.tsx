@@ -4,6 +4,7 @@ import {
   TouchableHighlight,
   Text,
   Modal,
+  ScrollView,
   View
 } from "react-native";
 
@@ -51,11 +52,15 @@ const FinishedModal: FunctionComponent<Props> = ({
             <Headline>{headline}</Headline>
           </View>
         </Scoreboard>
-        <View
-          style={{ alignItems: "center", justifyContent: "center", flex: 0.5 }}
+        <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+          style={{ flex: 0.5 }}
         >
           {children}
-        </View>
+        </ScrollView>
         <View style={styles.buttonWrapper}>
           <TouchableHighlight onPress={restart}>
             <View style={styles.newGameBtn}>
@@ -63,7 +68,9 @@ const FinishedModal: FunctionComponent<Props> = ({
             </View>
           </TouchableHighlight>
         </View>
-        <GameNav moveOn={goHome} moveOnText="Home" removeScore={undo} />
+        <View style={{ flex: 0.15 }}>
+          <GameNav moveOn={goHome} moveOnText="Home" removeScore={undo} />
+        </View>
       </Container>
     </Modal>
   );
@@ -71,7 +78,7 @@ const FinishedModal: FunctionComponent<Props> = ({
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    flex: 0.2,
+    flex: 0.15,
     margin: 20
   },
   buttonText: {

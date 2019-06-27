@@ -493,18 +493,20 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
           </TouchableHighlight>
         </View>
       </View>
-      <GameNav
-        backDisabled={!(gameHistory[0].rounds.length > 0)}
-        moveOn={advanceRound}
-        moveOnText="Next"
-        removeScore={removeScore}
-        underlayBack={
-          gameHistory.length < 1
-            ? theme.neutrals.seventh
-            : theme.neutrals.eighth
-        }
-        underlayMove={theme.primaries.lightBlues.eighth}
-      />
+      <View style={{ flex: 0.1 }}>
+        <GameNav
+          backDisabled={!(gameHistory[0].rounds.length > 0)}
+          moveOn={advanceRound}
+          moveOnText="Next"
+          removeScore={removeScore}
+          underlayBack={
+            gameHistory.length < 1
+              ? theme.neutrals.seventh
+              : theme.neutrals.eighth
+          }
+          underlayMove={theme.primaries.lightBlues.eighth}
+        />
+      </View>
       <FinishedModal
         goHome={() => goHome(navigation)}
         headline={shanghai ? "Shanghai Finish!" : "Stats"}
@@ -525,28 +527,28 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
         undo={removeScore}
         finished={finished}
       >
-        <View style={styles.resultWrapper}>
+        <View>
           {shanghai && (
-            <View>
-              <Text style={styles.boldResultText}>
+            <View style={styles.subHeader}>
+              <Text style={styles.subHeaderText}>
                 {`${selectedPlayers[activePlayer].name} wins!`}
               </Text>
             </View>
           )}
           {selectedPlayers.length > 1 && winners.length > 0 && !shanghai && (
-            <View>
+            <View style={styles.subHeader}>
               {winners.length > 1 ? (
-                <Text style={styles.boldResultText}>{`Draw!`}</Text>
+                <Text style={styles.subHeaderText}>{`Draw!`}</Text>
               ) : (
-                <Text style={styles.boldResultText}>{`${
+                <Text style={styles.subHeaderText}>{`${
                   selectedPlayers[winners[0]].name
                 } wins!`}</Text>
               )}
             </View>
           )}
           {selectedPlayers.map((sp, index) => (
-            <View key={sp.id}>
-              <Text style={styles.resultText}>{sp.name}</Text>
+            <View key={sp.id} style={{ marginBottom: 10 }}>
+              <Text style={styles.resultTextBold}>{sp.name}</Text>
               <Text style={styles.resultText}>{`Score: ${
                 scores[index]
               } (MPR: ${(
@@ -621,10 +623,23 @@ const styles = StyleSheet.create({
   resultText: {
     fontSize: 20
   },
+  resultTextBold: {
+    fontWeight: "bold",
+    fontSize: 20
+  },
   resultWrapper: { flexDirection: "column", padding: 10 },
   boldResultText: {
     fontWeight: "bold",
     fontSize: 20
+  },
+  subHeader: {
+    alignItems: "center",
+    marginBottom: 30,
+    marginTop: 10
+  },
+  subHeaderText: {
+    fontWeight: "bold",
+    fontSize: 24
   }
 });
 

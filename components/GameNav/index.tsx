@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.neutrals.tenth,
     justifyContent: "space-evenly",
     flexDirection: "row",
-    flex: 0.1,
+    flexShrink: 0,
+    flex: 1,
     margin: 1,
     width: "100%"
   },
