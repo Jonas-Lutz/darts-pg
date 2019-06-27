@@ -69,8 +69,7 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
           ...roundHistory,
           {
             points: goal,
-            multiplier: multiplier,
-            playerId: selectedPlayer.id
+            multiplier: multiplier
           }
         ];
 
@@ -354,7 +353,8 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
                   doubleRate: doubleRate,
                   singleRate: singleRate,
                   hitRate: successRate,
-                  ppr: ppr
+                  ppr: ppr,
+                  highscore: score
                 },
                 playerId: selectedPlayer.id
               }

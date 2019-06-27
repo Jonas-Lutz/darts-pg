@@ -11,7 +11,7 @@ const loadPlayers = async ({ setLoading, setPlayers }: Props) => {
   const fetchedPlayers = await AsyncStorage.getItem("players");
   if (fetchedPlayers) {
     setPlayers(JSON.parse(fetchedPlayers));
-    console.log("fetched Players");
+    console.log("fetched these Players: ", fetchedPlayers);
   } else {
     setPlayers([]);
   }

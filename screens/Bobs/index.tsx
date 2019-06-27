@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
   AsyncStorage,
+  Dimensions,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -62,11 +63,15 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
   const [finished, setFinished] = useState(false);
   const [activePlayer, setActivePlayer] = useState(0);
+
   const hits = [0, 1, 2, 3];
   const didMountRef = useRef(false);
+  const scoreBoardRef = useRef<ScrollView>(null);
+  const screenWidth = Dimensions.get("screen").width;
 
   // ================================================================================================
 
+  // Effect - Save Stats
   useEffect(() => {
     if (didMountRef.current) {
       const mode: "bobs" = "bobs";
@@ -75,7 +80,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         stats: {
           total: scores[index]
         },
-        playerId: sp.name
+        playerId: sp.id
       }));
       updateStats(bobsStats);
     } else {
@@ -83,53 +88,64 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   }, [finished]);
 
+  // Effect - Check, if someone has negative score
+  useEffect(() => {
+    const scoresBelowZero = scores.filter(s => s < 1);
+    if (scoresBelowZero.length) {
+      setFinished(true);
+    }
+  }, [scores]);
+
+  // Effect - Update Displayed Players
+  useEffect(() => {
+    if (selectedPlayers.length > 3 && scoreBoardRef.current) {
+      const offset = (activePlayer * screenWidth) / 3;
+      scoreBoardRef.current.scrollTo({
+        x: offset,
+        animated: true
+      });
+    }
+  }, [activePlayer, scoreBoardRef]);
+
   // ================================================================================================
 
   const addScore = (makes: number) => {
-    if (scores[activePlayer] > goal * 2 - 1 || makes > 0) {
-      const newGameHistory: PlayerRound[] = [...gameHistory];
-      const playerId = newGameHistory[activePlayer].playerId;
+    const newGameHistory: PlayerRound[] = [...gameHistory];
+    const playerId = newGameHistory[activePlayer].playerId;
 
-      newGameHistory.splice(activePlayer, 1, {
-        playerId: playerId,
-        scores: [...newGameHistory[activePlayer].scores, makes]
-      });
+    newGameHistory.splice(activePlayer, 1, {
+      playerId: playerId,
+      scores: [...newGameHistory[activePlayer].scores, makes]
+    });
 
-      // Update State
-      const newScores = [...scores];
-      if (makes > 0) {
-        newScores.splice(
-          activePlayer,
-          1,
-          newScores[activePlayer] + makes * goal * 2
-        );
-      } else {
-        newScores.splice(activePlayer, 1, newScores[activePlayer] - goal * 2);
-      }
-      setScores(newScores);
-      // Next Round:
-      if (activePlayer === selectedPlayers.length - 1) {
-        setGoal(round < 20 ? round + 1 : 25);
-        setActivePlayer(0);
-        setFinished(goal > 20);
-        setRound(goal > 20 ? round : round + 1);
-      }
-      // Not last player:
-      else {
-        setActivePlayer(activePlayer + 1);
-      }
-
-      setGameHistory(newGameHistory);
-      if (goal > 20) {
-        /*         updateStats();
-         */
-      }
+    // Update State
+    const newScores = [...scores];
+    if (makes > 0) {
+      newScores.splice(
+        activePlayer,
+        1,
+        newScores[activePlayer] + makes * goal * 2
+      );
     } else {
-      if (makes < 1) {
-        setFinished(true);
-        //TODO: Hier war es
-        setScores([]);
-      }
+      newScores.splice(activePlayer, 1, newScores[activePlayer] - goal * 2);
+    }
+    setScores(newScores);
+    // Next Round:
+    if (activePlayer === selectedPlayers.length - 1) {
+      setGoal(round < 20 ? round + 1 : 25);
+      setActivePlayer(0);
+      setFinished(goal > 20);
+      setRound(goal > 20 ? round : round + 1);
+    }
+    // Not last player:
+    else {
+      setActivePlayer(activePlayer + 1);
+    }
+
+    setGameHistory(newGameHistory);
+    if (goal > 20) {
+      /*         updateStats();
+       */
     }
   };
 
@@ -141,13 +157,16 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
 
     if (gameHistory[removePlayerIndex].scores.length > 0) {
       const newGameHistory = [...gameHistory];
-      // Removed Value:
-      const removeVal =
+      const multiplier =
         newGameHistory[removePlayerIndex].scores[
           newGameHistory[removePlayerIndex].scores.length - 1
-        ] *
-        (roundBack ? goal - 1 : goal) *
-        2;
+        ] === 0
+          ? -1
+          : newGameHistory[removePlayerIndex].scores[
+              newGameHistory[removePlayerIndex].scores.length - 1
+            ];
+      // Removed Value:
+      const removeVal = multiplier * (roundBack ? goal - 1 : goal) * 2;
 
       // Remove the value from Players Makes:
       newGameHistory[removePlayerIndex].scores.pop();
@@ -184,36 +203,43 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
       >
         <ScrollView
           horizontal
-          contentContainerStyle={{
-            width: "100%",
-            flex: 1,
-            flexDirection: "row"
-          }}
+          ref={scoreBoardRef}
+          style={{ flexDirection: "row" }}
         >
-          {selectedPlayers.map((sp: Player, index: number) => (
-            <View
-              key={sp.id}
-              style={{
-                backgroundColor:
-                  index === activePlayer
-                    ? theme.primaries.yellows.ninth
-                    : "transparent",
-                width:
-                  selectedPlayers.length > 2
-                    ? "33.3333%"
-                    : selectedPlayers.length === 1
-                    ? "100%"
-                    : "50%"
-              }}
-            >
-              <View style={styles.gamestats}>
-                <Text style={{ color: theme.neutrals.text }}>{sp.name}</Text>
-              </View>
-              <View style={styles.pointWrapper}>
-                <Text style={styles.pointLabel}>{`${scores[index]}`}</Text>
-              </View>
-            </View>
-          ))}
+          {selectedPlayers &&
+            selectedPlayers.length > 0 &&
+            selectedPlayers.map((sp: Player, index) => {
+              return (
+                <View
+                  key={sp.id}
+                  style={{
+                    backgroundColor:
+                      index === activePlayer
+                        ? theme.primaries.yellows.ninth
+                        : "transparent",
+                    width:
+                      selectedPlayers.length > 3
+                        ? screenWidth / 3
+                        : screenWidth / selectedPlayers.length,
+                    flexBasis:
+                      selectedPlayers.length > 2
+                        ? "33.3333%"
+                        : selectedPlayers.length === 1
+                        ? "100%"
+                        : "50%"
+                  }}
+                >
+                  <View style={styles.gamestats}>
+                    <Text style={{ color: theme.neutrals.text }}>
+                      {sp.name}
+                    </Text>
+                  </View>
+                  <View style={styles.pointWrapper}>
+                    <Text style={styles.pointLabel}>{`${scores[index]}`}</Text>
+                  </View>
+                </View>
+              );
+            })}
         </ScrollView>
       </Scoreboard>
       <View style={styles.inputContainer}>
@@ -263,24 +289,24 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         undo={() => removeScore(true)}
         finished={finished}
       >
-        {/* <View style={{ flexDirection: "column" }}>
-          <Text style={styles.resultText}>
-            {score > 0
-              ? `You finished with ${score} points!`
-              : `Game ended at D${goal}`}
-          </Text>
+        <View style={{ flexDirection: "column" }}>
+          {selectedPlayers.map((sp, index) => {
+            return (
+              <View key={`Stats-${sp.id}`} style={{ marginBottom: 10 }}>
+                <Text style={styles.resultText}>{sp.name}</Text>
+                <Text style={styles.resultText}>
+                  {scores[index] > 0
+                    ? `Finished with ${scores[index]} points!`
+                    : `Busted at D${goal}`}
+                </Text>
 
-          {score > 1436 && <Text>We both know you cheated tho</Text>}
-          {highscore && highscore > 0 && finished && highscore < score ? (
-            <Text
-              style={styles.resultText}
-            >{`That's a new Carreer High - Gratz!`}</Text>
-          ) : (
-            <Text
-              style={styles.resultText}
-            >{`Carreer High: ${highscore}`}</Text>
-          )}
-        </View> */}
+                {scores[index] > 1436 && (
+                  <Text>We both know you cheated tho</Text>
+                )}
+              </View>
+            );
+          })}
+        </View>
       </FinishedModal>
     </Container>
   );

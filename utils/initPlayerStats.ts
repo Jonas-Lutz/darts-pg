@@ -37,8 +37,9 @@ const initPlayerStats = async (id: string) => {
     },
     cricketCountUp: {
       highscore: 0,
-      mpr: 0,
-      darts: []
+      avgMpr: 0,
+      darts: [],
+      scores: []
     },
     nineNineX: {
       fields: [
@@ -47,18 +48,18 @@ const initPlayerStats = async (id: string) => {
           darts: [],
           tripleRate: 0,
           doubleRate: 0,
+          singleRate: 0,
           hitRate: 0,
-          ppr: 0
+          ppr: 0,
+          highscore: 0
         }
       ]
     },
     shanghai: {
-      highscore: 0,
-      darts: []
+      highscore: 0
     },
     bobs: {
-      highscore: 0,
-      darts: []
+      highscore: 0
     }
   });
 

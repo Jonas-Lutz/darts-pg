@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import {
   AsyncStorage,
+  Dimensions,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -64,34 +65,49 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [scores, setScores] = useState(selectedPlayers.map(sp => 0));
   const [roundHistory, setRoundHistory] = useState<Array<number>>([]);
   const [round, setRound] = useState(1);
+  const [winners, setWinners] = useState<Array<number>>([]);
 
   const [finished, setFinished] = useState(false);
-  const [highscore, setHighscore] = useState(0);
   const [activePlayer, setActivePlayer] = useState(0);
   const didMountRef = useRef(false);
+  const scoreBoardRef = useRef<ScrollView>(null);
+  const screenWidth = Dimensions.get("screen").width;
 
   // ================================================================================================
 
   useEffect(() => {
     if (didMountRef.current) {
       const mode = "cricketCountUp";
-      /* const shanghaiStats = selectedPlayers.map((sp, index) => ({
-        gameMode: mode as "shanghai",
+      const cricketCountUpStats = selectedPlayers.map((sp, index) => ({
+        gameMode: mode as "cricketCountUp",
         playerId: sp.id,
-        stats: { total: scores[index] }
+        stats: {
+          score: scores[index],
+          rounds: gameHistory[index].rounds.map(round =>
+            round.reduce((acc, val) => acc + val)
+          )
+        }
       }));
-      updateStats(shanghaiStats); */
+      updateStats(cricketCountUpStats);
     } else {
       didMountRef.current = true;
     }
   }, [finished]);
 
   useEffect(() => {
-    console.log(
-      "================================================================="
-    );
-    console.log(gameHistory);
-  }, [gameHistory]);
+    getWinner();
+  }, [finished]);
+
+  // Effect - Update Displayed Players
+  useEffect(() => {
+    if (selectedPlayers.length > 3 && scoreBoardRef.current) {
+      const offset = (activePlayer * screenWidth) / 3;
+      scoreBoardRef.current.scrollTo({
+        x: offset,
+        animated: true
+      });
+    }
+  }, [activePlayer, scoreBoardRef]);
 
   // ================================================================================================
 
@@ -170,6 +186,21 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
       setRoundHistory(newRoundHistory);
     }
   };
+
+  const getWinner = () => {
+    let maxVal = 0;
+    let winnerIdexes: number[] = [];
+    scores.map((score, index) => {
+      if (score > maxVal) {
+        maxVal = score;
+        winnerIdexes = [index];
+      } else if (score === maxVal) {
+        winnerIdexes.push(index);
+      }
+    });
+    setWinners(winnerIdexes);
+  };
+
   const removeScore = () => {
     const firstPlayer = activePlayer === 0;
     const prevPlayer =
@@ -259,44 +290,47 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
       >
         <ScrollView
           horizontal
-          contentContainerStyle={{
-            width: "100%",
-            flex: 1,
-            flexDirection: "row"
-          }}
+          ref={scoreBoardRef}
+          style={{ flexDirection: "row" }}
         >
-          {selectedPlayers.map((sp: Player, index: number) => (
-            <View
-              key={sp.id}
-              style={{
-                alignItems: "center",
-                backgroundColor:
-                  index === activePlayer
-                    ? theme.primaries.yellows.ninth
-                    : "transparent",
-                marginBottom: 2,
-                width:
-                  selectedPlayers.length > 2
-                    ? "33.3333%"
-                    : selectedPlayers.length === 1
-                    ? "100%"
-                    : "50%"
-              }}
-            >
-              <View style={styles.playerNameWrapper}>
-                <Text style={styles.playerName}>Player 1</Text>
+          {selectedPlayers &&
+            selectedPlayers.length > 0 &&
+            selectedPlayers.map((sp: Player, index) => (
+              <View
+                key={sp.id}
+                style={{
+                  alignItems: "center",
+                  backgroundColor:
+                    index === activePlayer
+                      ? theme.primaries.yellows.ninth
+                      : "transparent",
+                  marginBottom: 2,
+                  width:
+                    selectedPlayers.length > 3
+                      ? screenWidth / 3
+                      : screenWidth / selectedPlayers.length,
+                  flexBasis:
+                    selectedPlayers.length > 2
+                      ? "33.3333%"
+                      : selectedPlayers.length === 1
+                      ? "100%"
+                      : "50%"
+                }}
+              >
+                <View style={styles.playerNameWrapper}>
+                  <Text style={styles.playerName}>{sp.name}</Text>
+                </View>
+                <View style={styles.scoreWrapper}>
+                  <Text style={styles.scoreText}>{`${scores[index]}`}</Text>
+                </View>
+                <View style={styles.mprWrapper}>
+                  <Text style={styles.mprText}>{`MPR: ${calcMPR(
+                    scores[index],
+                    Math.max(1, round - 1 + roundHistory.length / 3)
+                  )}`}</Text>
+                </View>
               </View>
-              <View style={styles.scoreWrapper}>
-                <Text style={styles.scoreText}>{`${scores[index]}`}</Text>
-              </View>
-              <View style={styles.mprWrapper}>
-                <Text style={styles.mprText}>{`MPR: ${calcMPR(
-                  scores[index],
-                  Math.max(1, round - 1 + roundHistory.length / 3)
-                )}`}</Text>
-              </View>
-            </View>
-          ))}
+            ))}
         </ScrollView>
 
         <View style={styles.dartsDisplay}>
@@ -433,22 +467,23 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
         finished={finished}
       >
         <View style={styles.resultWrapper}>
-          <Text style={styles.boldResultText}>Game Finished</Text>
+          {selectedPlayers.length > 1 && winners.length > 0 && (
+            <View>
+              {winners.length > 1 ? (
+                <Text style={styles.boldResultText}>{`Draw!`}</Text>
+              ) : (
+                <Text style={styles.boldResultText}>{`${
+                  selectedPlayers[winners[0]].name
+                } wins!`}</Text>
+              )}
+            </View>
+          )}
           {selectedPlayers.map((sp: Player, index: number) => (
-            <View key={`result-${sp.id}`}>
+            <View key={`result-${sp.id}`} style={{ marginTop: 10 }}>
+              <Text style={styles.resultText}>{`${sp.name} `}</Text>
               <Text style={styles.resultText}>{`Score: ${
                 scores[index]
               } (MPR: ${(scores[index] / 7).toFixed(1)}).`}</Text>
-
-              {finished && highscore < scores[index] ? (
-                <Text
-                  style={styles.resultText}
-                >{`That's a new Carreer High - Gratz!`}</Text>
-              ) : (
-                <Text
-                  style={styles.resultText}
-                >{`Carreer High: ${highscore}`}</Text>
-              )}
             </View>
           ))}
         </View>

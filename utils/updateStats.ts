@@ -1,6 +1,5 @@
 import { AsyncStorage } from "react-native";
 import NoIdDart from "interfaces/noIdDart";
-import Player from "interfaces/player";
 import Stats from "interfaces/stats";
 
 const updateStats = async (
@@ -42,7 +41,18 @@ const updateStats = async (
               console.log("save cricket stats");
               break;*/
             case "cricketCountUp":
-              console.log("save cCU stats");
+              statHistory[index].cricketCountUp.highscore = Math.max(
+                p.stats.score,
+                statHistory[index].cricketCountUp.highscore
+              );
+              statHistory[index].cricketCountUp.darts.push(p.stats.rounds);
+              statHistory[index].cricketCountUp.scores.push(p.stats.score);
+              statHistory[index].cricketCountUp.avgMpr =
+                statHistory[index].cricketCountUp.scores.reduce(
+                  (acc, val) => acc + val
+                ) /
+                statHistory[index].cricketCountUp.scores.length /
+                7;
               break;
             case "nineNineX":
               const statField = statHistory[index].nineNineX.fields.find(
@@ -67,6 +77,10 @@ const updateStats = async (
                 statField.hitRate = (100 * hits) / amount;
                 statField.ppr =
                   ((triples * 3 + doubles * 2 + singles) * 3) / amount;
+                statField.highscore = Math.max(
+                  p.stats.highscore,
+                  statHistory[index].cricketCountUp.highscore
+                );
               } else {
                 statHistory[index].nineNineX.fields.push(p.stats);
               }
@@ -95,9 +109,8 @@ const updateStats = async (
   const response = await AsyncStorage.setItem(
     "stats",
     JSON.stringify(statHistory),
-    error => console.log(error)
+    error => console.log("error: ", error)
   );
-  console.log("res", response);
 };
 
 export default updateStats;
@@ -137,6 +150,7 @@ export interface NineNineXHistory {
     singleRate: number;
     hitRate: number;
     ppr: number;
+    highscore: number;
   };
 }
 
@@ -144,9 +158,7 @@ export interface CricketCountUpHistory {
   gameMode: "cricketCountUp";
   playerId: string;
   stats: {
-    carreerMpr: number;
-    topMpr: number;
-    highscore: number;
-    scores: number[];
+    score: number;
+    rounds: number[];
   };
 }

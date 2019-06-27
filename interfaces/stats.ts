@@ -19,7 +19,8 @@ export default interface Stats {
   cricketCountUp: {
     highscore: number;
     avgMpr: number;
-    darts: NoIdDart[];
+    darts: number[][];
+    scores: number[];
   };
   nineNineX: {
     fields: [
@@ -31,15 +32,14 @@ export default interface Stats {
         singleRate: number;
         hitRate: number;
         ppr: number;
+        highscore: number;
       }
     ];
   };
   shanghai: {
     highscore: number;
-    darts: NoIdDart[];
   };
   bobs: {
     highscore: number;
-    darts: NoIdDart[];
   };
 }

@@ -48,16 +48,20 @@ const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Array<Player>>([]);
 
+  // ================================================================================================
+
   useEffect(() => {
     loadPlayers({ setLoading, setPlayers });
   }, []);
+
+  // ================================================================================================
 
   const handleAddPlayer = () => {
     Keyboard.dismiss();
     const id = uuidv4();
     const newPlayers = [
       ...players,
-      { name: input, id: id, lastGamePlayed: new Date("timestamp") }
+      { name: input, id: id, lastGamePlayed: new Date().getTime() }
     ];
     setInput("");
     setPlayers(newPlayers);
@@ -83,6 +87,8 @@ const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
     setPlayers(newPlayers);
     savePlayers(newPlayers);
   };
+
+  // ================================================================================================
 
   return (
     <Container>
@@ -147,9 +153,13 @@ const Settings: NavigationScreenComponent<Props> = ({ navigation }) => {
   );
 };
 
+// ================================================================================================
+
 Settings.navigationOptions = {
   header: null
 };
+
+// ================================================================================================
 
 const styles = StyleSheet.create({
   headerContent: {

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, Image, ScrollView, View } from "react-native";
 import {
+  StackActions,
+  NavigationActions,
   NavigationScreenComponent,
   NavigationParams,
   NavigationScreenProps
@@ -29,6 +31,7 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 export interface Props extends NavigationScreenProps {
   followUp: string;
   multi: boolean;
+  showTimeFilter?: boolean;
 }
 
 // ================================================================================================
@@ -38,6 +41,8 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
+  const [timeFrame, setTimeFrame] = useState("allTime");
+  const showTimeFilter = navigation.getParam("showTimeFilter", false);
   const multi = navigation.getParam("multi");
 
   useEffect(() => {
@@ -72,7 +77,14 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
             style={{ width: 50, height: 50, marginRight: 25 }}
           />
           <View style={{ alignItems: "center" }}>
-            <Headline>Who's playing?</Headline>
+            <Headline>
+              {setTimeFrame ? "Stats Settings" : "Select Players"}
+            </Headline>
+            {showTimeFilter && (
+              <Text style={{ color: theme.neutrals.text }}>
+                Plese select 1 - 3 Players.
+              </Text>
+            )}
           </View>
           <View style={{ width: 75 }} />
         </View>
@@ -113,23 +125,94 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
           })
         )}
       </ScrollView>
-      <View
-        style={
-          selectedPlayers.length > 0
-            ? styles.gameBtnWrapper
-            : styles.gameBtnWrapperDisabled
-        }
-      >
-        <TouchableHighlight
-          disabled={selectedPlayers.length <= 0}
-          onPress={() => {
-            navigation.navigate(followUp, { selectedPlayers });
-          }}
-          style={styles.gameBtn}
+      {showTimeFilter ? (
+        <View style={{ flex: 0.2, width: "100%" }}>
+          {/* <View
+            style={{
+              backgroundColor: theme.neutrals.ninth,
+              flexDirection: "row",
+              flex: 1,
+              justifyContent: "space-between",
+              width: "100%"
+            }}
+          >
+            <View style={{ justifyContent: "center", width: "33%" }}>
+              <TouchableHighlight
+                onPress={() => setTimeFrame("24h")}
+                style={styles.timeButton}
+              >
+                <Text style={styles.timeButtonText}>24h</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{ justifyContent: "center", width: "33%" }}>
+              <TouchableHighlight
+                onPress={() => setTimeFrame("Week")}
+                style={styles.timeButton}
+              >
+                <Text style={styles.timeButtonText}>Week</Text>
+              </TouchableHighlight>
+            </View>
+            <View style={{ justifyContent: "center", width: "33%" }}>
+              <TouchableHighlight
+                onPress={() => setTimeFrame("allTime")}
+                style={styles.timeButton}
+              >
+                <Text style={styles.timeButtonText}>All Time</Text>
+              </TouchableHighlight>
+            </View>
+          </View> */}
+          <View
+            style={
+              selectedPlayers.length < 1
+                ? styles.applyBtnDisabled
+                : styles.applyBtn
+            }
+          >
+            <TouchableHighlight
+              disabled={selectedPlayers.length < 1}
+              onPress={() => {
+                const resetAction = StackActions.reset({
+                  index: 0,
+                  actions: [
+                    NavigationActions.navigate({
+                      routeName: "Stats",
+                      params: {
+                        selectedPlayers,
+                        timeFrame
+                      }
+                    })
+                  ]
+                });
+
+                navigation.dispatch(resetAction);
+              }}
+              style={styles.timeButton}
+            >
+              <Text style={{ color: theme.neutrals.tenth, fontSize: 22 }}>
+                Apply
+              </Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      ) : (
+        <View
+          style={
+            selectedPlayers.length > 0
+              ? styles.gameBtnWrapper
+              : styles.gameBtnWrapperDisabled
+          }
         >
-          <Text style={styles.gameBtnText}>Game on</Text>
-        </TouchableHighlight>
-      </View>
+          <TouchableHighlight
+            disabled={selectedPlayers.length <= 0}
+            onPress={() => {
+              navigation.navigate(followUp, { selectedPlayers });
+            }}
+            style={styles.gameBtn}
+          >
+            <Text style={styles.gameBtnText}>Game on</Text>
+          </TouchableHighlight>
+        </View>
+      )}
     </Container>
   );
 };
@@ -188,6 +271,28 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     width: "90%"
+  },
+  timeButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%"
+  },
+  timeButtonText: {
+    color: theme.neutrals.text,
+    fontSize: 20
+  },
+  applyBtn: {
+    backgroundColor: theme.primaries.lightBlues.fourth,
+    flex: 1,
+    justifyContent: "center",
+    width: "100%"
+  },
+  applyBtnDisabled: {
+    backgroundColor: theme.neutrals.eighth,
+    flex: 1,
+    justifyContent: "center",
+    width: "100%"
   }
 });
 
