@@ -101,8 +101,8 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
   }, [activePlayer, scoreBoardRef]);
 
   useEffect(() => {
-    console.log(winners, "Winners: ");
-  }, [winners]);
+    console.log(round, "te Runde");
+  }, [round]);
 
   // ================================================================================================
 
@@ -185,7 +185,9 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
       // Adjust Round, Goal:
       if (activePlayer === 0) {
         setRound(round - 1);
-        setGoal(ended ? goal : goal < 21 ? goal - 1 : 20);
+        setGoal(
+          ended ? (roundBack ? goal - 1 : goal) : goal < 21 ? goal - 1 : 20
+        );
       }
 
       // Scores
@@ -349,7 +351,7 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
                 <Text style={styles.resultText}>
                   {scores[index] > 0
                     ? ` - finished with ${scores[index]} points`
-                    : ` - busted at D${goal}`}
+                    : ` - busted at D${round - 1}`}
                 </Text>
 
                 {scores[index] > 1436 && (

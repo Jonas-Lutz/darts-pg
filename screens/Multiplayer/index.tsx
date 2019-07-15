@@ -36,7 +36,8 @@ const Multiplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
     { destination: "X01", label: "X01" },
     { destination: "Bobs", label: "Bob's 27" },
     { destination: "Cricket", label: "Cricket" },
-    { destination: "CricketCountUp", label: "Cricket Count Up" },
+    { destination: "CricketCutThroat", label: "Cricket - Cut Throat" },
+    { destination: "CricketCountUp", label: "Cricket - Count Up" },
     { destination: "Shanghai", label: "Shanghai" }
   ];
 

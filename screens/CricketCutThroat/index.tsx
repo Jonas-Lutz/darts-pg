@@ -16,6 +16,9 @@ import {
 } from "react-navigation";
 import { ScreenOrientation } from "expo";
 
+// Atoms:
+import Headline from "atoms/Headline";
+
 // Colors:
 import theme from "theme";
 
@@ -58,7 +61,7 @@ export interface Props extends NavigationScreenProps {
 
 // ================================================================================================
 
-const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
+const CutThroatCricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   const selectedPlayers = navigation.getParam("selectedPlayers");
 
   // ================================================================================================
@@ -103,12 +106,13 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   // ================================================================================================
 
   useEffect(() => {
+    console.log(wrapperHeight);
     /* console.log(
       "================================================================================================"
     );
     console.log("GameHistory: ");
     console.log(gameHistory); */
-  }, [gameHistory]);
+  }, [wrapperHeight]);
 
   useEffect(() => {
     ScreenOrientation.unlockAsync().then(() => {
@@ -223,9 +227,16 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
             ? thrwnDrt.multiplier
             : thrwnDrt.multiplier - 3 + prevHits;
 
-        // Add Scores to Player
+        // Add Scores to Players
         if (addAmount > 0) {
-          newGameHistory[activePlayer].score += thrwnDrt.points * addAmount;
+          newGameHistory.forEach((playerHistory, index) => {
+            if (
+              index !== activePlayer &&
+              playerHistory.hits[hitIndex].hits < 3
+            ) {
+              newGameHistory[index].score += thrwnDrt.points * addAmount;
+            }
+          });
         }
         let shouldClose = true;
         newGameHistory.forEach(pH => {
@@ -279,18 +290,18 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   // Check if someone has won
   const checkWin = () => {
-    let maximum = gameHistory[0].score;
+    let minimum = gameHistory[0].score;
     gameHistory.forEach(pH => {
-      if (pH.score > maximum) {
-        maximum = pH.score;
+      if (pH.score < minimum) {
+        minimum = pH.score;
       }
     });
 
     gameHistory.forEach(pH => {
-      const isBiggest = pH.score === maximum;
+      const isSmallest = pH.score === minimum;
       const openFields = pH.hits.filter(hitScore => hitScore.hits < 3);
 
-      if (isBiggest && openFields.length < 1) {
+      if (isSmallest && openFields.length < 1) {
         setFinished(true);
       }
     });
@@ -349,8 +360,11 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
           newHits < 3
             ? removedDart.points * (playerHits.hits - 3)
             : removedDart.points * (playerHits.hits - newHits);
-
-        newGameHistory[activePlayer].score -= removeValue;
+        newGameHistory.forEach((playerHistory, index) => {
+          if (index !== removePlayer && playerHistory.hits[hitIndex].hits < 3) {
+            newGameHistory[index].score -= removeValue;
+          }
+        });
       }
     }
 
@@ -666,7 +680,7 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
 
 // ================================================================================================
 
-Cricket.navigationOptions = {
+CutThroatCricket.navigationOptions = {
   header: null
 };
 
@@ -835,13 +849,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Cricket;
-
-/*
-
-
-  
-
-
-
-*/
+export default CutThroatCricket;

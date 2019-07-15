@@ -20,6 +20,9 @@ import Cricket from "screens/Cricket";
 // CricketCountUp:
 import CricketCountUp from "screens/CricketCountUp";
 
+// Cricket Cut Throat
+import CricketCutThroat from "screens/CricketCutThroat";
+
 // Home:
 import HomeScreen from "screens/Home";
 
@@ -48,6 +51,7 @@ const AppNavigator = createStackNavigator(
   {
     Bobs,
     Cricket,
+    CricketCutThroat,
     CricketCountUp,
     Home: HomeScreen,
     Multiplayer,

@@ -357,6 +357,13 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
           style={{ flexDirection: "row" }}
         >
           {selectedPlayers.map((sp: Player, index: number) => {
+            let hits = 0;
+            gameHistory[index].rounds.forEach(p => {
+              p.forEach(pp => {
+                hits -= pp.points;
+              });
+            });
+
             return (
               <View
                 key={`ScoreBoard-Player-View${sp.id}`}
@@ -385,7 +392,7 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
                 </View>
                 <View style={styles.mprWrapper}>
                   <Text style={styles.mprText}>{`MPR: ${calcMPR(
-                    scores[index],
+                    hits,
                     Math.max(1, round - 1 + roundHistory.length / 3)
                   )}`}</Text>
                 </View>
