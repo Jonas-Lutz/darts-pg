@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "Playground",
+    "name": "husarendart",
     "slug": "myPG",
     "privacy": "public",
     "sdkVersion": "33.0.0",
     "platforms": ["ios", "android"],
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/drkdrtsicn.png",
     "splash": {
       "image": "./assets/splshscrn.png",
       "resizeMode": "contain",
@@ -19,6 +18,9 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false
+    },
+    "android": {
+      "package": "com.husarendart"
     }
   }
 }

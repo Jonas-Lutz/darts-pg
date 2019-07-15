@@ -7,6 +7,7 @@ import {
   ScrollView,
   View
 } from "react-native";
+import { SafeAreaView } from "react-navigation";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -27,6 +28,7 @@ type Props = {
   restart: () => void;
   undo: () => void;
   finished: boolean;
+  landscape?: boolean;
 };
 
 // ==================================================================================================
@@ -34,6 +36,7 @@ type Props = {
 const FinishedModal: FunctionComponent<Props> = ({
   children,
   headline = "Finished",
+  landscape = false,
   goHome,
   restart,
   undo,
@@ -46,38 +49,46 @@ const FinishedModal: FunctionComponent<Props> = ({
         console.log("closed");
       }}
     >
-      <Container>
-        <Scoreboard flexVal={0.2}>
-          <View>
-            <Headline>{headline}</Headline>
-          </View>
-        </Scoreboard>
-        <ScrollView
-          contentContainerStyle={{
-            alignItems: "center",
-            justifyContent: "center"
+      <SafeAreaView style={styles.safeArea}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: theme.neutrals.tenth
           }}
-          style={{ flex: 0.5 }}
         >
-          {children}
-        </ScrollView>
-        <View style={styles.buttonWrapper}>
-          <TouchableHighlight onPress={restart}>
-            <View style={styles.newGameBtn}>
-              <Text style={styles.buttonText}>New Game</Text>
+          <Scoreboard flexVal={0.2}>
+            <View>
+              <Headline>{headline}</Headline>
             </View>
-          </TouchableHighlight>
+          </Scoreboard>
+          <ScrollView
+            contentContainerStyle={{
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+            style={{ flex: 0.5 }}
+          >
+            {children}
+          </ScrollView>
+          <View style={styles.buttonWrapper}>
+            <TouchableHighlight onPress={restart}>
+              <View style={styles.newGameBtn}>
+                <Text style={styles.buttonText}>New Game</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View style={{ flex: landscape ? 0.25 : 0.15 }}>
+            <GameNav moveOn={goHome} moveOnText="Home" removeScore={undo} />
+          </View>
         </View>
-        <View style={{ flex: 0.15 }}>
-          <GameNav moveOn={goHome} moveOnText="Home" removeScore={undo} />
-        </View>
-      </Container>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   buttonWrapper: {
+    alignItems: "center",
     flex: 0.15,
     margin: 20
   },
@@ -108,6 +119,10 @@ const styles = StyleSheet.create({
     height: 65,
     justifyContent: "center",
     width: 150
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: theme.neutrals.first
   }
 });
 

@@ -67,27 +67,18 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
 
   const hits = [0, 1, 2, 3];
   const didMountRef = useRef(false);
+  const winnerRef = useRef(false);
   const scoreBoardRef = useRef<ScrollView>(null);
   const screenWidth = Dimensions.get("screen").width;
 
   // ================================================================================================
 
-  // Effect - Save Stats
   useEffect(() => {
-    if (didMountRef.current) {
-      const mode: "bobs" = "bobs";
-      const bobsStats = selectedPlayers.map((sp, index) => ({
-        gameMode: mode as "bobs",
-        stats: {
-          total: scores[index]
-        },
-        playerId: sp.id
-      }));
-      updateStats(bobsStats);
+    if (winnerRef.current) {
+      getWinner();
     } else {
-      didMountRef.current = true;
+      winnerRef.current = true;
     }
-    getWinner();
   }, [finished]);
 
   // Effect - Check, if someone has negative score
@@ -108,6 +99,10 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
       });
     }
   }, [activePlayer, scoreBoardRef]);
+
+  useEffect(() => {
+    console.log(winners, "Winners: ");
+  }, [winners]);
 
   // ================================================================================================
 
@@ -205,6 +200,22 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   };
 
+  const saveStats = () => {
+    if (didMountRef.current) {
+      const mode: "bobs" = "bobs";
+      const bobsStats = selectedPlayers.map((sp, index) => ({
+        gameMode: mode as "bobs",
+        stats: {
+          total: scores[index],
+          winner: selectedPlayers.length > 1 && winners.includes(index),
+          finished: goal > 24 && scores[index] >= 0
+        },
+        playerId: sp.id
+      }));
+      updateStats(bobsStats);
+    }
+  };
+
   // ================================================================================================
 
   return (
@@ -290,9 +301,13 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         />
       </View>
       <FinishedModal
-        goHome={() => goHome(navigation)}
+        goHome={() => {
+          saveStats();
+          goHome(navigation);
+        }}
         headline={"Bob's 27 - Statistics"}
         restart={() => {
+          saveStats();
           const resetAction = StackActions.reset({
             index: 0,
             actions: [
@@ -308,6 +323,11 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
         finished={finished}
       >
         <View style={{ flexDirection: "column" }}>
+          {selectedPlayers.length === 1 && scores[0] < 1 && (
+            <View style={styles.subHeader}>
+              <Text style={styles.subHeaderText}>{`Bust!`}</Text>
+            </View>
+          )}
           {selectedPlayers.length > 1 && winners.length > 0 && (
             <View style={styles.subHeader}>
               {winners.length > 1 ? (

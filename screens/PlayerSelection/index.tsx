@@ -120,7 +120,11 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
                   selected ? styles.playerButtonSelected : styles.playerButton
                 }
               >
-                <Text style={styles.playerButtonText}>{p.name}</Text>
+                <Text style={styles.playerButtonText}>{`${p.name} ${
+                  selected
+                    ? `(${selectedPlayers.findIndex(s => s.id === p.id) + 1})`
+                    : ""
+                }`}</Text>
               </TouchableHighlight>
             );
           })

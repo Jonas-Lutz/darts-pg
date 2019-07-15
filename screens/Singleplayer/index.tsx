@@ -50,7 +50,7 @@ const Singleplayer: NavigationScreenComponent<Props> = ({ navigation }) => {
         <View style={{ flexDirection: "row" }}>
           <Image
             source={require("../../assets/singleplayer.png")}
-            style={{ width: 40, height: 40, marginRight: 25 }}
+            style={{ width: 28, height: 40, marginRight: 25 }}
           />
           <View style={{ alignItems: "center", justifyContent: "center" }}>
             <Headline>Singleplayer Games</Headline>

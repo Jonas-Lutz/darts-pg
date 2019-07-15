@@ -16,6 +16,7 @@ import theme from "theme";
 type Props = {
   bust?: boolean;
   flexVal: number;
+  landscape?: boolean;
   headline?: string;
   leftHeadline?: string;
   goHome?: () => void;
@@ -29,7 +30,8 @@ const Scoreboard: FunctionComponent<Props> = ({
   flexVal,
   headline,
   leftHeadline,
-  goHome
+  goHome,
+  landscape = false
 }) => {
   return (
     <View style={{ flex: flexVal, width: "100%" }}>
@@ -38,7 +40,13 @@ const Scoreboard: FunctionComponent<Props> = ({
           theme.primaries.yellows.seventh,
           theme.primaries.yellows.eighth
         ]}
-        style={!bust ? styles.scoreboard : styles.scoreboardBust}
+        style={
+          !bust
+            ? landscape
+              ? styles.landscapeScoreboard
+              : styles.scoreboard
+            : styles.scoreboardBust
+        }
       >
         {goHome && (
           <View
@@ -97,6 +105,14 @@ const Scoreboard: FunctionComponent<Props> = ({
 
 const styles = StyleSheet.create({
   scoreboard: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    marginBottom: 1,
+    width: "100%"
+  },
+  landscapeScoreboard: {
     alignItems: "center",
     flex: 1,
     flexDirection: "column",

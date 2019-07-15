@@ -76,25 +76,6 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
   // ================================================================================================
 
   useEffect(() => {
-    if (didMountRef.current) {
-      const mode = "cricketCountUp";
-      const cricketCountUpStats = selectedPlayers.map((sp, index) => ({
-        gameMode: mode as "cricketCountUp",
-        playerId: sp.id,
-        stats: {
-          score: scores[index],
-          rounds: gameHistory[index].rounds.map(round =>
-            round.reduce((acc, val) => acc + val)
-          )
-        }
-      }));
-      updateStats(cricketCountUpStats);
-    } else {
-      didMountRef.current = true;
-    }
-  }, [finished]);
-
-  useEffect(() => {
     getWinner();
   }, [finished]);
 
@@ -281,6 +262,24 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
     }
   };
 
+  const saveStats = () => {
+    if (didMountRef.current) {
+      const mode = "cricketCountUp";
+      const cricketCountUpStats = selectedPlayers.map((sp, index) => ({
+        gameMode: mode as "cricketCountUp",
+        playerId: sp.id,
+        stats: {
+          score: scores[index],
+          rounds: gameHistory[index].rounds.map(round =>
+            round.reduce((acc, val) => acc + val)
+          ),
+          winner: winners.includes(index)
+        }
+      }));
+      updateStats(cricketCountUpStats);
+    }
+  };
+
   return (
     <Container>
       <Scoreboard
@@ -452,8 +451,12 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
         />
       </View>
       <FinishedModal
-        goHome={() => goHome(navigation)}
+        goHome={() => {
+          saveStats();
+          goHome(navigation);
+        }}
         restart={() => {
+          saveStats();
           const resetAction = StackActions.reset({
             index: 0,
             actions: [

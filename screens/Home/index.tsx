@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,7 @@ import {
   NavigationScreenComponent,
   NavigationScreenProps
 } from "react-navigation";
+import { ScreenOrientation } from "expo";
 
 // Atoms:
 import Headline from "atoms/Headline";
@@ -79,7 +80,7 @@ const Home: NavigationScreenComponent<Props> = ({ navigation }) => {
               {index === 0 && (
                 <Image
                   source={require(`../../assets/singleplayer.png`)}
-                  style={{ width: 35, height: 35 }}
+                  style={{ marginLeft: 8, width: 24, height: 34 }}
                 />
               )}
               {index === 1 && (

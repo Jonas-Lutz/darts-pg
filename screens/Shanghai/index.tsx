@@ -94,26 +94,17 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [shanghai, setShanghai] = useState(false);
   const [winners, setWinners] = useState<Array<number>>([]);
   const didMountRef = useRef(false);
-
+  const winnerRef = useRef(false);
   const scoreBoardRef = useRef<ScrollView>(null);
   const screenWidth = Dimensions.get("screen").width;
 
   // ================================================================================================
 
   useEffect(() => {
-    if (didMountRef.current) {
-      const mode = "shanghai";
-      const shanghaiStats = selectedPlayers.map((sp, index) => ({
-        gameMode: mode as "shanghai",
-        playerId: sp.id,
-        stats: { total: scores[index] }
-      }));
-      updateStats(shanghaiStats);
-    } else {
-      didMountRef.current = true;
-    }
-    if (finished) {
+    if (winnerRef.current) {
       getWinner();
+    } else {
+      winnerRef.current = true;
     }
   }, [finished]);
 
@@ -249,7 +240,6 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
     const firstPlayer = activePlayer === 0;
     const prevPlayer =
       activePlayer > 0 ? activePlayer - 1 : selectedPlayers.length - 1;
-
     const removePlayer = roundHistory.length > 0 ? activePlayer : prevPlayer;
 
     // At least 1 dart thrown
@@ -336,6 +326,20 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
     } else {
       setRound(1);
     }
+  };
+
+  const saveStats = () => {
+    const mode = "shanghai";
+    const shanghaiStats = selectedPlayers.map((sp, index) => ({
+      gameMode: mode as "shanghai",
+      playerId: sp.id,
+      stats: {
+        total: scores[index],
+        winner: selectedPlayers.length > 1 && winners.includes(index),
+        shanghai: winners.includes(index) && shanghai
+      }
+    }));
+    updateStats(shanghaiStats);
   };
 
   // ================================================================================================
@@ -508,9 +512,13 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
         />
       </View>
       <FinishedModal
-        goHome={() => goHome(navigation)}
+        goHome={() => {
+          saveStats();
+          goHome(navigation);
+        }}
         headline={shanghai ? "Shanghai Finish!" : "Stats"}
         restart={() => {
+          saveStats();
           const resetAction = StackActions.reset({
             index: 0,
             actions: [

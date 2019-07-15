@@ -22,6 +22,8 @@ const initPlayerStats = async (id: string) => {
   statHistory.push({
     playerId: id,
     x01: {
+      games: 0,
+      wins: 0,
       checkout: 0,
       highestScore: 0,
       highestCheckout: 0,
@@ -29,17 +31,25 @@ const initPlayerStats = async (id: string) => {
       darts: [],
       plus100: 0,
       plus140: 0,
-      plus160: 0
+      plus160: 0,
+      plus180: 0
     },
     cricket: {
+      games: 0,
+      wins: 0,
       avgMpr: 0,
       darts: []
     },
     cricketCountUp: {
+      games: 0,
+      wins: 0,
       highscore: 0,
       avgMpr: 0,
       darts: [],
-      scores: []
+      scores: [],
+      fourteenPlus: 0,
+      twentyeightPlus: 0,
+      twentyonePlus: 0
     },
     nineNineX: {
       fields: [
@@ -56,10 +66,16 @@ const initPlayerStats = async (id: string) => {
       ]
     },
     shanghai: {
+      games: 0,
+      wins: 0,
+      shanghaiFinishes: 0,
       highscore: 0
     },
     bobs: {
-      highscore: 0
+      games: 0,
+      wins: 0,
+      highscore: 0,
+      finishes: 0
     }
   });
 

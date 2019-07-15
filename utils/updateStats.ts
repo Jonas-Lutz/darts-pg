@@ -53,6 +53,19 @@ const updateStats = async (
                 ) /
                 statHistory[index].cricketCountUp.scores.length /
                 7;
+              if (p.stats.winner) {
+                statHistory[index].cricketCountUp.wins += 1;
+              }
+              if (p.stats.score >= 14) {
+                statHistory[index].cricketCountUp.fourteenPlus += 1;
+                if (p.stats.score >= 21) {
+                  statHistory[index].cricketCountUp.twentyonePlus += 1;
+                }
+                if (p.stats.score >= 28) {
+                  statHistory[index].cricketCountUp.twentyeightPlus += 1;
+                }
+              }
+              statHistory[index].cricketCountUp.games += 1;
               break;
             case "nineNineX":
               const statField = statHistory[index].nineNineX.fields.find(
@@ -90,12 +103,26 @@ const updateStats = async (
                 p.stats.total,
                 statHistory[index].shanghai.highscore
               );
+              statHistory[index].shanghai.games += 1;
+              if (p.stats.winner) {
+                statHistory[index].shanghai.wins += 1;
+                if (p.stats.shanghai) {
+                  statHistory[index].shanghai.shanghaiFinishes += 1;
+                }
+              }
               break;
             case "bobs":
               statHistory[index].bobs.highscore = Math.max(
                 p.stats.total,
                 statHistory[index].bobs.highscore
               );
+              statHistory[index].bobs.games += 1;
+              if (p.stats.winner) {
+                statHistory[index].bobs.wins += 1;
+              }
+              if (p.stats.finished) {
+                statHistory[index].bobs.finishes += 1;
+              }
               break;
             default:
               console.log("default");
@@ -127,6 +154,8 @@ export interface BobsGameHistory {
   gameMode: "bobs";
   stats: {
     total: number;
+    winner: boolean;
+    finished: boolean;
   };
   playerId: string;
 }
@@ -135,6 +164,8 @@ export interface ShanghaiGameHistory {
   gameMode: "shanghai";
   stats: {
     total: number;
+    winner: boolean;
+    shanghai: boolean;
   };
   playerId: string;
 }
@@ -160,5 +191,6 @@ export interface CricketCountUpHistory {
   stats: {
     score: number;
     rounds: number[];
+    winner: boolean;
   };
 }
