@@ -13,11 +13,10 @@ interface Props {
 const AnimatedNumber: FC<Props> = ({ style, value }) => {
   return (
     <AnimateNumber
-      countBy={1}
       formatter={(val: number) => {
         return val.toFixed(0);
       }}
-      interval={2}
+      interval={5}
       steps={10}
       timing="easeOut"
       style={style}

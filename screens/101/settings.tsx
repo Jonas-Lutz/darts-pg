@@ -93,7 +93,8 @@ const OneOOneSettings: NavigationScreenComponent<Props> = ({ navigation }) => {
                   roundHistory: [],
                   finished: false,
                   bust: false,
-                  score: input ? parseInt(input) : 101
+                  score: input ? parseInt(input) : 101,
+                  selectedPlayer: selectedPlayer
                 });
               }}
               style={styles.startButton}
