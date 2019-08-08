@@ -30,6 +30,7 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 // Props:
 export interface Props extends NavigationScreenProps {
   followUp: string;
+  headline: string;
   multi: boolean;
   showTimeFilter?: boolean;
 }
@@ -38,6 +39,7 @@ export interface Props extends NavigationScreenProps {
 
 const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
   const followUp = navigation.getParam("followUp");
+  const headline = navigation.getParam("headline", "Headline");
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
@@ -67,7 +69,7 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
   return (
     <Container>
       <Scoreboard
-        headline={"Headline"}
+        headline={headline}
         flexVal={0.3}
         goHome={() => goHome(navigation)}
       >

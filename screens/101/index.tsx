@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import {
   StackActions,
@@ -11,6 +11,7 @@ import {
 import theme from "theme";
 
 // Components:
+import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import GameNav from "components/GameNav";
 import FinishedModal from "components/FinishedModal";
@@ -27,15 +28,15 @@ const isSmall = smallScreen();
 
 // ================================================================================================
 // Types:
-import Dart from "interfaces/dart";
+import noIdDart from "interfaces/noIddart";
 import Player from "interfaces/player";
 
 // Props:
 export interface Props extends NavigationScreenProps {
-  gameHistory: Dart[][];
+  gameHistory: noIdDart[][];
   multiplier: number;
   round: number;
-  roundHistory: Dart[];
+  roundHistory: noIdDart[];
   finished: boolean;
   bust: boolean;
   score: number;
@@ -46,14 +47,14 @@ export interface Props extends NavigationScreenProps {
 
 const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
   // State:
-  const [gameHistory, setGameHistory] = useState<Array<Array<Dart>>>(
+  const [gameHistory, setGameHistory] = useState<Array<Array<noIdDart>>>(
     navigation.getParam("gameHistory", [])
   );
   const [multiplier, setMultiplier] = useState(
     navigation.getParam("multiplier", 1)
   );
   const [round, setRound] = useState(navigation.getParam("round", 1));
-  const [roundHistory, setRoundHistory] = useState<Array<Dart>>(
+  const [roundHistory, setRoundHistory] = useState<Array<noIdDart>>(
     navigation.getParam("roundHistory", [])
   );
   const [finished, setFinished] = useState(
@@ -117,7 +118,7 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
     } else {
       const newGameHistory = [...gameHistory];
       const addedScore = newGameHistory[newGameHistory.length - 1]
-        .map((el: Dart) => el.points * el.multiplier)
+        .map((el: noIdDart) => el.points * el.multiplier)
         .reduce((total: number, curr: number) => {
           return total + curr;
         });
@@ -262,7 +263,7 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
         {/* Score - Label */}
         <View style={styles.scoreWrapper}>
           <Text>{selectedPlayer.name}</Text>
-          <Text style={styles.scoreLabel}>{score}</Text>
+          <AnimatedNumber style={styles.scoreLabel} value={score} />
         </View>
 
         {/* Round - History / Checkout */}

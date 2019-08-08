@@ -15,6 +15,7 @@ import {
 import theme from "theme";
 
 // Components:
+import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import GameNav from "components/GameNav";
 import Scoreboard from "components/Scoreboard";
@@ -192,7 +193,7 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
       >
         <View style={styles.gamestats}>
           <Text style={styles.playerLabel}>{selectedPlayer.name}</Text>
-          <Text style={styles.scoreLabelText}>{`${score}`}</Text>
+          <AnimatedNumber style={styles.scoreLabelText} value={score} />
 
           <View
             style={{

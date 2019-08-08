@@ -20,6 +20,7 @@ import {
 import theme from "theme";
 
 // Components:
+import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import GameNav from "components/GameNav";
 import FinishedModal from "components/FinishedModal";
@@ -388,7 +389,10 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
               >
                 <Text style={styles.nameText}>{sp.name}</Text>
                 <View style={styles.scoreWrapper}>
-                  <Text style={styles.scoreText}>{`${scores[index]}`}</Text>
+                  <AnimatedNumber
+                    style={styles.scoreText}
+                    value={scores[index]}
+                  />
                 </View>
                 <View style={styles.mprWrapper}>
                   <Text style={styles.mprText}>{`MPR: ${calcMPR(

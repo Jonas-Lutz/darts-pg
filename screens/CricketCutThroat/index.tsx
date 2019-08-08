@@ -23,6 +23,7 @@ import Headline from "atoms/Headline";
 import theme from "theme";
 
 // Components:
+import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import FinishedModal from "components/FinishedModal";
 import Scoreboard from "components/Scoreboard";
@@ -458,9 +459,10 @@ const CutThroatCricket: NavigationScreenComponent<Props> = ({ navigation }) => {
                       {bullHits ? getScoreIcon(bullHits.hits) : null}
                     </View>
                     <View style={styles.scoreColumn}>
-                      <Text style={styles.scoreColumnText}>{`${
-                        pH.score
-                      }`}</Text>
+                      <AnimatedNumber
+                        style={styles.scoreColumnText}
+                        value={pH.score}
+                      />
                     </View>
                   </View>
                 );

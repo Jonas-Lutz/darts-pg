@@ -19,6 +19,7 @@ import {
 import theme from "theme";
 
 // Components:
+import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import GameNav from "components/GameNav";
 import FinishedModal from "components/FinishedModal";
@@ -99,10 +100,6 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
       });
     }
   }, [activePlayer, scoreBoardRef]);
-
-  useEffect(() => {
-    console.log(round, "te Runde");
-  }, [round]);
 
   // ================================================================================================
 
@@ -264,7 +261,10 @@ const Bobs27: NavigationScreenComponent<Props> = ({ navigation }) => {
                     </Text>
                   </View>
                   <View style={styles.pointWrapper}>
-                    <Text style={styles.pointLabel}>{`${scores[index]}`}</Text>
+                    <AnimatedNumber
+                      style={styles.pointLabel}
+                      value={scores[index]}
+                    />
                   </View>
                 </View>
               );
