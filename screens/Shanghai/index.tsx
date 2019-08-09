@@ -514,6 +514,7 @@ const Shanghai: NavigationScreenComponent<Props> = ({ navigation }) => {
           moveOn={advanceRound}
           moveOnText="Next"
           removeScore={removeScore}
+          runAnimation={roundHistory.length > 2}
           underlayBack={
             gameHistory.length < 1
               ? theme.neutrals.seventh
@@ -610,6 +611,7 @@ const styles = StyleSheet.create({
   dartsDisplay: {
     flex: 0.2,
     flexDirection: "row",
+    minHeight: 15,
     justifyContent: "space-between",
     width: "100%"
   },

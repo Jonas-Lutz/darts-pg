@@ -16,6 +16,7 @@ import theme from "theme";
 
 // Components:
 import Container from "components/Container";
+import PulsatingText from "components/PulsatingText";
 import Scoreboard from "components/Scoreboard";
 
 // Utils:
@@ -217,7 +218,11 @@ const PlayerSelection: NavigationScreenComponent<Props> = ({ navigation }) => {
             style={styles.gameBtn}
             underlayColor={theme.primaries.lightBlues.second}
           >
-            <Text style={styles.gameBtnText}>Game on</Text>
+            <PulsatingText
+              runAnimation={selectedPlayers.length > 0}
+              text="Game on"
+              styles={styles.gameBtnText}
+            />
           </TouchableHighlight>
         </View>
       )}

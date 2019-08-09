@@ -20,6 +20,7 @@ import theme from "theme";
 
 // Components:
 import Container from "components/Container";
+import PulsatingText from "components/PulsatingText";
 import Scoreboard from "components/Scoreboard";
 
 // Utils:
@@ -100,7 +101,11 @@ const OneOOneSettings: NavigationScreenComponent<Props> = ({ navigation }) => {
               style={styles.startButton}
               underlayColor={theme.primaries.lightBlues.tenth}
             >
-              <Text style={styles.startButtonText}>Start</Text>
+              <PulsatingText
+                runAnimation={input.length > 0}
+                styles={styles.startButtonText}
+                text="Start"
+              />
             </TouchableHighlight>
           </View>
         </View>

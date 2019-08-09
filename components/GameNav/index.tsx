@@ -4,6 +4,9 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 // Colors:
 import theme from "theme";
 
+// Components
+import PulsatingText from "components/PulsatingText";
+
 // ==================================================================================================
 
 type Props = {
@@ -12,6 +15,7 @@ type Props = {
   moveOn: () => void;
   moveOnText: string;
   removeScore: () => void;
+  runAnimation?: boolean;
   underlayBack?: string;
   underlayMove?: string;
 };
@@ -23,6 +27,7 @@ const GameNav: FunctionComponent<Props> = ({
   moveOn,
   moveOnText,
   removeScore,
+  runAnimation = false,
   underlayBack = theme.neutrals.eighth,
   underlayMove = theme.primaries.lightBlues.eighth
 }) => {
@@ -51,14 +56,14 @@ const GameNav: FunctionComponent<Props> = ({
           style={styles.forwardButton}
           underlayColor={underlayMove}
         >
-          <Text
-            style={{
+          <PulsatingText
+            runAnimation={runAnimation}
+            styles={{
               color: theme.neutrals.tenth,
               fontSize: 22
             }}
-          >
-            {moveOnText}
-          </Text>
+            text={moveOnText}
+          />
         </TouchableHighlight>
       </View>
     </View>

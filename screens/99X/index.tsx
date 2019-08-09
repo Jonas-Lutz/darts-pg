@@ -324,6 +324,7 @@ const NineNineX: NavigationScreenComponent<Props> = ({ navigation }) => {
       <View style={{ flex: 0.1 }}>
         <GameNav
           backDisabled={gameHistory.length < 1}
+          runAnimation={roundHistory.length === 3}
           moveOn={() => {
             if ((round === 20 && roundHistory.length === 3) || round > 20) {
               const mode = "nineNineX";

@@ -17,7 +17,6 @@ import {
 import { ScreenOrientation } from "expo";
 
 // Atoms:
-import Headline from "atoms/Headline";
 
 // Colors:
 import theme from "theme";
@@ -26,6 +25,7 @@ import theme from "theme";
 import AnimatedNumber from "components/AnimatedNumber";
 import Container from "components/Container";
 import FinishedModal from "components/FinishedModal";
+import PulsatingText from "components/PulsatingText";
 import Scoreboard from "components/Scoreboard";
 
 // Types:
@@ -627,7 +627,15 @@ const CutThroatCricket: NavigationScreenComponent<Props> = ({ navigation }) => {
 
             <View style={styles.scoreColumn}>
               <TouchableHighlight onPress={advanceRound} style={styles.nextBtn}>
-                <Text style={styles.nextBtnText}>Next</Text>
+                <PulsatingText
+                  runAnimation={
+                    gameHistory[activePlayer].rounds &&
+                    gameHistory[activePlayer].rounds[round - 1] &&
+                    gameHistory[activePlayer].rounds[round - 1].length > 2
+                  }
+                  styles={styles.nextBtnText}
+                  text="Next"
+                />
               </TouchableHighlight>
             </View>
           </View>

@@ -419,6 +419,7 @@ const OneOOne: NavigationScreenComponent<Props> = ({ navigation }) => {
           moveOn={advanceRound}
           moveOnText="Next"
           removeScore={removeScore}
+          runAnimation={roundHistory.length > 2}
           underlayBack={
             gameHistory.length < 1
               ? theme.neutrals.seventh

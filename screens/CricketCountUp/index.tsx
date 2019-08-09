@@ -285,7 +285,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
     <Container>
       <Scoreboard
         flexVal={0.3}
-        headline="Cricket Count Up"
+        headline="Cricket - 28"
         goHome={() => goHome(navigation)}
       >
         <ScrollView
@@ -446,6 +446,7 @@ const CricketCountUp: NavigationScreenComponent<Props> = ({ navigation }) => {
           moveOn={advanceRound}
           moveOnText="Next"
           removeScore={removeScore}
+          runAnimation={roundHistory.length > 2}
           underlayBack={
             gameHistory.length < 1
               ? theme.neutrals.seventh
@@ -528,7 +529,8 @@ const styles = StyleSheet.create({
     flex: 0.2,
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%"
+    width: "100%",
+    minHeight: 15
   },
   dartsDisplayDart: {
     alignItems: "center",

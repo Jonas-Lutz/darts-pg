@@ -32,6 +32,7 @@ import Player from "interfaces/player";
 // Utils
 import goHome from "utils/goHome";
 import { getLabel } from "utils/getLabel";
+import PulsatingText from "components/PulsatingText";
 
 // ================================================================================================
 // Interfaces:
@@ -613,7 +614,15 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
 
             <View style={styles.scoreColumn}>
               <TouchableHighlight onPress={advanceRound} style={styles.nextBtn}>
-                <Text style={styles.nextBtnText}>Next</Text>
+                <PulsatingText
+                  runAnimation={
+                    gameHistory[activePlayer].rounds &&
+                    gameHistory[activePlayer].rounds[round - 1] &&
+                    gameHistory[activePlayer].rounds[round - 1].length > 2
+                  }
+                  styles={styles.nextBtnText}
+                  text="Next"
+                />
               </TouchableHighlight>
             </View>
           </View>
