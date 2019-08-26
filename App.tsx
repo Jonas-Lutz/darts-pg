@@ -3,6 +3,12 @@ import { StyleSheet, View } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import { AppLoading } from "expo";
 import { Asset } from "expo-asset";
+import Sentry from "sentry-expo";
+
+Sentry.enableInExpoDevelopment = true;
+Sentry.config(
+  "https://6de6c97b826d4927bd01398de3e5c373@sentry.io/1538502"
+).install();
 
 const _cacheResourcesAsync = async () => {
   const images = [

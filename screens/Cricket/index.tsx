@@ -97,7 +97,6 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [playerRowHeight, setPlayerRowHeight] = useState<number>(0);
   const [finished, setFinished] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [header, setHeader] = useState("klo");
   const [wrapperHeight, setWrapperHeight] = useState(
     Dimensions.get("window").height / 2
   );
@@ -105,21 +104,16 @@ const Cricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   // ================================================================================================
 
   useEffect(() => {
-    /* console.log(
-      "================================================================================================"
-    );
-    console.log("GameHistory: ");
-    console.log(gameHistory); */
+    console.log(gameHistory);
   }, [gameHistory]);
+
+  // ================================================================================================
 
   useEffect(() => {
     ScreenOrientation.unlockAsync().then(() => {
       ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE
       ).then(() => {
-        ScreenOrientation.getOrientationAsync().then(val =>
-          setHeader(val.orientation)
-        );
         setWrapperHeight(Dimensions.get("window").width / 2);
         setLoading(false);
       });

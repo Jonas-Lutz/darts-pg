@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { StyleSheet, Text, Image, View } from "react-native";
 import {
   NavigationScreenComponent,
@@ -26,10 +26,6 @@ export interface Props extends NavigationScreenProps {}
 // ================================================================================================
 
 const X01: NavigationScreenComponent<Props> = ({ navigation }) => {
-  /* static navigationOptions = {
-    header: null
-  }; */
-
   return (
     <Container>
       <Scoreboard flexVal={0.2} goHome={() => goHome(navigation)}>

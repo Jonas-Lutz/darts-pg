@@ -20,6 +20,7 @@
     "react-native-animate-number": "^0.1.2",
     "react-navigation": "3.11.0",
     "scheduler": "0.14.0",
+    "sentry-expo": "^1.13.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

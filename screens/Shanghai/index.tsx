@@ -613,7 +613,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 15,
     justifyContent: "space-between",
-    width: "100%"
+    width: "100%",
+    marginTop: 2
   },
   dartsDisplayDart: {
     alignItems: "center",

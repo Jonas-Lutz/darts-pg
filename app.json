@@ -22,5 +22,17 @@
     "android": {
       "package": "com.husarendart"
     }
+  },
+  "hooks": {
+    "postPublish": [
+      {
+        "file": "sentry-expo/upload-sourcemaps",
+        "config": {
+          "organization": "coolGang",
+          "project": "jonaslutz",
+          "authToken": "3e8fbe20a0fd440baa3c6ea30d9014e95bb8721f268b4256bbd46bedca379309"
+        }
+      }
+    ]
   }
 }

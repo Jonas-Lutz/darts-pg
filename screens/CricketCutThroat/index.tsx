@@ -99,7 +99,6 @@ const CutThroatCricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   const [playerRowHeight, setPlayerRowHeight] = useState<number>(0);
   const [finished, setFinished] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [header, setHeader] = useState("klo");
   const [wrapperHeight, setWrapperHeight] = useState(
     Dimensions.get("window").height / 2
   );
@@ -107,22 +106,10 @@ const CutThroatCricket: NavigationScreenComponent<Props> = ({ navigation }) => {
   // ================================================================================================
 
   useEffect(() => {
-    console.log(wrapperHeight);
-    /* console.log(
-      "================================================================================================"
-    );
-    console.log("GameHistory: ");
-    console.log(gameHistory); */
-  }, [wrapperHeight]);
-
-  useEffect(() => {
     ScreenOrientation.unlockAsync().then(() => {
       ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE
       ).then(() => {
-        ScreenOrientation.getOrientationAsync().then(val =>
-          setHeader(val.orientation)
-        );
         setWrapperHeight(Dimensions.get("window").width / 2);
         setLoading(false);
       });

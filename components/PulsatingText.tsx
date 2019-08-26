@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Animated } from "react-native";
 
 interface Props {
@@ -24,7 +24,7 @@ const PulsatingText: FC<Props> = ({ runAnimation, styles, text }) => {
     setIsAnimating(true);
     Animated.sequence([
       Animated.timing(zoom, {
-        toValue: 1.3,
+        toValue: 1.25,
         duration: 700
       }),
       Animated.timing(zoom, {
